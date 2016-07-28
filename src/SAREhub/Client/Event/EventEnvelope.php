@@ -48,7 +48,7 @@ class EventEnvelope {
 	 * @return bool
 	 */
 	public function isProcessedOrCancelled() {
-		return $this->isProcessed() || $this->cancelled;
+		return $this->isProcessed() || $this->isCancelled();
 	}
 	
 	/**
@@ -56,6 +56,13 @@ class EventEnvelope {
 	 */
 	public function isProcessed() {
 		return $this->processed;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isCancelled() {
+		return $this->cancelled;
 	}
 	
 	/**
@@ -70,7 +77,7 @@ class EventEnvelope {
 	 */
 	public function cancelled() {
 		if (!$this->isProcessedOrCancelled()) {
-			($c = $this->processedCallback) && $c($this);
+			($c = $this->cancelledCallback) && $c($this);
 			$this->cancelled = true;
 		}
 	}
@@ -80,13 +87,6 @@ class EventEnvelope {
 	 */
 	public function setCancelledCallback(callable $callback) {
 		$this->cancelledCallback = $callback;
-	}
-	
-	/**
-	 * @return bool
-	 */
-	public function isCancelled() {
-		return $this->cancelled;
 	}
 	
 	/**
