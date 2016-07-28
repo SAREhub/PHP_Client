@@ -20,8 +20,8 @@ script:
 - vendor/bin/phpdoc --quiet -d ./src -t ./build/docs
 after_script:
 - vendor/bin/test-reporter
-#after_success:
-#- bash .travis_after_success.sh
+after_success:
+- bash .travis_after_success.sh
 addons:
   code_climate:
    repo_token: "$CODECLIMATE_TOKEN"
