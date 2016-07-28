@@ -1,0 +1,33 @@
+sudo: false
+language: php
+php:
+- 5.6
+- 7.0
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$HOME/.composer/cache/files"
+install:
+- mv /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ~/xdebug.ini
+before_script:
+- composer install --no-interaction --prefer-dist --no-progress --quiet
+- mkdir -p build/docs
+- mv ~/xdebug.ini /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
+script:
+- phpunit --coverage-clover build/logs/clover.xml
+- vendor/bin/phpdoc --quiet -d ./src -t ./build/docs
+after_script:
+- vendor/bin/test-reporter
+#after_success:
+#- bash .travis_after_success.sh
+addons:
+  code_climate:
+   repo_token: "$CODECLIMATE_TOKEN"
+  apt:
+   packages:
+   - graphviz
+env:
+  global:
+  - secure: zzu9iGp74GQmTSghcCI1wT9q4zjAAHIU7k9bgijsA2R/EkssskI1jz85oXpT+F3k0h4D0N5Wqv8Lw8dry5EST7IY3kRGwLPYqvOqELrAsdgWFqA1gSqyMt9rGAfKXcmt32dsABT5ZvyPbSTI43dBbLDVA2MpQ6Pwccn9pCegsPIvOOpY0nbYhX/WHNEcFzlGJxo0DCAtvwXvbnh4NDbQN9P87kxlXtfdTYHwiQm8weYWRxvNIfALE5YaD8Z4x4eqjsZYkPs+gjlXcOdKJt0XDFb/Lwmu5DggLwZQNi2/iVd/rubui3mBXcXaFfjJZBLMILlXpCbV3wYC5Hf+7EQUwkK8sjy0Kx/RiVl0ef/uoK9359lTgygKj033YJhBgu0w+bs+tiGgl3hotUf6pv3qFwLzj6Xisy/LoDasBWVhdaLUdM9WJ12+1oIRTO2i4T2At6jum2TOypmBS7pgrIkQnkFdhz0MnPCvmdL3dIKLcKfdh0tHI3n5XSNEX/VIdUeZ+xSxkcHJZAUEiJn/4ToxvOaNqDAXImj7bfhcLwrjRYc1dVp0V9vm7bU4dz5BjsfYTb/c7d4UPU39y7LBD1BrJ0Lo5fpIxIsJKX6P28r1gvCdyTKmHa4H1ZIKJnoJVOTYJGuZ4HJggfo2wVXANG9nNScPDEwblL3TXFCsql6sTlE=
