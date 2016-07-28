@@ -24,7 +24,7 @@ class EventEnvelope {
 	 */
 	public function __construct(Event $event) {
 		$this->event = $event;
-		$this->processedCallback = $cancelledCallback = function () { };
+		$this->processedCallback = $this->cancelledCallback = function () { };
 	}
 	
 	/**
