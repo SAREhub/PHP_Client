@@ -1,106 +1,50 @@
 <?php
 
 namespace SAREhub\Client\Event;
-use SAREhub\Commons\Misc\Parameters;
 
 /**
- * Container for event with process state change notification callbacks
+ * Container for event with processPromise
  */
-class EventEnvelope {
-	
-	private $event;
-	
-	private $processed = false;
-	private $processedCallback;
-	
-	private $cancelled = false;
-	private $cancelledCallback;
-	
-	private $properties;
-	
-	/**
-	 * Creates envelope with default noops callbacks
-	 * @param Event $event
-	 */
-	public function __construct(Event $event) {
-		$this->event = $event;
-		$this->processedCallback = $this->cancelledCallback = function () { };
-	}
+interface EventEnvelope {
 	
 	/**
 	 * @return Event
 	 */
-	public function getEvent() {
-		return $this->event;
-	}
+	public function getEvent();
 	
 	/**
-	 * Execute once registered processed callback and sets that envelope as processed
+	 * Marks envelope as processed, it can call promise.resolve
 	 */
-	public function processed() {
-		if (!$this->isProcessedOrCancelled()) {
-			($c = $this->processedCallback) && $c($this);
-			$this->processed = true;
-		}
-	}
+	public function markAsProcessed();
 	
 	/**
-	 * @return bool
+	 * Marks envelope as process cancelled, it can call promise.cancel
 	 */
-	public function isProcessedOrCancelled() {
-		return $this->isProcessed() || $this->isCancelled();
-	}
+	public function markAsCancelled();
 	
 	/**
-	 * @return bool
+	 * Marks envelope as processed with some error, it can call promise.reject
+	 * @param \Exception $e
 	 */
-	public function isProcessed() {
-		return $this->processed;
-	}
+	public function markAsProcessedExceptionally(\Exception $e);
+	
+	/**
+	 * @return Promise|null
+	 */
+	public function getProcessPromise();
 	
 	/**
 	 * @return bool
 	 */
-	public function isCancelled() {
-		return $this->cancelled;
-	}
+	public function hasProcessPromise();
 	
-	/**
-	 * @param callable $callback
+	/*
+	 * @return EventEnvelopeProperties
 	 */
-	public function setProcessedCallback(callable $callback) {
-		$this->processedCallback = $callback;
-	}
+	public function getProperties();
 	
-	/**
-	 * Execute once registered cancelled callback and sets that envelope as cancelled
+	/*
+	 * @return bool
 	 */
-	public function cancelled() {
-		if (!$this->isProcessedOrCancelled()) {
-			($c = $this->cancelledCallback) && $c($this);
-			$this->cancelled = true;
-		}
-	}
-	
-	/**
-	 * @param callable $callback
-	 */
-	public function setCancelledCallback(callable $callback) {
-		$this->cancelledCallback = $callback;
-	}
-	
-	/**
-	 * @return Parameters
-	 */
-	public function getProperties() {
-		return $this->properties;
-	}
-	
-	/**
-	 * @param array $properties
-	 */
-	public function setProperties($properties) {
-		$this->properties = $properties;
-	}
-	
+	public function hasProperties();
 }
