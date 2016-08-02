@@ -15,4 +15,13 @@ class UserTest extends TestCase {
 		
 		$this->assertSame($userKey, $user->findKeyByClass(EmailUserKey::class));
 	}
+	
+	public function testFindKeyByTypeWhenKeyOfTypeNotExists() {
+		$userKey = new EmailUserKey('example@example.com');
+		$user = new User([
+		  $userKey
+		]);
+		
+		$this->assertNull($user->findKeyByClass(CookieUserKey::class));
+	}
 }
