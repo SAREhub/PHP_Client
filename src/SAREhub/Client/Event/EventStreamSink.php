@@ -2,15 +2,26 @@
 
 namespace SAREhub\Client\Event;
 
-abstract class EventStreamSink extends EventStream {
+/**
+ * Represents place where events can be puts
+ */
+interface EventStreamSink {
 	
-	public abstract function write(EventEnvelope $eventEnvelope);
+	/**
+	 * Puts event to sink
+	 * @param EventEnvelope $eventEnvelope
+	 */
+	public function write(EventEnvelope $eventEnvelope);
 	
-	public function onPipe(EventStreamSource $source) {
-		
-	}
+	/**
+	 * Executed in event stream source when this sink was connected to source
+	 * @param EventStreamSource $source
+	 */
+	public function onPipe(EventStreamSource $source);
 	
-	public function onUnpipe(EventStreamSource $source) {
-		
-	}
+	/**
+	 * Executed in event stream source when this sink was disconnected from source
+	 * @param EventStreamSource $source
+	 */
+	public function onUnpipe(EventStreamSource $source);
 }

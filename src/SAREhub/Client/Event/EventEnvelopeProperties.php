@@ -2,6 +2,6 @@
 
 namespace SAREhub\Client\Event;
 
-abstract class EventStream {
+interface EventEnvelopeProperties {
 	
 }

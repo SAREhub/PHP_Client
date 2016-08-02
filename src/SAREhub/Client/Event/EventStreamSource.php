@@ -5,47 +5,27 @@ namespace SAREhub\Client\Event;
 /**
  * Represents place where events come from
  */
-abstract class EventStreamSource extends EventStream {
-	
-	/** @var EventStreamSink */
-	private $sink;
-	
-	public function __construct() {
-		$this->sink = new NullEventStreamSink();
-	}
+interface EventStreamSource {
 	
 	/**
 	 * Blocking or not blocking method (pushing only to connected sink)
 	 */
-	public abstract function flow();
+	public function flow();
 	
 	/**
 	 * Blocking method for get events (additionally pushing to sink)
 	 * @return Event
 	 */
-	public abstract function read();
+	public function read();
 	
 	/**
-	 * Disconnects current sink from source
+	 * Disconnects all sinks from source
 	 */
-	public function unpipe() {
-		$this->pipe(new NullEventStreamSink());
-	}
+	public function unpipe();
 	
 	/**
 	 * Connects sink to the source(additionally notify previous sink about that)
 	 * @param EventStreamSink $sink
 	 */
-	public function pipe(EventStreamSink $sink) {
-		$this->sink->onUnpipe($this);
-		$this->sink = $sink;
-		$this->sink->onPipe($this);
-	}
-	
-	/**
-	 * @return EventStreamSink
-	 */
-	public function getSink() {
-		return $this->sink;
-	}
+	public function pipe(EventStreamSink $sink);
 }
