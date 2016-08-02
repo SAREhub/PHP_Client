@@ -16,6 +16,14 @@ class RoutingKey implements \IteratorAggregate {
 	}
 	
 	/**
+	 * @param string $routingKeyString
+	 * @return RoutingKey
+	 */
+	public static function createFromString($routingKeyString) {
+		return new self(explode('.', $routingKeyString));
+	}
+	
+	/**
 	 * @param string part
 	 * @return $this
 	 */
