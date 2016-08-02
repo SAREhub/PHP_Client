@@ -2,6 +2,8 @@
 
 namespace SAREhub\Client\Event;
 
+use GuzzleHttp\Promise\Promise;
+
 /**
  * Container for event with processPromise
  */
@@ -38,6 +40,12 @@ interface EventEnvelope {
 	 */
 	public function hasProcessPromise();
 	
+	/**
+	 * @param Promise $processPromise
+	 * @return mixed
+	 */
+	public function setProcessPromise(Promise $processPromise);
+	
 	/*
 	 * @return EventEnvelopeProperties
 	 */
@@ -47,4 +55,9 @@ interface EventEnvelope {
 	 * @return bool
 	 */
 	public function hasProperties();
+	
+	/**
+	 * @param EventEnvelopeProperties $properties
+	 */
+	public function setProperties(EventEnvelopeProperties $properties);
 }
