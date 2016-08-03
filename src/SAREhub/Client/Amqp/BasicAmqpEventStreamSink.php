@@ -9,10 +9,18 @@ use SAREhub\Client\Event\EventSerializationService;
 use SAREhub\Client\Event\EventStreamSink;
 use SAREhub\Client\Event\EventStreamSource;
 
+/**
+ * Basic implementation of amqp event stream sink
+ */
 class BasicAmqpEventStreamSink implements EventStreamSink {
 	
+	/** @var AMQPChannel */
 	protected $channel;
+	
+	/** @var string */
 	protected $exchangeName;
+	
+	/** @var EventSerializationService */
 	protected $eventSerializationService;
 	
 	public function __construct(AMQPChannel $channel,
@@ -40,6 +48,9 @@ class BasicAmqpEventStreamSink implements EventStreamSink {
 		}
 	}
 	
+	/**
+	 * @return string
+	 */
 	public function getExchangeName() {
 		return $this->exchangeName;
 	}
@@ -52,6 +63,9 @@ class BasicAmqpEventStreamSink implements EventStreamSink {
 		
 	}
 	
+	/**
+	 * @return AMQPChannel
+	 */
 	public function getChannel() {
 		return $this->channel;
 	}
