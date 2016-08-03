@@ -9,7 +9,7 @@ use SAREhub\Client\Event\BasicEventEnvelope;
 use SAREhub\Client\Event\Event;
 use SAREhub\Client\Event\EventSerializationService;
 
-class AmqpEventStreamSinkTest extends TestCase {
+class BasicAmqpEventStreamSinkTest extends TestCase {
 	
 	private $channelMock;
 	private $eventMock;
@@ -50,7 +50,7 @@ class AmqpEventStreamSinkTest extends TestCase {
 			'part1.part2'
 		  );
 		
-		$sink = new AmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
+		$sink = new BasicAmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
 		$sink->write($this->eventEnvelopeMock);
 	}
 	
@@ -75,7 +75,7 @@ class AmqpEventStreamSinkTest extends TestCase {
 			'part1.part2'
 		  );
 		
-		$sink = new AmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
+		$sink = new BasicAmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
 		$sink->write($this->eventEnvelopeMock);
 	}
 	
@@ -97,7 +97,7 @@ class AmqpEventStreamSinkTest extends TestCase {
 			'part1.part2'
 		  );
 		
-		$sink = new AmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
+		$sink = new BasicAmqpEventStreamSink($this->channelMock, 'exchange', $this->eventSerializationService);
 		$sink->write($this->eventEnvelopeMock);
 	}
 	

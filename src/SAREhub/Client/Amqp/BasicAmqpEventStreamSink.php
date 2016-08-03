@@ -9,7 +9,7 @@ use SAREhub\Client\Event\EventSerializationService;
 use SAREhub\Client\Event\EventStreamSink;
 use SAREhub\Client\Event\EventStreamSource;
 
-class AmqpEventStreamSink implements EventStreamSink {
+class BasicAmqpEventStreamSink implements EventStreamSink {
 	
 	protected $channel;
 	protected $exchangeName;
