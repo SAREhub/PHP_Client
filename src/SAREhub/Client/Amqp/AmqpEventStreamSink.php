@@ -11,29 +11,32 @@ use SAREhub\Client\Event\EventStreamSource;
 
 class AmqpEventStreamSink implements EventStreamSink {
 	
-	const EXCHANGE_PREFIX = "PC";
-	
 	protected $channel;
-	protected $systemName;
 	protected $exchangeName;
 	protected $eventSerializationService;
 	
-	public function __construct(AMQPChannel $channel, $systemName, EventSerializationService $eventSerializationService) {
+	public function __construct(AMQPChannel $channel,
+	                            $exchangeName,
+	                            EventSerializationService $eventSerializationService) {
+		
 		$this->channel = $channel;
-		$this->systemName = $systemName;
-		$this->exchangeName = self::EXCHANGE_PREFIX.$systemName;
+		$this->exchangeName = $exchangeName;
 		$this->eventSerializationService = $eventSerializationService;
 	}
 	
 	public function write(EventEnvelope $eventEnvelope) {
 		try {
 			$messageBody = $this->eventSerializationService->serialize($eventEnvelope->getEvent());
-			$message = new AMQPMessage($messageBody);
-			
+			/** @var AmqpEventEnvelopeProperties $messageProperties */
 			$messageProperties = $eventEnvelope->getProperties();
-			$this->channel->basic_publish($message, $this->getExchangeName(), );
-		} catch (\Exception $e) {
-			
+			$this->channel->basic_publish(new AMQPMessage(
+			  $messageBody, $messageProperties->toAmqpMessageProperties()),
+			  $this->getExchangeName(),
+			  $messageProperties->getRoutingKeyAsString()
+			);
+			$eventEnvelope->markAsProcessed();
+		} catch (AmqpException $e) {
+			$eventEnvelope->markAsProcessedExceptionally($e);
 		}
 	}
 	
@@ -47,5 +50,9 @@ class AmqpEventStreamSink implements EventStreamSink {
 	
 	public function onUnpipe(EventStreamSource $source) {
 		
+	}
+	
+	public function getChannel() {
+		return $this->channel;
 	}
 }
