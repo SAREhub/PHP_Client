@@ -44,7 +44,7 @@ class AmqpEventEnvelopePropertiesTest extends TestCase {
 	/**
 	 * @expectedException \SAREhub\Client\Amqp\EmptyRoutingKeyAmqpException
 	 */
-	public function testGetRoutingKeyAsStringWithouthRoutingKeySets() {
+	public function testGetRoutingKeyAsStringWithoutRoutingKeySets() {
 		$properties = new AmqpEventEnvelopeProperties();
 		$properties->getRoutingKeyAsString();
 	}
@@ -61,6 +61,14 @@ class AmqpEventEnvelopePropertiesTest extends TestCase {
 		$properties->setReplyTo('test_to', 'test_id');
 		$this->assertEquals([
 		  'reply_to' => 'test_to',
+		  'correlation_id' => 'test_id',
+		], $properties->toAmqpMessageProperties());
+	}
+	
+	public function testToAmqpMessagePropertiesOnlyResponseForReplyTo() {
+		$properties = new AmqpEventEnvelopeProperties();
+		$properties->setCorrelationId('test_id');
+		$this->assertEquals([
 		  'correlation_id' => 'test_id',
 		], $properties->toAmqpMessageProperties());
 	}

@@ -89,6 +89,8 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 		if ($this->hasReplyTo()) {
 			$properties['reply_to'] = $this->getReplyTo();
 			$properties['correlation_id'] = $this->getCorrelationId();
+		} else if ($this->hasCorrelationId()) {
+			$properties['correlation_id'] = $this->getCorrelationId();
 		}
 		
 		if ($this->hasPriority()) {
@@ -116,7 +118,7 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	 * @param string $replyTo
 	 * @param string $correlationId
 	 */
-	public function setReplyTo($replyTo, $correlationId) {
+	public function setReplyTo($replyTo, $correlationId = '') {
 		$this->replyTo = $replyTo;
 		$this->correlationId = $correlationId;
 	}
@@ -126,6 +128,20 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	 */
 	public function getCorrelationId() {
 		return $this->correlationId;
+	}
+	
+	/**
+	 * @param string $correlationId
+	 */
+	public function setCorrelationId($correlationId) {
+		$this->correlationId = $correlationId;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function hasCorrelationId() {
+		return !empty($this->correlationId);
 	}
 	
 	/**
