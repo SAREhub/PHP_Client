@@ -7,7 +7,6 @@ use SAREhub\Client\Event\User\UserEvent;
 
 class EventSerializationServiceTest extends TestCase {
 	
-	
 	public function testRegisterSerializer() {
 		$serializationService = new EventSerializationService();
 		
@@ -78,102 +77,5 @@ class EventSerializationServiceTest extends TestCase {
 		$serializationService->serialize($eventMock);
 	}
 	
-	public function testRegisterDeserializer() {
-		$serializationService = new EventSerializationService();
-		
-		$deserializerMock = $this->getCallbackMock();
-		$serializationService->registerDeserializer("testEvent", $deserializerMock);
-		$this->assertTrue($serializationService->hasDeserializer('testEvent'));
-		$this->assertSame($deserializerMock, $serializationService->getDeserializer('testEvent'));
-	}
 	
-	public function testDeserialize() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		
-		$eventData = [
-		  'type' => 'testEvent',
-		  'user' => [
-			'email' => 'example@example.com'
-		  ],
-		  'params' => [
-			'param1' => 1
-		  ]
-		];
-		
-		$deserializerMock = $this->getCallbackMock();
-		$deserializerMock->expects($this->once())->method('__invoke')->with($eventData)->willReturn($eventMock);
-		
-		$serializationService = new EventSerializationService();
-		$serializationService->registerDeserializer("testEvent", $deserializerMock);
-		$this->assertSame($eventMock, $serializationService->deserialize(json_encode($eventData)));
-	}
-	
-	/**
-	 * @expectedException \SAREhub\Client\Event\EventDeserializeException
-	 */
-	public function testDeserializeInvalidJson() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		
-		$eventData = [
-		  'type' => 'testEvent',
-		  'user' => [
-			'email' => 'example@example.com'
-		  ],
-		  'params' => [
-			'param1' => 1
-		  ]
-		];
-		
-		$deserializerMock = $this->getCallbackMock();
-		$deserializerMock->expects($this->never())->method('__invoke')->with($eventData)->willReturn($eventMock);
-		
-		$serializationService = new EventSerializationService();
-		$serializationService->registerDeserializer("testEvent", $deserializerMock);
-		$this->assertSame($eventMock, $serializationService->deserialize(json_encode($eventData)."invalidString"));
-	}
-	
-	/**
-	 * @expectedException \SAREhub\Client\Event\EventDeserializeException
-	 */
-	public function testDeserializeWithUnregisteredDeserializer() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		
-		$eventData = [
-		  'type' => 'testEvent',
-		  'user' => [
-			'email' => 'example@example.com'
-		  ],
-		  'params' => [
-			'param1' => 1
-		  ]
-		];
-		
-		$serializationService = new EventSerializationService();
-		$serializationService->deserialize(json_encode($eventData));
-	}
-	
-	/**
-	 * @expectedException \SAREhub\Client\Event\EventDeserializeException
-	 */
-	public function testDeserializeWithDeserializerWhoReturnNonEventObjectValue() {
-		$eventData = [
-		  'type' => 'testEvent',
-		  'user' => [
-			'email' => 'example@example.com'
-		  ],
-		  'params' => [
-			'param1' => 1
-		  ]
-		];
-		
-		$deserializerMock = $this->getCallbackMock();
-		$deserializerMock->expects($this->once())->method('__invoke')->with($eventData)->willReturn(null);
-		
-		$serializationService = new EventSerializationService();
-		$serializationService->registerDeserializer("testEvent", $deserializerMock);
-		$serializationService->deserialize(json_encode($eventData));
-	}
 }
