@@ -13,12 +13,6 @@ interface EventStreamSource {
 	public function flow();
 	
 	/**
-	 * Blocking method for get events (additionally pushing to sink)
-	 * @return Event
-	 */
-	public function read();
-	
-	/**
 	 * Disconnects all sinks from source
 	 */
 	public function unpipe();
