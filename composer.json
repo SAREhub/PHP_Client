@@ -1,7 +1,6 @@
 {
   "name": "sarehub/client",
   "description": "This project contains SAREhub event bus client",
-  "version": "0.1.0",
   "license": "MIT",
   "authors": [
     {

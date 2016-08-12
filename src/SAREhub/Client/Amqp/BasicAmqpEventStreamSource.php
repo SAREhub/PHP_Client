@@ -8,7 +8,6 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use SAREhub\Client\Event\BasicEventEnvelope;
 use SAREhub\Client\Event\EventEnvelope;
-use SAREhub\Client\Event\EventSerializationService;
 use SAREhub\Client\Event\EventStreamSourceBase;
 use SAREhub\Commons\Misc\Parameters;
 
@@ -47,11 +46,11 @@ class BasicAmqpEventStreamSource extends EventStreamSourceBase {
 		$this->consumeCallback = $consumeCallbackBuilder($this);
 	}
 	
-	public static function createConsumeCallbackBuilder(EventSerializationService $serializationService, $processPromiseFactory) {
-		return function (self $source) use ($serializationService, $processPromiseFactory) {
+	public static function createConsumeCallbackBuilder(EventDeserializationService $deserializationService, $processPromiseFactory) {
+		return function (self $source) use ($deserializationService, $processPromiseFactory) {
 			$sink = $source->getSink();
-			return function (AMQPMessage $message) use ($serializationService, $processPromiseFactory, $sink) {
-				$event = $serializationService->deserialize($message->getBody());
+			return function (AMQPMessage $message) use ($deserializationService, $processPromiseFactory, $sink) {
+				$event = $deserializationService->deserialize($message->getBody());
 				$eventEnvelopeProperties = AmqpEventEnvelopeProperties::createFromDeliveredAmqpMessage($message);
 				$eventEnvelope = new BasicEventEnvelope($event, $eventEnvelopeProperties);
 				$eventEnvelope->setProcessPromise($processPromiseFactory($eventEnvelope));
