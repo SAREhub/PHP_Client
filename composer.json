@@ -1,6 +1,7 @@
 {
   "name": "sarehub/client",
   "description": "This project contains SAREhub event bus client",
+  "version": "0.1.0",
   "license": "MIT",
   "authors": [
     {
@@ -21,7 +22,7 @@
     "monolog/monolog": "1.9.*",
     "respect/validation": "1.1.*",
     "php-amqplib/php-amqplib": "2.6.*",
-    "sarehub/commons": "dev-master"
+    "sarehub/commons": "0.1.*"
   },
   "autoload": {
     "psr-4": {

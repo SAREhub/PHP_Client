@@ -14,10 +14,6 @@ abstract class EventStreamSourceBase implements EventStreamSource {
 		$this->sink = new NullEventStreamSink();
 	}
 	
-	public abstract function flow();
-	
-	public abstract function read();
-	
 	public function unpipe() {
 		$this->pipe(new NullEventStreamSink());
 	}
