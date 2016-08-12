@@ -22,7 +22,7 @@
     "monolog/monolog": "1.9.*",
     "respect/validation": "1.1.*",
     "php-amqplib/php-amqplib": "2.6.*",
-    "sarehub/commons": "dev-master"
+    "sarehub/commons": "0.1.*"
   },
   "autoload": {
     "psr-4": {
