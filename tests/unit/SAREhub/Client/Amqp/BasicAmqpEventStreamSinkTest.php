@@ -7,7 +7,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Event\BasicEventEnvelope;
 use SAREhub\Client\Event\Event;
-use SAREhub\Client\Event\EventSerializationService;
+use SAREhub\Client\Event\JsonEventSerializationService;
 
 class BasicAmqpEventStreamSinkTest extends TestCase {
 	
@@ -29,7 +29,7 @@ class BasicAmqpEventStreamSinkTest extends TestCase {
 		$this->eventEnvelopeMock->expects($this->once())->method('markAsProcessed');
 		$this->eventEnvelopeMock->expects($this->never())->method('markAsProcessedExceptionally');
 		
-		$this->eventSerializationService = $this->createMock(EventSerializationService::class);
+		$this->eventSerializationService = $this->createMock(JsonEventSerializationService::class);
 		$this->eventSerializationService->method('serialize')
 		  ->with($this->identicalTo($this->eventMock))
 		  ->willReturn(json_encode(['type' => 'test']));
