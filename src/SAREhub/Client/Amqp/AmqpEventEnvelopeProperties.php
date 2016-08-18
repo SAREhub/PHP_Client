@@ -22,7 +22,7 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	/** @var null|array */
 	private $deliveryProperties = null;
 	
-	public static function createFromDeliveredAmqpMessage(AMQPMessage $message) {
+	public static function createFromDeliveredMessage(AMQPMessage $message) {
 		$object = new self();
 		$messageProperties = $message->get_properties();
 		$object->routingKey = RoutingKey::createFromString($message->delivery_info['routing_key']);
