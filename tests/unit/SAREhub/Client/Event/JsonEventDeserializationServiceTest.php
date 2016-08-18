@@ -5,10 +5,10 @@ namespace SAREhub\Client\Event;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Event\User\UserEvent;
 
-class EventDeserializationServiceTest extends TestCase {
+class JsonEventDeserializationServiceTest extends TestCase {
 	
 	public function testRegisterDeserializer() {
-		$serializationService = new EventDeserializationService();
+		$serializationService = new JsonEventDeserializationService();
 		
 		$deserializerMock = $this->getCallbackMock();
 		$serializationService->registerDeserializer("testEvent", $deserializerMock);
@@ -37,7 +37,7 @@ class EventDeserializationServiceTest extends TestCase {
 		$deserializerMock = $this->getCallbackMock();
 		$deserializerMock->expects($this->once())->method('__invoke')->with($eventData)->willReturn($eventMock);
 		
-		$serializationService = new EventDeserializationService();
+		$serializationService = new JsonEventDeserializationService();
 		$serializationService->registerDeserializer("testEvent", $deserializerMock);
 		$this->assertSame($eventMock, $serializationService->deserialize(json_encode($eventData)));
 	}
@@ -62,7 +62,7 @@ class EventDeserializationServiceTest extends TestCase {
 		$deserializerMock = $this->getCallbackMock();
 		$deserializerMock->expects($this->never())->method('__invoke')->with($eventData)->willReturn($eventMock);
 		
-		$serializationService = new EventDeserializationService();
+		$serializationService = new JsonEventDeserializationService();
 		$serializationService->registerDeserializer("testEvent", $deserializerMock);
 		$this->assertSame($eventMock, $serializationService->deserialize(json_encode($eventData)."invalidString"));
 	}
@@ -84,7 +84,7 @@ class EventDeserializationServiceTest extends TestCase {
 		  ]
 		];
 		
-		$serializationService = new EventDeserializationService();
+		$serializationService = new JsonEventDeserializationService();
 		$serializationService->deserialize(json_encode($eventData));
 	}
 	
@@ -105,7 +105,7 @@ class EventDeserializationServiceTest extends TestCase {
 		$deserializerMock = $this->getCallbackMock();
 		$deserializerMock->expects($this->once())->method('__invoke')->with($eventData)->willReturn(null);
 		
-		$serializationService = new EventDeserializationService();
+		$serializationService = new JsonEventDeserializationService();
 		$serializationService->registerDeserializer("testEvent", $deserializerMock);
 		$serializationService->deserialize(json_encode($eventData));
 	}
