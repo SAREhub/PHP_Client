@@ -4,6 +4,7 @@ namespace SAREhub\Client\Amqp;
 
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;
+use SAREhub\Client\Event\BasicEventEnvelope;
 use SAREhub\Client\Event\EventDeserializationService;
 
 /**
@@ -11,24 +12,22 @@ use SAREhub\Client\Event\EventDeserializationService;
  */
 class AmqpEventConsumerBuilder {
 	
-	private $consumerContext;
-	
-	public function __construct() {
-		$this->consumerContext = new AmqpEventConsumerContext();
-	}
+	private $source;
+	private $deserializationService;
+	private $processPromiseFactory;
 	
 	public function source(BasicAmqpEventStreamSource $source) {
-		$this->consumerContext->source = $source;
+		$this->source = $source;
 		return $this;
 	}
 	
 	public function deserializationService(EventDeserializationService $service) {
-		$this->consumerContext->deserializationService = $service;
+		$this->deserializationService = $service;
 		return $this;
 	}
 	
 	public function processPromiseFactory(callable $factory) {
-		$this->consumerContext->processPromiseFactory = $factory;
+		$this->processPromiseFactory = $factory;
 		return $this;
 	}
 	
@@ -37,26 +36,21 @@ class AmqpEventConsumerBuilder {
 	 * @throws ValidationException When one of required context parameter isn't defined
 	 */
 	public function build() {
-		$context = new AmqpEventConsumerContext();
+		$source = $this->source;
+		v::notEmpty()->setName('source')->check($source);
 		
-		$context->source = $this->consumerContext->source;
-		v::notEmpty()->setName('source')->check($context->source);
+		$deserializationService = $this->deserializationService;
+		v::notEmpty()->setName('deserializationService')->check($deserializationService);
 		
-		$context->deserializationService = $this->consumerContext->deserializationService;
-		v::notEmpty()->setName('deserializationService')->check($context->deserializationService);
+		$processPromiseFactory = $this->processPromiseFactory;
+		v::notEmpty()->setName('processPromiseFactory')->check($processPromiseFactory);
 		
-		$context->processPromiseFactory = $this->consumerContext->processPromiseFactory;
-		v::notEmpty()->setName('processPromiseFactory')->check($context->processPromiseFactory);
-		
-		
-		return function (AMQPMessage $message) use ($context) {
-			if (!$context->source->hasStopPromise()) {
-				$event = $context->deserializationService->deserialize($message->getBody());
-				$eventEnvelopeProperties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
-				$eventEnvelope = new BasicEventEnvelope($event, $eventEnvelopeProperties);
-				$eventEnvelope->setProcessPromise($context->processPromiseFactory($context->source, $eventEnvelope));
-				$context->source->getSink()->write($eventEnvelope);
-			}
+		return function (AMQPMessage $message) use ($source, $deserializationService, $processPromiseFactory) {
+			$event = $deserializationService->deserialize($message->getBody());
+			$eventEnvelopeProperties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
+			$eventEnvelope = new BasicEventEnvelope($event, $eventEnvelopeProperties);
+			$eventEnvelope->setProcessPromise($processPromiseFactory($source, $eventEnvelope));
+			$source->getSink()->write($eventEnvelope);
 		};
 	}
 }

@@ -5,16 +5,17 @@ namespace SAREhub\Client\Amqp;
 use GuzzleHttp\Promise\CancellationException;
 use GuzzleHttp\Promise\Promise;
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Message\AMQPMessage;
-use SAREhub\Client\Event\BasicEventEnvelope;
 use SAREhub\Client\Event\EventEnvelope;
+use SAREhub\Client\Event\EventStreamSink;
+use SAREhub\Client\Event\EventStreamSource;
 use SAREhub\Client\Event\EventStreamSourceBase;
+use SAREhub\Client\Event\NullEventStreamSink;
 use SAREhub\Commons\Misc\Parameters;
 
 /**
  * Event stream source as AMQP queue
  */
-class BasicAmqpEventStreamSource extends EventStreamSourceBase {
+class BasicAmqpEventStreamSource implements EventStreamSource {
 	
 	const DEFAULT_CONSUMER_TAG = '';
 	
@@ -27,87 +28,50 @@ class BasicAmqpEventStreamSource extends EventStreamSourceBase {
 	/** @var string */
 	private $consumerTag;
 	
-	/** @var callable */
-	private $consumeCallback;
+	/** @var AmqpEventConsumerBuilder */
+	private $consumerBuilder;
 	
-	/** @var bool */
-	private $inFlowMode = false;
+	/** @var \Generator */
+	private $flowControl = null;
+	
+	/** @var EventStreamSink */
+	private $sink;
 	
 	/**
 	 * @param AMQPChannel $channel
-	 * @param array $parameters
+	 * @param array $parameters {
+	 *
+	 *
+	 * @type string $queueName Name of queue for consuming event
+	 * @type string $consumerTag Optional. Id of consumer
+	 * @type AmqpEventConsumerBuilder $consumerBuilder
+	 * }
 	 */
 	public function __construct(AMQPChannel $channel, array $parameters) {
 		$this->channel = $channel;
 		$parameters = new Parameters($parameters);
 		$this->queueName = $parameters->getRequired('queueName');
 		$this->consumerTag = $parameters->get('consumerTag', self::DEFAULT_CONSUMER_TAG);
-		$consumeCallbackBuilder = $parameters->getRequired('consumeCallbackBuilder');
-		$this->consumeCallback = $consumeCallbackBuilder($this);
+		$this->consumerBuilder = $parameters->getRequired('consumerBuilder');
+		$this->consumerBuilder->source($this);
 	}
 	
-	public static function createConsumeCallbackBuilder(EventDeserializationService $deserializationService, $processPromiseFactory) {
-		return function (self $source) use ($deserializationService, $processPromiseFactory) {
-			$sink = $source->getSink();
-			return function (AMQPMessage $message) use ($deserializationService, $processPromiseFactory, $sink) {
-				$event = $deserializationService->deserialize($message->getBody());
-				$eventEnvelopeProperties = AmqpEventEnvelopeProperties::createFromDeliveredAmqpMessage($message);
-				$eventEnvelope = new BasicEventEnvelope($event, $eventEnvelopeProperties);
-				$eventEnvelope->setProcessPromise($processPromiseFactory($eventEnvelope));
-				$sink->write($eventEnvelope);
-			};
-		};
-	}
-	
+	/**
+	 * Returns simple process promise factory
+	 * @return \Closure
+	 */
 	public static function createDefaultProcessPromiseFactory() {
-		return function (BasicAmqpEventStreamSource $source, EventEnvelope $eventEnvelope) {
-			/** @var AmqpEventEnvelopeProperties $properties */
-			$properties = $eventEnvelope->getProperties();
+		return function (self $source, EventEnvelope $eventEnvelope) {
 			$promise = new Promise();
-			$promise->then(function () use ($source, $properties) {
-				$source->channel->basic_ack($properties->getDeliveryProperties()['delivery_tag']);
-			}, function ($error) use ($source, $properties) {
+			$promise->then(function () use ($source, $eventEnvelope) {
+				$source->getChannel()->basic_ack($eventEnvelope->getProperties()->getDeliveryTag());
+			}, function ($error) use ($source, $eventEnvelope) {
 				$requeue = $error instanceof CancellationException;
-				$source->channel->basic_reject($properties->getDeliveryProperties()['delivery_tag'], $requeue);
+				$source->getChannel()->basic_reject($eventEnvelope->getProperties()->getDeliveryTag(), $requeue);
 			});
 			
 			return $promise;
 		};
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * Nonblocking implementation based on Generator. To cancel consume send boolean "true" to Generator
-	 * @return \Closure
-	 */
-	public function flow() {
-		if (!$this->inFlowMode) {
-			$this->inFlowMode = true;
-			$consumerTag = $this->getConsumerTag();
-			$channel = $this->getChannel();
-			$consumeCallback = $this->consumeCallbackBuilder($this);
-			return function () use ($channel, $consumerTag, $consumeCallback) {
-				$channel->basic_consume($this->queueName, $consumerTag, false, false, false, false, $consumeCallback);
-				while (count($channel->callbacks)) {
-					if ((yield true)) {
-						$channel->basic_cancel($consumerTag);
-						$this->inFlowMode = false;
-						break;
-					}
-					
-					$channel->wait();
-				}
-			};
-		}
-		
-		throw new AmqpException("EventStreamSource is in flow mode");
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getConsumerTag() {
-		return $this->consumerTag;
 	}
 	
 	/**
@@ -118,9 +82,93 @@ class BasicAmqpEventStreamSource extends EventStreamSourceBase {
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 * Nonblocking implementation based on Generator
+	 * ```php
+	 * $source->flow();
+	 * $flowControl = $source->getFlowControl();
+	 * $flowControl->next();
+	 * $source->stopFlow();
+	 * ```
+	 */
+	public function flow() {
+		if (!$this->isInFlowMode()) {
+			$this->getChannel()->basic_qos(null, 1, null);
+			return $this->createFlowControl();
+		}
+		
+		throw new AmqpException("EventStreamSource is in flow mode");
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isInFlowMode() {
+		return $this->flowControl !== null;
+	}
+	
+	private function createFlowControl() {
+		$flowControlBuilder = function () {
+			yield true;
+			$channel = $this->getChannel();
+			$consumer = $this->consumerBuilder->build();
+			$channel->basic_consume($this->getQueue(), $this->getConsumerTag(), false, false, false, false, $consumer);
+			while (count($channel->callbacks)) {
+				if (!$this->isInFlowMode()) {
+					break;
+				}
+				$channel->wait();
+				yield true;
+			}
+		};
+		$this->flowControl = $flowControlBuilder();
+	}
+	
+	/**
 	 * @return string
 	 */
 	public function getQueue() {
 		return $this->queueName;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getConsumerTag() {
+		return $this->consumerTag;
+	}
+	
+	/**
+	 * @return \Generator
+	 */
+	public function getFlowControl() {
+		return $this->flowControl;
+	}
+	
+	/**
+	 * Stops flow mode in source
+	 * @throws AmqpException When source isn't in flow mode
+	 */
+	public function stopFlow() {
+		if ($this->isInFlowMode()) {
+			$this->channel->basic_cancel($this->getConsumerTag());
+			$this->flowControl = null;
+			
+		}
+	}
+	
+	public function pipe(EventStreamSink $sink) {
+		$this->unpipe($sink);
+		$this->pipe($sink);
+		$this->sink->onPipe($this);
+	}
+	
+	public function unpipe() {
+		$this->sink->onUnpipe($this);
+		$this->sink = new NullEventStreamSink();
+	}
+	
+	public function getSink() {
+		return $this->sink;
 	}
 }
