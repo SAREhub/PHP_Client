@@ -7,23 +7,23 @@ use PHPUnit\Framework\TestCase;
 
 class AmqpEventEnvelopePropertiesTest extends TestCase {
 	
-	public function testCreateFromDeliveredAmqpMessage() {
+	public function testCreateFromDeliveredMessage() {
 		$message = new AMQPMessage();
 		$message->delivery_info['routing_key'] = 'routing.key';
-		$properties = AmqpEventEnvelopeProperties::createFromDeliveredAmqpMessage($message);
+		$properties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
 		$this->assertEquals('routing.key', (string)$properties->getRoutingKey());
 		$this->assertTrue($properties->hasDeliveryProperties());
 		$this->assertEquals(['routing_key' => 'routing.key'], $properties->getDeliveryProperties());
 	}
 	
-	public function testCreateFromDeliveredAmqpMessageWithAll() {
+	public function testCreateFromDeliveredMessageWithAll() {
 		$message = new AMQPMessage('', [
 		  'reply_to' => 'test_to',
 		  'correlation_id' => 'test_id',
 		  'priority' => 1
 		]);
 		$message->delivery_info['routing_key'] = 'routing.key';
-		$properties = AmqpEventEnvelopeProperties::createFromDeliveredAmqpMessage($message);
+		$properties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
 		
 		$this->assertEquals('routing.key', (string)$properties->getRoutingKey());
 		$this->assertTrue($properties->hasDeliveryProperties());

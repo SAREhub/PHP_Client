@@ -22,7 +22,7 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	/** @var null|array */
 	private $deliveryProperties = null;
 	
-	public static function createFromDeliveredAmqpMessage(AMQPMessage $message) {
+	public static function createFromDeliveredMessage(AMQPMessage $message) {
 		$object = new self();
 		$messageProperties = $message->get_properties();
 		$object->routingKey = RoutingKey::createFromString($message->delivery_info['routing_key']);
@@ -68,10 +68,10 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	}
 	
 	/**
-	 * @return array
+	 * @return string
 	 */
-	public function getDeliveryProperties() {
-		return $this->deliveryProperties;
+	public function getDeliveryTag() {
+		return $this->hasDeliveryProperties() ? $this->deliveryProperties['delivery_tag'] : '';
 	}
 	
 	/**
@@ -79,6 +79,13 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	 */
 	public function hasDeliveryProperties() {
 		return $this->deliveryProperties !== null;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getDeliveryProperties() {
+		return $this->deliveryProperties;
 	}
 	
 	/**

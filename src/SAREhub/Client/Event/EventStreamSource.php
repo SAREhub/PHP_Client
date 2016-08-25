@@ -8,18 +8,25 @@ namespace SAREhub\Client\Event;
 interface EventStreamSource {
 	
 	/**
-	 * Blocking or not blocking method (pushing only to connected sink)
+	 * Enabling flow mode in source(pushing events to connected sinks)
 	 */
 	public function flow();
 	
 	/**
-	 * Disconnects all sinks from source
+	 * Connects sink to the source
+	 * @param EventStreamSink $sink
+	 */
+	public function pipe(EventStreamSink $sink);
+	
+	/**
+	 * Disconnects sink from source
 	 */
 	public function unpipe();
 	
 	/**
-	 * Connects sink to the source(additionally notify previous sink about that)
-	 * @param EventStreamSink $sink
+	 * Returns current connected EventStreamSink
+	 * @return EventStreamSink
 	 */
-	public function pipe(EventStreamSink $sink);
+	public function getSink();
+	
 }

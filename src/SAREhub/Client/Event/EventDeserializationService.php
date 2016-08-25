@@ -2,14 +2,7 @@
 
 namespace SAREhub\Client\Event;
 
-/**
- * Class used for deserialize events
- */
-class EventDeserializationService {
-	
-	/** @var callable[] */
-	private $deserializerRegistry = [];
-	
+interface EventDeserializationService {
 	/**
 	 * Register event deserializer. Deserializer must be function with one array type argument
 	 * ```php
@@ -21,9 +14,7 @@ class EventDeserializationService {
 	 * @param string $eventType
 	 * @param callable $deserializer
 	 */
-	public function registerDeserializer($eventType, callable $deserializer) {
-		$this->deserializerRegistry[$eventType] = $deserializer;
-	}
+	public function registerDeserializer($eventType, callable $deserializer);
 	
 	/**
 	 * Deserialize event data string in json format
@@ -36,39 +27,17 @@ class EventDeserializationService {
 	 * @return Event
 	 * @throws EventDeserializeException
 	 */
-	public function deserialize($eventData) {
-		if (!($decodedEventData = json_decode($eventData, true))) {
-			throw new EventDeserializeException(
-			  "Can't decode json: ".json_last_error_msg()."\nData: ".$eventData, json_last_error()
-			);
-		}
-		
-		if ($deserializer = $this->getDeserializer($decodedEventData['type'])) {
-			if (($event = $deserializer($decodedEventData)) instanceof Event) {
-				return $event;
-			}
-			throw new EventDeserializeException(
-			  "Deserializer for event type: ".$decodedEventData['type']." must return object instanceof Event"
-			);
-		}
-		throw new EventDeserializeException(
-		  "Deserializer for event type: ".$decodedEventData['type']." isn't registered"
-		);
-	}
+	public function deserialize($eventData);
 	
 	/**
 	 * @param string $eventType
 	 * @return callable|null
 	 */
-	public function getDeserializer($eventType) {
-		return $this->hasDeserializer($eventType) ? $this->deserializerRegistry[$eventType] : null;
-	}
+	public function getDeserializer($eventType);
 	
 	/**
 	 * @param string $eventType
 	 * @return bool
 	 */
-	public function hasDeserializer($eventType) {
-		return isset($this->deserializerRegistry[$eventType]);
-	}
+	public function hasDeserializer($eventType);
 }
