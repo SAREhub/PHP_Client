@@ -2,6 +2,7 @@
 
 namespace SAREhub\Client\Amqp;
 
+use PhpAmqpLib\Message\AMQPMessage;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;
 use SAREhub\Client\Event\BasicEventEnvelope;

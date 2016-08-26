@@ -3,6 +3,7 @@
 namespace SAREhub\Client\Event\User;
 
 use SAREhub\Client\Event\Event;
+use SAREhub\Client\User\User;
 
 /**
  * Base user event class
