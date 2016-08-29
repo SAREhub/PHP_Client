@@ -54,6 +54,9 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 		$this->consumerTag = $parameters->get('consumerTag', self::DEFAULT_CONSUMER_TAG);
 		$this->consumerBuilder = $parameters->getRequired('consumerBuilder');
 		$this->consumerBuilder->source($this);
+		
+		$this->sink = new NullEventStreamSink();
+		
 	}
 	
 	/**
@@ -158,8 +161,8 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 	}
 	
 	public function pipe(EventStreamSink $sink) {
-		$this->unpipe($sink);
-		$this->pipe($sink);
+		$this->unpipe();
+		$this->sink = $sink;
 		$this->sink->onPipe($this);
 	}
 	
