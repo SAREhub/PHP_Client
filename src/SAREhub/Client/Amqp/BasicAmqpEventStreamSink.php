@@ -43,7 +43,7 @@ class BasicAmqpEventStreamSink implements EventStreamSink {
 			  $messageProperties->getRoutingKeyAsString()
 			);
 			$eventEnvelope->markAsProcessed();
-		} catch (AmqpException $e) {
+		} catch (\Exception $e) {
 			$eventEnvelope->markAsProcessedExceptionally($e);
 		}
 	}
