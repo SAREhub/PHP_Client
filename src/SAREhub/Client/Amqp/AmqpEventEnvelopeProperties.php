@@ -2,7 +2,6 @@
 
 namespace SAREhub\Client\Amqp;
 
-use PhpAmqpLib\Message\AMQPMessage;
 use SAREhub\Client\Event\EventEnvelopeProperties;
 
 class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
@@ -21,17 +20,6 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	
 	/** @var null|array */
 	private $deliveryProperties = null;
-	
-	public static function createFromDeliveredMessage(AMQPMessage $message) {
-		$object = new self();
-		$messageProperties = $message->get_properties();
-		$object->routingKey = RoutingKey::createFromString($message->delivery_info['routing_key']);
-		$object->replyTo = isset($messageProperties['reply_to']) ? $messageProperties['reply_to'] : '';
-		$object->correlationId = isset($messageProperties['correlation_id']) ? $messageProperties['correlation_id'] : '';
-		$object->priority = isset($messageProperties['priority']) ? $messageProperties['priority'] : 0;
-		$object->deliveryProperties = $message->delivery_info;
-		return $object;
-	}
 	
 	/**
 	 * Returns routing key as string in AMQP routing key format
@@ -82,10 +70,17 @@ class AmqpEventEnvelopeProperties implements EventEnvelopeProperties {
 	}
 	
 	/**
-	 * @return array
+	 * @return array|null
 	 */
 	public function getDeliveryProperties() {
 		return $this->deliveryProperties;
+	}
+	
+	/**
+	 * @param array $deliveryProperties
+	 */
+	public function setDeliveryProperties(array $deliveryProperties) {
+		$this->deliveryProperties = $deliveryProperties;
 	}
 	
 	/**

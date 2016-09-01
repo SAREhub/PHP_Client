@@ -5,30 +5,24 @@ namespace SAREhub\Client\Amqp;
 use PhpAmqpLib\Message\AMQPMessage;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;
-use SAREhub\Client\Event\BasicEventEnvelope;
-use SAREhub\Client\Event\EventDeserializationService;
 
 /**
  * That builder can build amqp queue event consumer callback with given context
  */
 class AmqpEventConsumerBuilder {
 	
+	/** @var BasicAmqpEventStreamSource */
 	private $source;
-	private $deserializationService;
-	private $processPromiseFactory;
+	
+	/** @var AmqpEventEnvelopeFactory */
+	private $eventEnvelopeFactory;
 	
 	public function source(BasicAmqpEventStreamSource $source) {
 		$this->source = $source;
-		return $this;
 	}
 	
-	public function deserializationService(EventDeserializationService $service) {
-		$this->deserializationService = $service;
-		return $this;
-	}
-	
-	public function processPromiseFactory(callable $factory) {
-		$this->processPromiseFactory = $factory;
+	public function eventEnvelopeFactory(AmqpEventEnvelopeFactory $factory) {
+		$this->eventEnvelopeFactory = $factory;
 		return $this;
 	}
 	
@@ -40,17 +34,11 @@ class AmqpEventConsumerBuilder {
 		$source = $this->source;
 		v::notEmpty()->setName('source')->check($source);
 		
-		$deserializationService = $this->deserializationService;
-		v::notEmpty()->setName('deserializationService')->check($deserializationService);
+		$eventEnvelopeFactory = $this->eventEnvelopeFactory;
+		v::notEmpty()->setName('eventEnvelopeFactory')->check($eventEnvelopeFactory);
 		
-		$processPromiseFactory = $this->processPromiseFactory;
-		v::notEmpty()->setName('processPromiseFactory')->check($processPromiseFactory);
-		
-		return function (AMQPMessage $message) use ($source, $deserializationService, $processPromiseFactory) {
-			$event = $deserializationService->deserialize($message->getBody());
-			$eventEnvelopeProperties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
-			$eventEnvelope = new BasicEventEnvelope($event, $eventEnvelopeProperties);
-			$eventEnvelope->setProcessPromise($processPromiseFactory($source, $eventEnvelope));
+		return function (AMQPMessage $amqpMessage) use ($source, $eventEnvelopeFactory) {
+			$eventEnvelope = $eventEnvelopeFactory->createFromDeliveredMessage($amqpMessage);
 			$source->getSink()->write($eventEnvelope);
 		};
 	}

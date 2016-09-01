@@ -2,36 +2,9 @@
 
 namespace SAREhub\Client\Amqp;
 
-use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
 
 class AmqpEventEnvelopePropertiesTest extends TestCase {
-	
-	public function testCreateFromDeliveredMessage() {
-		$message = new AMQPMessage();
-		$message->delivery_info['routing_key'] = 'routing.key';
-		$properties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
-		$this->assertEquals('routing.key', (string)$properties->getRoutingKey());
-		$this->assertTrue($properties->hasDeliveryProperties());
-		$this->assertEquals(['routing_key' => 'routing.key'], $properties->getDeliveryProperties());
-	}
-	
-	public function testCreateFromDeliveredMessageWithAll() {
-		$message = new AMQPMessage('', [
-		  'reply_to' => 'test_to',
-		  'correlation_id' => 'test_id',
-		  'priority' => 1
-		]);
-		$message->delivery_info['routing_key'] = 'routing.key';
-		$properties = AmqpEventEnvelopeProperties::createFromDeliveredMessage($message);
-		
-		$this->assertEquals('routing.key', (string)$properties->getRoutingKey());
-		$this->assertTrue($properties->hasDeliveryProperties());
-		$this->assertEquals(['routing_key' => 'routing.key'], $properties->getDeliveryProperties());
-		$this->assertEquals('test_to', $properties->getReplyTo());
-		$this->assertEquals('test_id', $properties->getCorrelationId());
-		$this->assertEquals(1, $properties->getPriority());
-	}
 	
 	public function testGetRoutingKeyAsString() {
 		$routingKeyMock = $this->createMock(RoutingKey::class);

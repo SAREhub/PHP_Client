@@ -16,6 +16,26 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 	private $sourceMock;
 	private $eventEnvelopeMock;
 	
+	protected function setUp() {
+		$this->channelMock = $this->getMockBuilder(AMQPChannel::class)
+		  ->disableOriginalConstructor()
+		  ->getMock();
+		
+		$this->consumerBuilderMock = $this->getMockBuilder(AmqpEventConsumerBuilder::class)->getMock();
+		$this->consumerMock = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
+		$this->consumerBuilderMock->method('build')->willReturn($this->consumerMock);
+		
+		$this->sourceMock = $this->getMockBuilder(BasicAmqpEventStreamSource::class)
+		  ->disableOriginalConstructor()
+		  ->getMock();
+		
+		$this->sourceMock->method('getChannel')->willReturn($this->channelMock);
+		
+		$this->eventEnvelopeMock = $this->getMockBuilder(BasicEventEnvelope::class)
+		  ->disableOriginalConstructor()
+		  ->getMock();
+	}
+	
 	public function testCreate() {
 		$this->consumerBuilderMock->expects($this->once())->method('source');
 		$source = new BasicAmqpEventStreamSource($this->channelMock, [
@@ -128,23 +148,5 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 		\GuzzleHttp\Promise\queue()->run();
 	}
 	
-	protected function setUp() {
-		$this->channelMock = $this->getMockBuilder(AMQPChannel::class)
-		  ->disableOriginalConstructor()
-		  ->getMock();
-		
-		$this->consumerBuilderMock = $this->getMockBuilder(AmqpEventConsumerBuilder::class)->getMock();
-		$this->consumerMock = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
-		$this->consumerBuilderMock->method('build')->willReturn($this->consumerMock);
-		
-		$this->sourceMock = $this->getMockBuilder(BasicAmqpEventStreamSource::class)
-		  ->disableOriginalConstructor()
-		  ->getMock();
-		
-		$this->sourceMock->method('getChannel')->willReturn($this->channelMock);
-		
-		$this->eventEnvelopeMock = $this->getMockBuilder(BasicEventEnvelope::class)
-		  ->disableOriginalConstructor()
-		  ->getMock();
-	}
+	
 }
