@@ -11,16 +11,23 @@ class RoutingKey implements \IteratorAggregate {
 	/** @var array */
 	protected $parts;
 	
-	public function __construct(array $parts = null) {
-		$this->parts = $parts ? $parts : [];
+	/**
+	 * Defaults create empty routing key.
+	 * String will be converted to array(explode by dot).
+	 * Array of routing key parts.
+	 * @param string|array|null $routingKey
+	 */
+	public function __construct($routingKey = null) {
+		$routingKey = ($routingKey === null) ? [] : $routingKey;
+		$this->parts = is_array($routingKey) ? $routingKey : explode('.', $routingKey);
 	}
 	
 	/**
-	 * @param string $routingKeyString
+	 * @param string $routingKey
 	 * @return RoutingKey
 	 */
-	public static function createFromString($routingKeyString) {
-		return new self(explode('.', $routingKeyString));
+	public static function createFromString($routingKey) {
+		return new self($routingKey);
 	}
 	
 	/**
@@ -47,14 +54,14 @@ class RoutingKey implements \IteratorAggregate {
 		return empty($this->parts);
 	}
 	
-	public function getIterator() {
-		return $this->parts;
-	}
-	
 	/**
 	 * @return array
 	 */
 	public function getParts() {
+		return $this->parts;
+	}
+	
+	public function getIterator() {
 		return $this->parts;
 	}
 	

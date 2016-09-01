@@ -11,13 +11,14 @@ class RoutingKeyTest extends TestCase {
 		$this->assertEquals([], $routingKey->getParts());
 	}
 	
-	public function testCreate() {
-		$routingKey = new RoutingKey(['p1', 'p2']);
+	public function testCreateFromString() {
+		$routingKey = new RoutingKey('p1.p2');
 		$this->assertEquals(['p1', 'p2'], $routingKey->getParts());
 	}
 	
-	public function testCreateFromString() {
-		$this->assertEquals(['p1', 'p2', 'p3'], RoutingKey::createFromString('p1.p2.p3')->getParts());
+	public function testCreateFromArray() {
+		$routingKey = new RoutingKey(['p1', 'p2']);
+		$this->assertEquals(['p1', 'p2'], $routingKey->getParts());
 	}
 	
 	public function testAddPart() {
