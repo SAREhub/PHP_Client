@@ -16,7 +16,7 @@ use SAREhub\Commons\Misc\Parameters;
  * Event stream source as AMQP queue
  */
 class BasicAmqpEventStreamSource implements EventStreamSource {
-	const DEFAULT_TIMEOUT = 5;
+	const DEFAULT_TIMEOUT = 0;
 	const DEFAULT_CONSUMER_TAG = '';
 	
 	/** @var AMQPChannel */
