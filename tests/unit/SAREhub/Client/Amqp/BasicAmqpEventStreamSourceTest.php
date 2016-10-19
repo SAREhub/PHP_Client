@@ -64,7 +64,8 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 		  ->method('basic_consume')
 		  ->with('test', '', false, false, false, false, $this->identicalTo($this->consumerMock));
 		
-		$this->channelMock->expects($this->once())->method('wait');
+		$this->channelMock->expects($this->once())->method('wait')
+		  ->with(null, true, BasicAmqpEventStreamSource::DEFAULT_TIMEOUT);
 		$this->channelMock->callbacks = [1]; // needs for count in flow loop
 		$source = new BasicAmqpEventStreamSource($this->channelMock, [
 		  'queueName' => 'test',
