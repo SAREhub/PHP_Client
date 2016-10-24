@@ -8,7 +8,6 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use SAREhub\Client\Event\EventEnvelope;
 use SAREhub\Client\Event\EventStreamSink;
 use SAREhub\Client\Event\EventStreamSource;
-use SAREhub\Client\Event\EventStreamSourceBase;
 use SAREhub\Client\Event\NullEventStreamSink;
 use SAREhub\Commons\Misc\Parameters;
 
@@ -16,7 +15,8 @@ use SAREhub\Commons\Misc\Parameters;
  * Event stream source as AMQP queue
  */
 class BasicAmqpEventStreamSource implements EventStreamSource {
-	const DEFAULT_TIMEOUT = 0;
+	
+	const DEFAULT_TIMEOUT = 3;
 	const DEFAULT_CONSUMER_TAG = '';
 	
 	/** @var AMQPChannel */
@@ -54,10 +54,9 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 		$this->consumerTag = $parameters->get('consumerTag', self::DEFAULT_CONSUMER_TAG);
 		$this->consumerBuilder = $parameters->getRequired('consumerBuilder');
 		$this->consumerBuilder->source($this);
-		
 		$this->sink = new NullEventStreamSink();
-		
 	}
+	
 	
 	/**
 	 * Returns simple process promise factory
@@ -120,7 +119,11 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 				if (!$this->isInFlowMode()) {
 					break;
 				}
-				$channel->wait(null, true, self::DEFAULT_TIMEOUT);
+				
+				$changeStreamsCount = $channel->getConnection()->getSocket()->select(self::DEFAULT_TIMEOUT, 1);
+				if ($changeStreamsCount > 0) {
+					$channel->wait(null, true, self::DEFAULT_TIMEOUT);
+				}
 				yield true;
 			}
 		};

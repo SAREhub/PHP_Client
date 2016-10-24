@@ -19,7 +19,7 @@
     "guzzlehttp/promises": "1.*",
     "respect/validation": "1.*",
     "php-amqplib/php-amqplib": "2.*",
-    "sarehub/commons": "0.*"
+    "sarehub/commons": "0.5.*"
   },
   "autoload": {
     "psr-4": {
