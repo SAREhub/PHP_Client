@@ -9,6 +9,7 @@ use SAREhub\Client\Event\EventEnvelope;
 use SAREhub\Client\Event\EventStreamSink;
 use SAREhub\Client\Event\EventStreamSource;
 use SAREhub\Client\Event\NullEventStreamSink;
+use SAREhub\Client\Util\StreamHelper;
 use SAREhub\Commons\Misc\Parameters;
 
 /**
@@ -38,6 +39,11 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 	private $sink;
 	
 	/**
+	 * @var StreamHelper
+	 */
+	private $streamHelper;
+	
+	/**
 	 * @param AMQPChannel $channel
 	 * @param array $parameters {
 	 *
@@ -55,8 +61,16 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 		$this->consumerBuilder = $parameters->getRequired('consumerBuilder');
 		$this->consumerBuilder->source($this);
 		$this->sink = new NullEventStreamSink();
+		
+		$this->streamHelper = new StreamHelper();
 	}
 	
+	/**
+	 * @param StreamHelper $helper
+	 */
+	public function withStreamHelper(StreamHelper $helper) {
+		$this->streamHelper = $helper;
+	}
 	
 	/**
 	 * Returns simple process promise factory
@@ -120,7 +134,8 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 					break;
 				}
 				
-				$changeStreamsCount = $channel->getConnection()->getSocket()->select(self::DEFAULT_TIMEOUT, 1);
+				$socket = $channel->getConnection()->getSocket();
+				$changeStreamsCount = $this->streamHelper->select($socket, self::DEFAULT_TIMEOUT);
 				if ($changeStreamsCount > 0) {
 					$channel->wait(null, true, self::DEFAULT_TIMEOUT);
 				}

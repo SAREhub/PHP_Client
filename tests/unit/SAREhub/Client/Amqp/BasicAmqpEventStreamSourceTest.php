@@ -5,13 +5,12 @@ namespace SAREhub\Client\Amqp;
 use GuzzleHttp\Promise\CancellationException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Wire\IO\SocketIO;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Event\BasicEventEnvelope;
+use SAREhub\Client\Util\StreamHelper;
 
 class BasicAmqpEventStreamSourceTest extends TestCase {
 	
-	private $socketMock;
 	private $connectionMock;
 	private $channelMock;
 	private $consumerBuilderMock;
@@ -29,8 +28,7 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 		$this->channelMock = $this->createMock(AMQPChannel::class);
 		$this->connectionMock = $this->createMock(AMQPStreamConnection::class);
 		$this->channelMock->method('getConnection')->willReturn($this->connectionMock);
-		$this->socketMock = $this->createMock(SocketIO::class);
-		$this->connectionMock->method('getSocket')->willReturn($this->socketMock);
+		$this->connectionMock->method('getSocket')->willReturn('socket');
 		
 		$this->consumerBuilderMock = $this->createMock(AmqpEventConsumerBuilder::class);
 		$this->consumerMock = $this->createPartialMock(\stdClass::class, ['__invoke']);
@@ -97,8 +95,11 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 		$this->source->getFlowControl()->next();
 	}
 	
-	public function testFlowControlNextThenChannelWait() {
-		$this->socketMock->method('select')->willReturn(1);
+	public function testFlowControlNextWhenMessageThenChannelWait() {
+		$streamHelper = $this->createMock(StreamHelper::class);
+		$streamHelper->method('select')->willReturn(1);
+		$this->source->withStreamHelper($streamHelper);
+		
 		$this->channelMock->expects($this->once())->method('wait')
 		  ->with(null, true, BasicAmqpEventStreamSource::DEFAULT_TIMEOUT);
 		$this->channelMock->callbacks = [1]; // needs for count in flow loop
@@ -107,9 +108,11 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 	}
 	
 	public function testFlowControlNextWhenSocketSelectReturnZeroThenNotWait() {
+		$streamHelper = $this->createMock(StreamHelper::class);
+		$streamHelper->method('select')->willReturn(0);
+		$this->source->withStreamHelper($streamHelper);
 		$this->channelMock->expects($this->never())->method('wait');
 		$this->channelMock->callbacks = [1]; // needs for count in flow loop
-		$this->socketMock->method('select')->willReturn(0);
 		$this->source->flow();
 		$this->source->getFlowControl()->next();
 	}
