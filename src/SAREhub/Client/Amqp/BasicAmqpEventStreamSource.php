@@ -135,14 +135,10 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 					break;
 				}
 				
-				$socket = $channel->getConnection()->getSocket();
-				$changeStreamsCount = $this->streamHelper->select($socket, self::DEFAULT_TIMEOUT);
-				if ($changeStreamsCount > 0) {
-					try {
-						$channel->wait(null, true, self::DEFAULT_TIMEOUT);
-					} catch (AMQPTimeoutException $e) {
-						sleep(1);
-					}
+				try {
+					$channel->wait(null, true, self::DEFAULT_TIMEOUT);
+				} catch (AMQPTimeoutException $e) {
+					sleep(1);
 				}
 				yield true;
 			}

@@ -107,16 +107,6 @@ class BasicAmqpEventStreamSourceTest extends TestCase {
 		$this->source->getFlowControl()->next();
 	}
 	
-	public function testFlowControlNextWhenSocketSelectReturnZeroThenNotWait() {
-		$streamHelper = $this->createMock(StreamHelper::class);
-		$streamHelper->method('select')->willReturn(0);
-		$this->source->withStreamHelper($streamHelper);
-		$this->channelMock->expects($this->never())->method('wait');
-		$this->channelMock->callbacks = [1]; // needs for count in flow loop
-		$this->source->flow();
-		$this->source->getFlowControl()->next();
-	}
-	
 	public function testStopFlowWhenFlowThenIsNotInFlowModeReturnFalse() {
 		$this->source->flow();
 		$this->source->stopFlow();
