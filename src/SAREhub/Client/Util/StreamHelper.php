@@ -18,9 +18,9 @@ class StreamHelper {
 		
 		$error = error_get_last();
 		if (isset($error['message']) && stripos($error['message'], 'interrupted system call')) {
+			return false;
+		} else {
 			return stream_select($read, $write, $except, $sec, $usec);
 		}
-		
-		return false;
 	}
 }
