@@ -14,13 +14,24 @@ class AmqpConnectionHelper {
 	 */
 	public static function createConnection(Parameters $config) {
 		self::validateConfig($config);
-		return new AMQPStreamConnection(
+		$connection = new AMQPStreamConnection(
 		  $config->getRequired('host'),
 		  $config->getRequired('port'),
 		  $config->getRequired('username'),
 		  $config->getRequired('password'),
-		  $config->getRequired('vhost')
+		  $config->getRequired('vhost'),
+		  false,
+		  'AMQPLAIN',
+		  null,
+		  'en_US',
+		  3.0,
+		  3.0,
+		  null,
+		  $config->get('keepalive', true),
+		  $config->get('heartbeat', 30)
 		);
+		
+		return $connection;
 	}
 	
 	

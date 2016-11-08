@@ -14,7 +14,9 @@ class AmqpConfigBuilderTest extends TestCase {
 		  'port' => 10000,
 		  'username' => 'user',
 		  'password' => 'pass',
-		  'vhost' => 'vhost123'
+		  'vhost' => 'vhost123',
+		  'heartbeat' => 30,
+		  'keepalive' => true
 		];
 		
 		$this->assertEquals($config, (new AmqpConfigBuilder())
