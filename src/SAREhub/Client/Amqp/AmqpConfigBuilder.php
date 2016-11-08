@@ -15,6 +15,9 @@ class AmqpConfigBuilder {
 	private $username = '';
 	private $password = '';
 	
+	private $heartbeat = 30;
+	private $keepalive = true;
+	
 	/**
 	 * @param string $host
 	 * @return $this
@@ -58,6 +61,22 @@ class AmqpConfigBuilder {
 	public function vhost($vhost) {
 		$this->vhost = $vhost;
 		return $this;
+	}
+	
+	/**
+	 * @param int $heartbeat
+	 * @return $this
+	 */
+	public function heartbeat($heartbeat) {
+		$this->heartbeat = $heartbeat;
+		return $this;
+	}
+	
+	/**
+	 * @param boolean $keepalive
+	 */
+	public function keepalive($keepalive) {
+		$this->keepalive = $keepalive;
 	}
 	
 	/**
