@@ -5,6 +5,7 @@ namespace SAREhub\Client\Amqp;
 use GuzzleHttp\Promise\CancellationException;
 use GuzzleHttp\Promise\Promise;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Exception\AMQPTimeoutException;
 use SAREhub\Client\Event\EventEnvelope;
 use SAREhub\Client\Event\EventStreamSink;
 use SAREhub\Client\Event\EventStreamSource;
@@ -137,7 +138,11 @@ class BasicAmqpEventStreamSource implements EventStreamSource {
 				$socket = $channel->getConnection()->getSocket();
 				$changeStreamsCount = $this->streamHelper->select($socket, self::DEFAULT_TIMEOUT);
 				if ($changeStreamsCount > 0) {
-					$channel->wait(null, true, self::DEFAULT_TIMEOUT);
+					try {
+						$channel->wait(null, true, self::DEFAULT_TIMEOUT);
+					} catch (AMQPTimeoutException $e) {
+						sleep(1);
+					}
 				}
 				yield true;
 			}
