@@ -25,7 +25,7 @@ class AmqpConnectionHelper {
 		  null,
 		  'en_US',
 		  3.0,
-		  3.0,
+		  $config->get('heartbeat', 30) * 2,
 		  null,
 		  $config->get('keepalive', true),
 		  $config->get('heartbeat', 30)
