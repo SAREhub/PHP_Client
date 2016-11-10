@@ -41,7 +41,8 @@ class Router implements Processor {
 	 * @return string
 	 */
 	public function getRoutingKeyForExchange(Exchange $exchange) {
-		return ($this->routingFunction)($exchange);
+		$routingFunction = $this->routingFunction;
+		return $routingFunction($exchange);
 	}
 	
 	/**
