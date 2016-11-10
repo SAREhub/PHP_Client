@@ -19,11 +19,12 @@ class TransformProcessor implements Processor {
 	 * @param callable $tranformer
 	 * @return TransformProcessor
 	 */
-	public static function tranform(callable $tranformer) {
+	public static function transform(callable $tranformer) {
 		return new self($tranformer);
 	}
 	
 	public function process(Exchange $exchange) {
-		($this->tranformer)($exchange);
+		$c = $this->tranformer;
+		$c($exchange);
 	}
 }

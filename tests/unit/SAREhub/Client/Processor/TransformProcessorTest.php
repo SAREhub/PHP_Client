@@ -11,7 +11,7 @@ class TransformProcessorTest extends TestCase {
 	
 	protected function setUp() {
 		$this->transformerMock = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
-		$this->processor = TransformProcessor::tranform($this->transformerMock);
+		$this->processor = TransformProcessor::transform($this->transformerMock);
 	}
 	
 	public function testProcess() {
