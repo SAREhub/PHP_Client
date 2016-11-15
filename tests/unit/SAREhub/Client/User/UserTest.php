@@ -7,21 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase {
 	
-	public function testFindKeyByType() {
-		$userKey = new EmailUserKey('example@example.com');
-		$user = new User([
-		  $userKey
-		]);
-		
-		$this->assertSame($userKey, $user->findKeyByClass(EmailUserKey::class));
+	public function testFindKeyByTypeWhenFoundThenReturnKey() {
+		$key = StandardUserKeyFactory::email('example@example.com');
+		$user = new User([$key]);
+		$this->assertSame($key, $user->findKeyByType(StandardUserKeyFactory::EMAIL_KEY_TYPE));
 	}
 	
-	public function testFindKeyByTypeWhenKeyOfTypeNotExists() {
-		$userKey = new EmailUserKey('example@example.com');
-		$user = new User([
-		  $userKey
-		]);
-		
-		$this->assertNull($user->findKeyByClass(CookieUserKey::class));
+	public function testFindKeyByTypeWhenNotFoundThenReturnNull() {
+		$key = StandardUserKeyFactory::email('example@example.com');
+		$user = new User([$key]);
+		$this->assertNull($user->findKeyByType(StandardUserKeyFactory::COOKIE_KEY_TYPE));
 	}
 }

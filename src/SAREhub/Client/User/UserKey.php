@@ -2,7 +2,10 @@
 
 namespace SAREhub\Client\User;
 
-abstract class UserKey {
+interface UserKey {
 	
-	public abstract function getKeyType();
+	public function getValue();
+	
+	public function getKeyType();
+	
 }
