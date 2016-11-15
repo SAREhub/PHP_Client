@@ -38,4 +38,22 @@ interface Exchange {
 	 */
 	public function clearOut();
 	
+	/**
+	 * Return true If exchange has exception sets
+	 * @return bool
+	 */
+	public function isFailed();
+	
+	/**
+	 * @return \Exception
+	 */
+	public function getException();
+	
+	/**
+	 * @param \Exception $exception
+	 */
+	public function setException(\Exception $exception);
+	
+	
+	
 }

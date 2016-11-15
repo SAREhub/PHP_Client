@@ -12,4 +12,15 @@ class BasicExchangeTest extends TestCase {
 		$message = new BasicMessage();
 		$this->assertSame($message, BasicExchange::withIn($message)->getIn());
 	}
+	
+	public function testIsFailedWhenNoExceptionSetsThenReturnFalse() {
+		$exchange = new BasicExchange();
+		$this->assertFalse($exchange->isFailed());
+	}
+	
+	public function testIsFailedWhenExceptionSetsThenReturnTrue() {
+		$exchange = new BasicExchange();
+		$exchange->setException(new \Exception());
+		$this->assertTrue($exchange->isFailed());
+	}
 }

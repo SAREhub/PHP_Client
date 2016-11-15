@@ -1,14 +1,27 @@
 <?php
 
 namespace SAREhub\Client\Message;
+use Prophecy\Exception\Exception;
 
 /**
  * Basic implementation of Exchange interface
  */
 class BasicExchange implements Exchange {
 	
-	protected $in = null;
-	protected $out = null;
+	/**
+	 * @var Message|null
+	 */
+	private $in = null;
+	
+	/**
+	 * @var Message|null
+	 */
+	private $out = null;
+	
+	/**
+	 * @var Exception|null
+	 */
+	private $exception = null;
 	
 	public static function withIn(Message $message) {
 		$exchange = new self();
@@ -44,5 +57,17 @@ class BasicExchange implements Exchange {
 	public function clearOut() {
 		$this->out = null;
 		return $this;
+	}
+	
+	public function isFailed() {
+		return $this->getException() !== null;
+	}
+	
+	public function getException() {
+		return $this->exception;
+	}
+	
+	public function setException(\Exception $exception) {
+		$this->exception = $exception;
 	}
 }
