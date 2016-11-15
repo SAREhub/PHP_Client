@@ -5,11 +5,25 @@ namespace SAREhub\Client\Event;
 /**
  * Base event class
  */
-abstract class Event {
+interface Event {
+	
+	/**
+	 * @return int
+	 */
+	public function getTime();
 	
 	/**
 	 * Returns event type name
 	 * @return string
 	 */
-	public abstract function getEventType();
+	public function getEventType();
+	
+	public function getAttribute($name);
+	
+	public function hasAttribute($name);
+	
+	/**
+	 * @return array
+	 */
+	public function getAttributes();
 }

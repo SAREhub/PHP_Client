@@ -8,16 +8,27 @@ use SAREhub\Client\User\User;
 /**
  * Base user event class
  */
-abstract class UserEvent extends Event {
+abstract class UserEvent implements Event {
 	
-	/** @var User */
+	/**
+	 * @var User
+	 */
 	private $user;
 	
 	/**
 	 * @param User $user
 	 */
-	public function __construct(User $user) {
+	public function __construct(User $user = null) {
 		$this->user = $user;
+	}
+	
+	/**
+	 * @param User $user
+	 * @return $this
+	 */
+	public function withUser(User $user) {
+		$this->user = $user;
+		return $this;
 	}
 	
 	/**
