@@ -9,7 +9,7 @@ class BasicEvent implements Event {
 	private $time;
 	private $attributes = [];
 	
-	public function __construct($eventType) {
+	protected function __construct($eventType) {
 		$this->eventType = $eventType;
 	}
 	

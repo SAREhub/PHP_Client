@@ -8,18 +8,26 @@ namespace SAREhub\Client\Event;
 interface Event {
 	
 	/**
-	 * @return int
-	 */
-	public function getTime();
-	
-	/**
 	 * Returns event type name
 	 * @return string
 	 */
 	public function getEventType();
 	
+	/**
+	 * @return int
+	 */
+	public function getTime();
+	
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
 	public function getAttribute($name);
 	
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	public function hasAttribute($name);
 	
 	/**
