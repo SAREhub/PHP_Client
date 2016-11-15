@@ -7,23 +7,33 @@ use SAREhub\Client\Event\User\UserEvent;
 
 class JsonEventSerializationServiceTest extends TestCase {
 	
-	public function testRegisterSerializer() {
-		$serializationService = new JsonEventSerializationService();
+	private $event;
+	private $serializer;
+	
+	/**
+	 * @var JsonEventSerializationService
+	 */
+	private $service;
+	
+	protected function setUp() {
+		$this->event = $this->createMock(BasicEvent::class);
+		$this->event->method('getEventType')->willReturn('testEvent');
 		
-		$serializerMock = $this->getCallbackMock();
-		$serializationService->registerSerializer("testEvent", $serializerMock);
-		$this->assertTrue($serializationService->hasSerializer('testEvent'));
-		$this->assertSame($serializerMock, $serializationService->getSerializer('testEvent'));
+		$this->serializer = $this->createPartialMock(\stdClass::class, ['__invoke']);
+		$this->service = new JsonEventSerializationService();
 	}
 	
-	private function getCallbackMock() {
-		return $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
+	public function testRegisterSerializerThenHasSerializer() {
+		$this->service->registerSerializer("testEvent", $this->serializer);
+		$this->assertTrue($this->service->hasSerializer('testEvent'));
 	}
 	
-	public function testSerialize() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		
+	public function testRegisterSerializerThenGetSerilizer() {
+		$this->service->registerSerializer("testEvent", $this->serializer);
+		$this->assertSame($this->serializer, $this->service->getSerializer('testEvent'));
+	}
+	
+	public function testSerializeThenReturnEventDataJson() {
 		$eventData = [
 		  'type' => 'testEvent',
 		  'user' => [
@@ -34,48 +44,25 @@ class JsonEventSerializationServiceTest extends TestCase {
 		  ]
 		];
 		
-		$serializerMock = $this->getCallbackMock();
-		$serializerMock->expects($this->once())->method('__invoke')->with($eventMock)->willReturn($eventData);
+		$this->serializer->expects($this->once())
+		  ->method('__invoke')
+		  ->with(self::identicalTo($this->event))
+		  ->willReturn($eventData);
 		
-		$serializationService = new JsonEventSerializationService();
-		$serializationService->registerSerializer("testEvent", $serializerMock);
-		$this->assertEquals(json_encode($eventData), $serializationService->serialize($eventMock));
+		$this->service->registerSerializer("testEvent", $this->serializer);
+		$this->assertEquals(json_encode($eventData), $this->service->serialize($this->event));
 	}
 	
-	/**
-	 * @expectedException \SAREhub\Client\Event\EventSerializeException
-	 */
-	public function testSerializeWithUnregisteredSerializer() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		$serializationService = new JsonEventSerializationService();
-		$serializationService->serialize($eventMock);
+	public function testSerializeWhenNotRegisteredSerializerThenThrowException() {
+		$this->expectException(EventSerializeException::class);
+		$this->service->serialize($this->event);
 	}
 	
-	/**
-	 * @expectedException \SAREhub\Client\Event\EventSerializeException
-	 */
-	public function testSerializeWithSerializerWhoReturnEmptyValue() {
-		$eventMock = $this->getMockBuilder(UserEvent::class)->disableOriginalConstructor()->getMock();
-		$eventMock->method('getEventType')->willReturn('testEvent');
-		
-		$eventData = [
-		  'type' => 'testEvent',
-		  'user' => [
-			'email' => 'example@example.com'
-		  ],
-		  'params' => [
-			'param1' => 1
-		  ]
-		];
-		
-		$serializerMock = $this->getCallbackMock();
-		$serializerMock->expects($this->once())->method('__invoke')->with($eventMock)->willReturn(null);
-		
-		$serializationService = new JsonEventSerializationService();
-		$serializationService->registerSerializer("testEvent", $serializerMock);
-		$serializationService->serialize($eventMock);
+	public function testSerializeWhenSerializerReturnNullThenThrowException() {
+		$this->serializer->method('__invoke')->willReturn(null);
+		$this->service->registerSerializer("testEvent", $this->serializer);
+		$this->expectException(EventSerializeException::class);
+		$this->service->serialize($this->event);
 	}
-	
 	
 }
