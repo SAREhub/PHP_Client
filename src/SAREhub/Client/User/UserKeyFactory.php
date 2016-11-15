@@ -2,20 +2,31 @@
 
 namespace SAREhub\Client\User;
 
-
-class StandardUserKeyFactory {
+class UserKeyFactory {
 	
-	const HUB_PROFILE_ID_KEY_TYPE = 'id';
+	const ID_KEY_TYPE = 'id';
 	const COOKIE_KEY_TYPE = 'cookie';
 	const EMAIL_KEY_TYPE = 'email';
 	const MOBILE_KEY_TYPE = 'mobile';
 	
 	/**
+	 * @param array $keys
+	 * @return array
+	 */
+	public static function convertFromRawArray(array $keys) {
+		foreach ($keys as $type => &$value) {
+			$value = self::createKey($type, $value);
+		}
+		
+		return $keys;
+	}
+	
+	/**
 	 * @param string $value
 	 * @return BasicUserKey
 	 */
-	public static function hubProfileId($value) {
-		return self::createKey(self::HUB_PROFILE_ID_KEY_TYPE, $value);
+	public static function id($value) {
+		return self::createKey(self::ID_KEY_TYPE, $value);
 	}
 	
 	/**
