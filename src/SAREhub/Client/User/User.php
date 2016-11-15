@@ -19,16 +19,17 @@ class User {
 	}
 	
 	/**
-	 * Finds user key by class name
-	 * @param string $userKeyClass User key class name
+	 * Finds user key by type
+	 * @param string $keyType = $type;
 	 * @return UserKey|null
 	 */
-	public function findKeyByClass($userKeyClass) {
+	public function findKeyByType($keyType) {
 		foreach ($this->keys as $key) {
-			if (is_a($key, $userKeyClass)) {
+			if ($key->getKeyType() === $keyType) {
 				return $key;
 			}
 		}
+		
 		return null;
 	}
 	
