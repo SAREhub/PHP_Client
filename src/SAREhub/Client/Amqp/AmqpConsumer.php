@@ -2,8 +2,6 @@
 
 namespace SAREhub\Client\Amqp;
 
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
 use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\Exchange;
@@ -14,7 +12,7 @@ use SAREhub\Component\Worker\Service\ServiceSupport;
 class AmqpConsumer extends ServiceSupport {
 	
 	/**
-	 * @var AMQPChannel
+	 * @var AmqpChannelWrapper
 	 */
 	private $channel;
 	
@@ -27,11 +25,6 @@ class AmqpConsumer extends ServiceSupport {
 	 * @var string
 	 */
 	private $consumerTag = '';
-	
-	/**
-	 * @var int
-	 */
-	private $waitTimeout = 3;
 	
 	/**
 	 * @var AmqpMessageConverter
@@ -52,10 +45,10 @@ class AmqpConsumer extends ServiceSupport {
 	}
 	
 	/**
-	 * @param AMQPChannel $channel
+	 * @param AmqpChannelWrapper
 	 * @return $this
 	 */
-	public function withChannel(AMQPChannel $channel) {
+	public function withChannel(AmqpChannelWrapper $channel) {
 		$this->channel = $channel;
 		return $this;
 	}
@@ -97,14 +90,7 @@ class AmqpConsumer extends ServiceSupport {
 	}
 	
 	protected function doStart() {
-		$this->getChannel()->basic_consume(
-		  $this->getQueueName(),
-		  $this->getConsumerTag(),
-		  false,
-		  false,
-		  false,
-		  false,
-		  [$this, 'consume']);
+		$this->getChannel()->registerConsumer($this);
 	}
 	
 	public function consume(AMQPMessage $in) {
@@ -124,28 +110,22 @@ class AmqpConsumer extends ServiceSupport {
 	private function confirmProcess(Exchange $exchange) {
 		$deliveryTag = $exchange->getIn()->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
 		if ($exchange->isFailed()) {
-			$this->getChannel()->basic_nack($deliveryTag, false, true);
+			$this->getChannel()->nack($deliveryTag, false, true);
 		} else {
-			$this->getChannel()->basic_ack($deliveryTag);
+			$this->getChannel()->ack($deliveryTag);
 		}
 	}
 	
 	protected function doTick() {
-		if (count($this->getChannel()->callbacks)) {
-			try {
-				$this->getChannel()->wait(null, true, $this->getWaitTimeout());
-			} catch (AMQPTimeoutException $e) {
-				sleep(1); // when queue is empty we can wait some time
-			}
-		}
+		$this->getChannel()->wait();
 	}
 	
 	protected function doStop() {
-		$this->channel->basic_cancel($this->getConsumerTag());
+		$this->channel->cancelConsume();
 	}
 	
 	/**
-	 * @return AMQPChannel
+	 * @return AmqpChannelWrapper
 	 */
 	public function getChannel() {
 		return $this->channel;
@@ -163,13 +143,6 @@ class AmqpConsumer extends ServiceSupport {
 	 */
 	public function getConsumerTag() {
 		return $this->consumerTag;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getWaitTimeout() {
-		return $this->waitTimeout;
 	}
 	
 	/**

@@ -2,18 +2,17 @@
 
 namespace unit\SAREhub\Client\Amqp;
 
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
+use SAREhub\Client\Amqp\AmqpChannelWrapper;
 use SAREhub\Client\Amqp\AmqpConsumer;
 use SAREhub\Client\Amqp\AmqpMessageConverter;
 use SAREhub\Client\Message\BasicMessage;
 use SAREhub\Client\Message\Exchange;
 use SAREhub\Client\Processor\Processor;
 
-class AmqpEventConsumerTest extends TestCase {
+class AmqpConsumerTest extends TestCase {
 	
 	/**
 	 * @var PHPUnit_Framework_MockObject_MockObject
@@ -41,7 +40,7 @@ class AmqpEventConsumerTest extends TestCase {
 	private $amqpMessage;
 	
 	protected function setUp() {
-		$this->channel = $this->createMock(AMQPChannel::class);
+		$this->channel = $this->createMock(AmqpChannelWrapper::class);
 		$this->processor = $this->createMock(Processor::class);
 		
 		$this->converter = $this->createMock(AmqpMessageConverter::class);
@@ -55,40 +54,22 @@ class AmqpEventConsumerTest extends TestCase {
 		$this->amqpMessage = $this->createMock(AMQPMessage::class);
 	}
 	
-	public function testStartThenBasicConsume() {
+	public function testStartThenChannelRegisterConsumer() {
 		$this->channel->expects($this->once())
-		  ->method('basic_consume')
-		  ->with('test', '', false, false, false, false, [$this->consumer, 'consume']);
+		  ->method('registerConsumer')
+		  ->with($this->consumer);
 		$this->consumer->start();
 	}
 	
 	public function testTickThenCallChannelWait() {
-		$this->channel->callbacks = ['test'];
-		$this->channel->expects($this->once())
-		  ->method('wait')
-		  ->with(null, true, 3);
-		
-		$this->consumer->start();
-		$this->consumer->tick();
-	}
-	
-	public function testTickWhenTimeoutExceptionThenSilent() {
-		$this->channel->callbacks = ['test'];
-		$this->channel->method('wait')->willThrowException(new AMQPTimeoutException());
-		$this->consumer->start();
-		$this->consumer->tick();
-	}
-	
-	public function testTickWhenNoCallbacksThenNotCallChannelWait() {
-		$this->channel->expects($this->never())->method('wait');
+		$this->channel->expects($this->once())->method('wait');
 		$this->consumer->start();
 		$this->consumer->tick();
 	}
 	
 	public function testStopThenCallChannelBasicCancel() {
 		$this->channel->expects($this->once())
-		  ->method('basic_cancel')
-		  ->with('', false, false);
+		  ->method('cancelConsume');
 		$this->consumer->start();
 		$this->consumer->stop();
 	}
