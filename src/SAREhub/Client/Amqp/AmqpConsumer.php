@@ -97,7 +97,6 @@ class AmqpConsumer extends ServiceSupport {
 	}
 	
 	protected function doStart() {
-		
 		$this->getChannel()->basic_consume(
 		  $this->getQueueName(),
 		  $this->getConsumerTag(),
@@ -119,7 +118,7 @@ class AmqpConsumer extends ServiceSupport {
 	 * @return Message
 	 */
 	private function createExchange(AMQPMessage $in) {
-		return BasicExchange::withIn($this->converter->convert($in));
+		return BasicExchange::withIn($this->converter->convertFrom($in));
 	}
 	
 	private function confirmProcess(Exchange $exchange) {

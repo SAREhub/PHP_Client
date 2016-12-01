@@ -13,7 +13,7 @@ class AmqpMessageConverter {
 	 * @param AMQPMessage $message
 	 * @return Message
 	 */
-	public function convert(AMQPMessage $message) {
+	public function convertFrom(AMQPMessage $message) {
 		return BasicMessage::withBody($message->getBody())
 		  ->setHeaders([
 			AMH::CONSUMER_TAG => $message->get('consumer_tag'),
@@ -27,5 +27,19 @@ class AmqpMessageConverter {
 			AMH::CORRELATION_ID => $message->get('correlation_id'),
 			AMH::PRIORITY => $message->get('priority')
 		  ]);
+	}
+	
+	/**
+	 * @param Message $message
+	 * @return AMQPMessage
+	 */
+	public function convertTo(Message $message) {
+		$properties = [];
+		foreach (AmqpMessageHeaders::getPropertyHeaders() as $header) {
+			if ($message->hasHeader($header)) {
+				$properties[AmqpMessageHeaders::getMessagePropertyName($header)] = $message->getHeader($header);
+			}
+		}
+		return new AMQPMessage($message->getBody(), $properties);
 	}
 }

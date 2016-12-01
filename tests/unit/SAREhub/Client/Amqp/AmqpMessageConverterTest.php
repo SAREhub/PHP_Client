@@ -43,55 +43,65 @@ class AmqpMessageConverterTest extends TestCase {
 		  'routing_key' => 'd_routing_key',
 		];
 		
-		$this->convertedMessage = $this->converter->convert($this->amqpMessage);
+		$this->convertedMessage = $this->converter->convertFrom($this->amqpMessage);
 	}
 	
-	public function testConvertThenBody() {
+	public function testConvertToThenBody() {
 		$this->assertEquals($this->amqpMessage->getBody(), $this->convertedMessage->getBody());
 	}
 	
-	public function testConvertThenConsumerTagHeader() {
+	public function testConvertToThenConsumerTagHeader() {
 		$this->assertHeader('consumer_tag', AmqpMessageHeaders::CONSUMER_TAG);
 	}
 	
-	public function testConvertThenDeliveryTagHeader() {
+	public function testConvertToThenDeliveryTagHeader() {
 		$this->assertHeader('delivery_tag', AmqpMessageHeaders::DELIVERY_TAG);
 	}
 	
-	public function testConvertThenRedeliveredHeader() {
+	public function testConvertToThenRedeliveredHeader() {
 		$this->assertHeader('redelivered', AmqpMessageHeaders::REDELIVERED);
 	}
 	
-	public function testConvertThenExchangeHeader() {
+	public function testConvertToThenExchangeHeader() {
 		$this->assertHeader('exchange', AmqpMessageHeaders::EXCHANGE);
 	}
 	
-	public function testConvertThenRoutingKeyHeader() {
+	public function testConvertToThenRoutingKeyHeader() {
 		$this->assertHeader('routing_key', AmqpMessageHeaders::ROUTING_KEY);
 	}
 	
-	public function testConvertThenContentTypeHeader() {
+	public function testConvertToThenContentTypeHeader() {
 		$this->assertHeader('content_type', AmqpMessageHeaders::CONTENT_TYPE);
 	}
 	
-	public function testConvertThenContentEncodingHeader() {
+	public function testConvertToThenContentEncodingHeader() {
 		$this->assertHeader('content_encoding', AmqpMessageHeaders::CONTENT_ENCODING);
 	}
 	
-	public function testConvertThenReplyToHeader() {
+	public function testConvertToThenReplyToHeader() {
 		$this->assertHeader('reply_to', AmqpMessageHeaders::REPLY_TO);
 	}
 	
-	public function testConvertThenCorrelationIdHeader() {
+	public function testConvertToThenCorrelationIdHeader() {
 		$this->assertHeader('correlation_id', AmqpMessageHeaders::CORRELATION_ID);
 	}
 	
-	public function testConvertThenPriorityHeader() {
+	public function testConvertToThenPriorityHeader() {
 		$this->assertHeader('priority', AmqpMessageHeaders::PRIORITY);
 	}
 	
 	private function assertHeader($property, $header) {
 		$current = $this->convertedMessage->getHeader($header);
 		$this->assertEquals($this->amqpMessage->get($property), $current);
+	}
+	
+	public function testConvertToThenAmqpMessageBody() {
+		$message = $this->converter->convertTo($this->converter->convertFrom($this->amqpMessage));
+		$this->assertEquals($this->amqpMessage->getBody(), $message->getBody());
+	}
+	
+	public function testConvertToThenMessageProperties() {
+		$message = $this->converter->convertTo($this->converter->convertFrom($this->amqpMessage));
+		$this->assertEquals($this->amqpMessage->get_properties(), $message->get_properties());
 	}
 }
