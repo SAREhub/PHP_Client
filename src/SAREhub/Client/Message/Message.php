@@ -28,6 +28,13 @@ interface Message {
 	public function hasAnyHeader();
 	
 	/**
+	 * Sets all headers to new.
+	 * @param array $headers
+	 * @return $this
+	 */
+	public function setHeaders(array $headers);
+	
+	/**
 	 * @param string $name
 	 * @param mixed $value
 	 * @return $this

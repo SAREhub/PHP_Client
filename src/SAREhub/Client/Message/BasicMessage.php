@@ -34,6 +34,11 @@ class BasicMessage implements Message {
 		return !empty($this->headers);
 	}
 	
+	public function setHeaders(array $headers) {
+		$this->headers = $headers;
+		return $this;
+	}
+	
 	public function setHeader($name, $value) {
 		$this->headers[$name] = $value;
 		return $this;

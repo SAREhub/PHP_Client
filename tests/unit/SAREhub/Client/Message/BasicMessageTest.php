@@ -19,6 +19,23 @@ class BasicMessageTest extends TestCase {
 		$this->assertSame($this->message, $this->message->setHeader('test', 1));
 	}
 	
+	public function testSetHeadersThenHeadersSets() {
+		$headers = ['h1' => 1, 'h2' => 2];
+		$this->message->setHeaders($headers);
+		$this->assertEquals($headers, $this->message->getHeaders());
+	}
+	
+	public function testSetHeadersWhenHasHeaderThenOnlyNewHeadersSets() {
+		$this->message->setHeader('tmp', 3);
+		$headers = ['h1' => 1, 'h2' => 2];
+		$this->message->setHeaders($headers);
+		$this->assertEquals($headers, $this->message->getHeaders());
+	}
+	
+	public function testSetHeadersThenReturnThis() {
+		$this->assertSame($this->message, $this->message->setHeaders(['h1' => 1, 'h2' => 2]));
+	}
+	
 	public function testSetHeaderThenHeaderSets() {
 		$this->message->setHeader('test', 1);
 		$this->assertSame(1, $this->message->getHeader('test'));
