@@ -18,7 +18,8 @@
     "guzzlehttp/promises": "1.*",
     "respect/validation": "1.*",
     "php-amqplib/php-amqplib": "2.*",
-    "sarehub/commons": "0.5.*"
+    "sarehub/commons": "0.5.*",
+    "sarehub/component_worker": "0.1.*"
   },
   "autoload": {
     "psr-4": {
