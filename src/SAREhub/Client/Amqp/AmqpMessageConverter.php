@@ -20,7 +20,7 @@ class AmqpMessageConverter {
 			AMH::DELIVERY_TAG => $message->get('delivery_tag'),
 			AMH::REDELIVERED => $message->get('redelivered'),
 			AMH::EXCHANGE => $message->get('exchange'),
-			AMH::ROUTING_KEY => $message->get('routing_key'),
+		    AMH::ROUTING_KEY => RoutingKey::createFromString($message->get('routing_key')),
 			AMH::CONTENT_TYPE => $message->get('content_type'),
 			AMH::CONTENT_ENCODING => $message->get('content_encoding'),
 			AMH::REPLY_TO => $message->get('reply_to'),
