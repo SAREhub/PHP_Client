@@ -23,11 +23,11 @@ class BasicMessage implements Message {
 	}
 	
 	public function hasHeader($name) {
-		return $this->hasAnyHeader() && isset($this->headers[$name]);
+		return isset($this->headers[$name]);
 	}
 	
 	public function getHeaders() {
-		return $this->hasAnyHeader() ? $this->headers : [];
+		return $this->headers;
 	}
 	
 	public function hasAnyHeader() {
