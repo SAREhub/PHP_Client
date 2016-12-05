@@ -4,6 +4,7 @@ namespace SAREhub\Client\Amqp;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
+use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -84,5 +85,15 @@ class AmqpChannelWrapperTest extends TestCase {
 	public function testNackThenChannelNack() {
 		$this->channel->expects($this->once())->method('basic_nack')->with(1000, false, true);
 		$this->wrapper->nack(1000);
+	}
+	
+	public function testPublishThenChannelBasicPublish() {
+		$amqpMessage = new AMQPMessage();
+		$routingKey = new RoutingKey('part1.part2');
+		$this->channel->expects($this->once())
+		  ->method('basic_publish')
+		  ->with($amqpMessage, 'exchange', (string)$routingKey);
+		
+		$this->wrapper->publish($amqpMessage, 'exchange', $routingKey);
 	}
 }
