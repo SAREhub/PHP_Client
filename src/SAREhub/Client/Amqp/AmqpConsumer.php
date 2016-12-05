@@ -5,7 +5,6 @@ namespace SAREhub\Client\Amqp;
 use PhpAmqpLib\Message\AMQPMessage;
 use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\Exchange;
-use SAREhub\Client\Message\Message;
 use SAREhub\Client\Processor\Processor;
 use SAREhub\Component\Worker\Service\ServiceSupport;
 
@@ -101,7 +100,7 @@ class AmqpConsumer extends ServiceSupport {
 	
 	/**
 	 * @param AMQPMessage $in
-	 * @return Message
+	 * @return Exchange
 	 */
 	private function createExchange(AMQPMessage $in) {
 		return BasicExchange::withIn($this->converter->convertFrom($in));
@@ -110,7 +109,7 @@ class AmqpConsumer extends ServiceSupport {
 	private function confirmProcess(Exchange $exchange) {
 		$deliveryTag = $exchange->getIn()->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
 		if ($exchange->isFailed()) {
-			$this->getChannel()->nack($deliveryTag, false, true);
+			$this->getChannel()->nack($deliveryTag);
 		} else {
 			$this->getChannel()->ack($deliveryTag);
 		}
