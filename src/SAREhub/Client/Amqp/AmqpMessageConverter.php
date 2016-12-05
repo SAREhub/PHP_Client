@@ -10,6 +10,7 @@ use SAREhub\Client\Message\Message;
 class AmqpMessageConverter {
 	
 	/**
+	 * Converts AMQP message to Client Message
 	 * @param AMQPMessage $message
 	 * @return Message
 	 */
@@ -30,6 +31,7 @@ class AmqpMessageConverter {
 	}
 	
 	/**
+	 * Converts Client Message to AMQP message
 	 * @param Message $message
 	 * @return AMQPMessage
 	 */
