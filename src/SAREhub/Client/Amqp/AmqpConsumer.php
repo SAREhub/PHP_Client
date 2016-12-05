@@ -33,7 +33,7 @@ class AmqpConsumer extends ServiceSupport {
 	/**
 	 * @var Processor
 	 */
-	private $nextProcessor;
+	private $processor;
 	
 	
 	/**
@@ -83,8 +83,8 @@ class AmqpConsumer extends ServiceSupport {
 	 * @param Processor $processor
 	 * @return $this
 	 */
-	public function withNextProcessor(Processor $processor) {
-		$this->nextProcessor = $processor;
+	public function withProcessor(Processor $processor) {
+		$this->processor = $processor;
 		return $this;
 	}
 	
@@ -94,7 +94,7 @@ class AmqpConsumer extends ServiceSupport {
 	
 	public function consume(AMQPMessage $in) {
 		$exchange = $this->createExchange($in);
-		$this->getNextProcessor()->process($exchange);
+		$this->getProcessor()->process($exchange);
 		$this->confirmProcess($exchange);
 	}
 	
@@ -147,7 +147,7 @@ class AmqpConsumer extends ServiceSupport {
 	/**
 	 * @return Processor
 	 */
-	public function getNextProcessor() {
-		return $this->nextProcessor;
+	public function getProcessor() {
+		return $this->processor;
 	}
 }

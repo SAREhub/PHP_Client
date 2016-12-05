@@ -49,7 +49,7 @@ class AmqpConsumerTest extends TestCase {
 		  ->withChannel($this->channel)
 		  ->withQueueName('test')
 		  ->withConverter($this->converter)
-		  ->withNextProcessor($this->processor);
+		  ->withProcessor($this->processor);
 		
 		$this->amqpMessage = $this->createMock(AMQPMessage::class);
 	}
