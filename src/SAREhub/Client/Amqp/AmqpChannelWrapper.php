@@ -4,6 +4,7 @@ namespace SAREhub\Client\Amqp;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class AmqpChannelWrapper {
 	
@@ -65,6 +66,10 @@ class AmqpChannelWrapper {
 	
 	public function nack($deliveryTag) {
 		$this->getChannel()->basic_nack($deliveryTag, false, true);
+	}
+	
+	public function publish(AMQPMessage $message, $exchange, RoutingKey $routingKey) {
+		$this->channel->basic_publish($message, $exchange, (string)$routingKey);
 	}
 	
 	/**
