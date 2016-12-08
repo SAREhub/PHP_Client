@@ -34,16 +34,16 @@ interface Event {
 	 * @param string $name
 	 * @return mixed
 	 */
-	public function getAttribute($name);
+	public function getProperty($name);
 	
 	/**
 	 * @param string $name
 	 * @return bool
 	 */
-	public function hasAttribute($name);
+	public function hasProperty($name);
 	
 	/**
 	 * @return array
 	 */
-	public function getAttributes();
+	public function getProperties();
 }

@@ -4,28 +4,28 @@ namespace unit\SAREhub\Client\Event;
 
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Event\BasicEvent;
-use SAREhub\Client\Event\EventAttributeNotFoundException;
+use SAREhub\Client\Event\EventPropertyNotFoundException;
 
 class BasicEventTest extends TestCase {
 	
 	public function testGetAttributeWhenExistsThenReturnValue() {
-		$event = BasicEvent::newInstanceOf('type')->withAttribute('test', 'value');
-		$this->assertEquals('value', $event->getAttribute('test'));
+		$event = BasicEvent::newInstanceOf('type')->withProperty('test', 'value');
+		$this->assertEquals('value', $event->getProperty('test'));
 	}
 	
 	public function testGetAttributeWhenNotExistsThenThrowException() {
 		$event = BasicEvent::newInstanceOf('type');
-		$this->expectException(EventAttributeNotFoundException::class);
-		$event->getAttribute('test');
+		$this->expectException(EventPropertyNotFoundException::class);
+		$event->getProperty('test');
 	}
 	
 	public function testHasAttributeWhenExistsThenReturnTrue() {
-		$event = BasicEvent::newInstanceOf('type')->withAttribute('test', 'value');
-		$this->assertTrue($event->hasAttribute('test'));
+		$event = BasicEvent::newInstanceOf('type')->withProperty('test', 'value');
+		$this->assertTrue($event->hasProperty('test'));
 	}
 	
 	public function testHasAttributeWhenNotExistsThenReturnFalse() {
 		$event = BasicEvent::newInstanceOf('type');
-		$this->assertFalse($event->hasAttribute('test'));
+		$this->assertFalse($event->hasProperty('test'));
 	}
 }

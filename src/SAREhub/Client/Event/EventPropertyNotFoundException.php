@@ -3,7 +3,7 @@
 namespace SAREhub\Client\Event;
 
 
-class EventAttributeNotFoundException extends \RuntimeException {
+class EventPropertyNotFoundException extends \RuntimeException {
 	
 	private $event;
 	private $attributeName;
