@@ -2,6 +2,8 @@
 
 namespace SAREhub\Client\Event;
 
+use SAREhub\Client\User\User;
+
 /**
  * Base event class
  */
@@ -17,6 +19,16 @@ interface Event {
 	 * @return int
 	 */
 	public function getTime();
+	
+	/**
+	 * @return User
+	 */
+	public function getUser();
+	
+	/**
+	 * @return bool
+	 */
+	public function hasUser();
 	
 	/**
 	 * @param string $name

@@ -3,10 +3,13 @@
 namespace SAREhub\Client\Event;
 
 
+use SAREhub\Client\User\User;
+
 class BasicEvent implements Event {
 	
 	private $eventType;
 	private $time;
+	private $user;
 	private $attributes = [];
 	
 	protected function __construct($eventType) {
@@ -28,6 +31,10 @@ class BasicEvent implements Event {
 	public function withTime($time) {
 		$this->time = $time;
 		return $this;
+	}
+	
+	public function withUser(User $user) {
+		$this->user = $user;
 	}
 	
 	/**
@@ -55,6 +62,14 @@ class BasicEvent implements Event {
 	
 	public function getTime() {
 		return $this->time;
+	}
+	
+	public function getUser() {
+		return $this->user;
+	}
+	
+	public function hasUser() {
+		return $this->user !== null;
 	}
 	
 	public function getAttributes() {
