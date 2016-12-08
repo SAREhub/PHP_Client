@@ -17,24 +17,25 @@ class BasicEvent implements Event {
 	}
 	
 	/**
-	 * @param $eventType
+	 * @param string $eventType
 	 * @return BasicEvent
 	 */
 	public static function newInstanceOf($eventType) {
 		return new self($eventType);
 	}
 	
-	/**
-	 * @param int $time
-	 * @return $this
-	 */
 	public function withTime($time) {
 		$this->time = $time;
 		return $this;
 	}
 	
+	/**
+	 * @param User $user
+	 * @return $this
+	 */
 	public function withUser(User $user) {
 		$this->user = $user;
+		return $this;
 	}
 	
 	/**
