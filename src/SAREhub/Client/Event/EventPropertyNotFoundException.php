@@ -6,17 +6,19 @@ namespace SAREhub\Client\Event;
 class EventPropertyNotFoundException extends \RuntimeException {
 	
 	private $event;
-	private $attributeName;
+	private $property;
 	
-	public function __construct(Event $event, $attributeName, \Exception $previous = null) {
-		parent::__construct('attribute '.$attributeName." not found in event: ".var_export($event, true), 0, $previous);
+	public function __construct(Event $event, $property, \Exception $previous = null) {
+		parent::__construct('property '.$property." not found in event: ".var_export($event, true), 0, $previous);
+		$this->event = $event;
+		$this->property = $property;
 	}
 	
 	public function getEvent() {
 		return $this->event;
 	}
 	
-	public function getAttributeName() {
-		return $this->attributeName;
+	public function getProperty() {
+		return $this->property;
 	}
 }
