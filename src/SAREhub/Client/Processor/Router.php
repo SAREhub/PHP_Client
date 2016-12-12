@@ -15,19 +15,21 @@ class Router implements Processor {
 	
 	protected $routingFunction;
 	
+	
 	/**
-	 * @param callable $routingFunction
+	 * @return Router
 	 */
-	public function __construct(callable $routingFunction) {
-		$this->routingFunction = $routingFunction;
+	public static function newInstance() {
+		return new self();
 	}
 	
 	/**
-	 * @param callable $routingFunction
-	 * @return Router
+	 * @param callable $f
+	 * @return $this
 	 */
-	public static function withRoutingFunction(callable $routingFunction) {
-		return new self($routingFunction);
+	public function withRoutingFunction(callable $f) {
+		$this->routingFunction = $f;
+		return $this;
 	}
 	
 	public function process(Exchange $exchange) {
