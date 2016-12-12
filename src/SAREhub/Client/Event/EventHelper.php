@@ -11,7 +11,7 @@ class EventHelper {
 	 * @param Message $message
 	 * @return Event
 	 */
-	public function extract(Message $message) {
+	public static function extract(Message $message) {
 		return $message->getBody();
 	}
 }
