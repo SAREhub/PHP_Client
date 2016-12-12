@@ -11,6 +11,13 @@ class BasicMessage implements Message {
 	protected $body = null;
 	
 	/**
+	 * @return BasicMessage
+	 */
+	public static function newInstance() {
+		return new self();
+	}
+	
+	/**
 	 * @param mixed $body
 	 * @return $this
 	 */
