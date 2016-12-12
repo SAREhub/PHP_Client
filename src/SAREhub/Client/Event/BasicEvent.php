@@ -24,6 +24,10 @@ class BasicEvent implements Event {
 		return new self($eventType);
 	}
 	
+	/**
+	 * @param int $time
+	 * @return $this
+	 */
 	public function withTime($time) {
 		$this->time = $time;
 		return $this;
