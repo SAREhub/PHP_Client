@@ -23,7 +23,7 @@ class AmqpMessageConverter {
 			AMH::EXCHANGE => $message->get('exchange'),
 		    AMH::ROUTING_KEY => RoutingKey::createFromString($message->get('routing_key')),
 			AMH::CONTENT_TYPE => $message->get('content_type'),
-			AMH::CONTENT_ENCODING => $message->get('content_encoding'),
+		    AMH::CONTENT_ENCODING => $message->has('content_encoding') ? $message->get('content_encoding') : null,
 			AMH::REPLY_TO => $message->get('reply_to'),
 			AMH::CORRELATION_ID => $message->get('correlation_id'),
 			AMH::PRIORITY => $message->get('priority')
