@@ -30,6 +30,7 @@ class AmqpChannelWrapper {
 	
 	public function __construct(AMQPChannel $channel, AmqpConnectionService $service) {
 		$this->channel = $channel;
+		$this->channel->basic_qos(0, 1, false);
 		$this->connectionService = $service;
 	}
 	
