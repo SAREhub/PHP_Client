@@ -22,14 +22,17 @@ class AmqpMessageConverter {
 			AMH::REDELIVERED => $message->get('redelivered'),
 			AMH::EXCHANGE => $message->get('exchange'),
 		    AMH::ROUTING_KEY => RoutingKey::createFromString($message->get('routing_key')),
-			AMH::CONTENT_TYPE => $message->get('content_type'),
-		    AMH::CONTENT_ENCODING => $message->has('content_encoding') ? $message->get('content_encoding') : null,
-			AMH::REPLY_TO => $message->get('reply_to'),
-			AMH::CORRELATION_ID => $message->get('correlation_id'),
-			AMH::PRIORITY => $message->get('priority')
+		    AMH::CONTENT_TYPE => $this->extractProperty('content_type', $message),
+		    AMH::CONTENT_ENCODING => $this->extractProperty('content_encoding', $message),
+		    AMH::REPLY_TO => new RoutingKey($this->extractProperty('reply_to', $message)),
+		    AMH::CORRELATION_ID => $this->extractProperty('correlation_id', $message),
+		    AMH::PRIORITY => $this->extractProperty('priority', $message)
 		  ]);
 	}
 	
+	private function extractProperty($name, AMQPMessage $message) {
+		return $message->has($name) ? $message->get($name) : null;
+	}
 	/**
 	 * Converts Client Message to AMQP message
 	 * @param Message $message
