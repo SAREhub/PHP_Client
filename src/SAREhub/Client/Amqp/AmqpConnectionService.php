@@ -25,7 +25,7 @@ class AmqpConnectionService {
 	
 	protected function createConnection() {
 		$config = $this->getConfig();
-		$connection = new AMQPStreamConnection(
+		$this->connection = new AMQPStreamConnection(
 		  $config->getRequired('host'),
 		  $config->getRequired('port'),
 		  $config->getRequired('username'),
@@ -41,8 +41,6 @@ class AmqpConnectionService {
 		  $config->get('keepalive', true),
 		  $config->get('heartbeat', 30)
 		);
-		
-		return $connection;
 	}
 	
 	/**
