@@ -18,11 +18,12 @@ class BasicMessage implements Message {
 	}
 	
 	/**
-	 * @param mixed $body
 	 * @return $this
 	 */
-	public static function withBody($body) {
-		return (new self())->setBody($body);
+	public function copy() {
+		return self::newInstance()
+		  ->setHeaders($this->getHeaders())
+		  ->setBody($this->getBody());
 	}
 	
 	public function getHeader($name, $defaultValue = null) {

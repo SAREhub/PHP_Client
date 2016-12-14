@@ -5,6 +5,11 @@ namespace SAREhub\Client\Message;
 interface Message {
 	
 	/**
+	 * @return Message
+	 */
+	public function copy();
+	
+	/**
 	 * @param $name
 	 * @param mixed $defaultValue
 	 * @return mixed

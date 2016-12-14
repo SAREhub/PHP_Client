@@ -15,6 +15,16 @@ class BasicMessageTest extends TestCase {
 		$this->message = new BasicMessage();
 	}
 	
+	public function testCopyThenBody() {
+		$copy = $this->message->setBody('body')->copy();
+		$this->assertSame($copy->getBody(), $this->message->getBody());
+	}
+	
+	public function testCopyThenHeaders() {
+		$copy = $this->message->setHeaders(['a' => 1, 'b' => 2])->copy();
+		$this->assertSame($copy->getHeaders(), $this->message->getHeaders());
+	}
+	
 	public function testSetHeaderThenReturnThis() {
 		$this->assertSame($this->message, $this->message->setHeader('test', 1));
 	}
