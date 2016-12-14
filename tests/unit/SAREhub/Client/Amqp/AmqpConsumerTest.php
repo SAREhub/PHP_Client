@@ -78,18 +78,22 @@ class AmqpConsumerTest extends TestCase {
 		$this->converter->expects($this->once())
 		  ->method('convertFrom')
 		  ->with($this->identicalTo($this->amqpMessage))
-		  ->willReturn(BasicMessage::withBody('test'));
+		  ->willReturn($this->createMessage());
 		
 		$this->consumer->consume($this->amqpMessage);
 	}
 	
 	public function testConsumeThenProcessorProcess() {
-		$message = BasicMessage::withBody('test');
+		$message = $this->createMessage();
 		$this->converter->method('convertFrom')->willReturn($message);
 		$this->processor->expects($this->once())
 		  ->method('process')->with($this->callback(function (Exchange $exchange) use ($message) {
 			  return $exchange->getIn() === $message;
 		  }));
 		$this->consumer->consume($this->amqpMessage);
+	}
+	
+	private function createMessage() {
+		return BasicMessage::newInstance()->setBody('test');
 	}
 }
