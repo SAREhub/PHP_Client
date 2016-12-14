@@ -15,7 +15,8 @@ class AmqpMessageConverter {
 	 * @return Message
 	 */
 	public function convertFrom(AMQPMessage $message) {
-		return BasicMessage::withBody($message->getBody())
+		return BasicMessage::newInstance()
+		  ->setBody($message->getBody())
 		  ->setHeaders([
 			AMH::CONSUMER_TAG => $message->get('consumer_tag'),
 			AMH::DELIVERY_TAG => $message->get('delivery_tag'),
