@@ -95,7 +95,7 @@ class AmqpConsumer extends ServiceSupport {
 	public function consume(AMQPMessage $in) {
 		$exchange = $this->createExchange($in);
 		$this->getProcessor()->process($exchange);
-		$this->confirmProcess($exchange);
+		$this->confirmProcess($exchange, $in->get('delivery_tag'));
 	}
 	
 	/**
@@ -106,8 +106,7 @@ class AmqpConsumer extends ServiceSupport {
 		return BasicExchange::withIn($this->converter->convertFrom($in));
 	}
 	
-	private function confirmProcess(Exchange $exchange) {
-		$deliveryTag = $exchange->getIn()->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
+	private function confirmProcess(Exchange $exchange, $deliveryTag) {
 		if ($exchange->isFailed()) {
 			$this->getChannel()->nack($deliveryTag);
 		} else {
