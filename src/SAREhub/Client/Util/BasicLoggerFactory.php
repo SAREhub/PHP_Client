@@ -11,6 +11,13 @@ class BasicLoggerFactory implements LoggerFactory {
 	private $processors = [];
 	
 	/**
+	 * @return BasicLoggerFactory
+	 */
+	public static function newInstance() {
+		return new self();
+	}
+	
+	/**
 	 * @param HandlerInterface $handler
 	 * @return $this
 	 */
