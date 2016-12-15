@@ -37,4 +37,8 @@ class HeaderAppenderProcessor implements Processor {
 	public function getHeaders() {
 		return $this->headers;
 	}
+	
+	public function __toString() {
+		return 'HeaderAppender['.http_build_query($this->getHeaders(), '', ', ').']';
+	}
 }

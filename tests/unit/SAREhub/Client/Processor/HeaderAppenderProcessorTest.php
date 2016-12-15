@@ -17,4 +17,10 @@ class HeaderAppenderProcessorTest extends TestCase {
 		$processor->process(BasicExchange::newInstance()->setIn($message));
 		$this->assertEquals($startHeaders + $processor->getHeaders(), $message->getHeaders());
 	}
+	
+	public function testToString() {
+		$processor = HeaderAppenderProcessor::newInstance()
+		  ->withHeaders(['a' => 1, 'b' => 2, 'c' => 3]);
+		$this->assertEquals('HeaderAppender[a=1, b=2, c=3]', (string)$processor);
+	}
 }
