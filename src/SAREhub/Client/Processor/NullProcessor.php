@@ -12,4 +12,8 @@ class NullProcessor implements Processor {
 	public function process(Exchange $exchange) {
 		
 	}
+	
+	public function __toString() {
+		return 'NOOP';
+	}
 }
