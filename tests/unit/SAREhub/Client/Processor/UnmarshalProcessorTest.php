@@ -8,7 +8,7 @@ use SAREhub\Client\Message\BasicExchange;
 
 class UnmarshalProcessorTest extends TestCase {
 	
-	private $dataFormatMock;
+	private $dataFormat;
 	
 	/**
 	 * @var UnmarshalProcessor
@@ -18,16 +18,21 @@ class UnmarshalProcessorTest extends TestCase {
 	private $exchange;
 	
 	public function setUp() {
-		$this->dataFormatMock = $this->createMock(DataFormat::class);
-		$this->processor = UnmarshalProcessor::withDataFormat($this->dataFormatMock);
+		$this->dataFormat = $this->createPartialMock(DataFormat::class, ['marshal', 'unmarshal', '__toString']);
+		$this->processor = UnmarshalProcessor::withDataFormat($this->dataFormat);
 		$this->exchange = new BasicExchange();
 	}
 	
 	public function testProcess() {
-		$this->dataFormatMock->expects($this->once())
+		$this->dataFormat->expects($this->once())
 		  ->method('unmarshal')
 		  ->with($this->identicalTo($this->exchange));
 		$this->processor->process($this->exchange);
+	}
+	
+	public function testToString() {
+		$this->dataFormat->method('__toString')->willReturn('format');
+		$this->assertEquals('Unmarshal[format]', (string)$this->processor);
 	}
 	
 }

@@ -18,4 +18,6 @@ interface DataFormat {
 	 * @param Exchange $exchange
 	 */
 	public function unmarshal(Exchange $exchange);
+	
+	public function __toString();
 }

@@ -24,4 +24,15 @@ class UnmarshalProcessor implements Processor {
 	public function process(Exchange $exchange) {
 		$this->dataFormat->unmarshal($exchange);
 	}
+	
+	/**
+	 * @return DataFormat
+	 */
+	public function getDataFormat() {
+		return $this->dataFormat;
+	}
+	
+	public function __toString() {
+		return 'Unmarshal['.$this->getDataFormat().']';
+	}
 }

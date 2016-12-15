@@ -19,14 +19,18 @@ class JsonDataFormatTest extends TestCase {
 	
 	public function testMarshalThenExchangeOutBody() {
 		$data = ['param1' => 1, 'param2' => 2];
-		$exchange = BasicExchange::withIn(BasicMessage::withBody($data));
+		$exchange = BasicExchange::newInstance()
+		  ->setIn(BasicMessage::newInstance()
+			->setBody($data));
 		$this->dataFormat->marshal($exchange);
 		$this->assertEquals(json_encode($data), $exchange->getOut()->getBody());
 	}
 	
 	public function testUnmarshalThenExchangeOutBody() {
 		$data = ['param1' => 1, 'param2' => 2];
-		$exchange = BasicExchange::withIn(BasicMessage::withBody(json_encode($data)));
+		$exchange = BasicExchange::newInstance()
+		  ->setIn(BasicMessage::newInstance()
+			->setBody(json_encode($data)));
 		$this->dataFormat->unmarshal($exchange);
 		$this->assertEquals($data, $exchange->getOut()->getBody());
 	}

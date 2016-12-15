@@ -3,28 +3,47 @@
 namespace SAREhub\Client\Processor;
 
 use SAREhub\Client\Message\Exchange;
+use SAREhub\Client\Util\IdAware;
 
 /**
  * That processor execute transform function on exchange.
  */
-class TransformProcessor implements Processor {
+class TransformProcessor implements Processor, IdAware {
 	
-	private $tranformer;
+	private $id = '';
+	private $transformer;
 	
-	public function __construct(callable $tranformer) {
-		$this->tranformer = $tranformer;
+	public function __construct(callable $transformer) {
+		$this->transformer = $transformer;
 	}
 	
 	/**
-	 * @param callable $tranformer
+	 * @param callable $transformer
 	 * @return TransformProcessor
 	 */
-	public static function transform(callable $tranformer) {
-		return new self($tranformer);
+	public static function transform(callable $transformer) {
+		return new self($transformer);
 	}
 	
 	public function process(Exchange $exchange) {
-		$c = $this->tranformer;
+		$c = $this->transformer;
 		$c($exchange);
+	}
+	
+	public function getId() {
+		return $this->id;
+	}
+	
+	/**
+	 * @param String $id
+	 * @return $this
+	 */
+	public function setId($id) {
+		$this->id = $id;
+		return $this;
+	}
+	
+	public function __toString() {
+		return 'Transform['.$this->getId().']';
 	}
 }

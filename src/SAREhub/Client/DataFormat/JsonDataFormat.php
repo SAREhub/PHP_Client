@@ -21,4 +21,8 @@ class JsonDataFormat implements DataFormat {
 		$unmarshaled = json_decode($exchange->getIn()->getBody(), true);
 		$exchange->getOut()->setBody($unmarshaled);
 	}
+	
+	public function __toString() {
+		return 'DataFormat[JSON]';
+	}
 }

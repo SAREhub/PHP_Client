@@ -22,7 +22,7 @@ class MarshalProcessorTest extends TestCase {
 	private $exchange;
 	
 	public function setUp() {
-		$this->dataFormatMock = $this->createMock(DataFormat::class);
+		$this->dataFormatMock = $this->createPartialMock(DataFormat::class, ['marshal', 'unmarshal', '__toString']);
 		$this->processor = MarshalProcessor::withDataFormat($this->dataFormatMock);
 		$this->exchange = new BasicExchange();
 	}
@@ -34,6 +34,11 @@ class MarshalProcessorTest extends TestCase {
 		  ->with($this->identicalTo($this->exchange));
 		
 		$this->processor->process($this->exchange);
+	}
+	
+	public function testToString() {
+		$this->dataFormatMock->method('__toString')->willReturn('format');
+		$this->assertEquals('Marshal[format]', (string)$this->processor);
 	}
 	
 }

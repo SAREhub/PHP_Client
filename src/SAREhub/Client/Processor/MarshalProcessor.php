@@ -37,4 +37,8 @@ class MarshalProcessor implements Processor {
 	public function getDataFormat() {
 		return $this->dataFormat;
 	}
+	
+	public function __toString() {
+		return 'Marshal['.$this->getDataFormat().']';
+	}
 }

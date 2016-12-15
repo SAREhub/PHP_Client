@@ -80,4 +80,10 @@ class Pipeline implements Processor {
 	public function getProcessors() {
 		return $this->processors;
 	}
+	
+	public function __toString() {
+		return 'Pipeline['.implode(', ', $this->getProcessors()).']';
+	}
+	
+	
 }

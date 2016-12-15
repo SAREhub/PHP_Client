@@ -101,11 +101,24 @@ class PipelineTest extends TestCase {
 		$this->pipeline->process($exchange);
 	}
 	
+	public function testToString() {
+		$this->pipeline
+		  ->add($this->createProcessorWithToString('processor1'))
+		  ->add($this->createProcessorWithToString('processor2'));
+		
+		$this->assertEquals('Pipeline[processor1, processor2]', (string)$this->pipeline);
+	}
 	/**
-	 * @return Processor
+	 * @return Processor|PHPUnit_Framework_MockObject_MockObject
 	 */
 	private function createProcessor() {
 		return $this->createMock(Processor::class);
+	}
+	
+	private function createProcessorWithToString($return) {
+		$p = $this->createPartialMock(Processor::class, ['__toString', 'process']);
+		$p->method('__toString')->willReturn($return);
+		return $p;
 	}
 	
 	/**
