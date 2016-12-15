@@ -11,10 +11,9 @@ use SAREhub\Client\Message\Exchange;
 class Router implements Processor {
 	
 	/** @var Processor[] */
-	protected $routes = [];
+	private $routes = [];
 	
-	protected $routingFunction;
-	
+	private $routingFunction;
 	
 	/**
 	 * @return Router
@@ -92,5 +91,9 @@ class Router implements Processor {
 	 */
 	public function getRoutingFunction() {
 		return $this->routingFunction;
+	}
+	
+	public function __toString() {
+		return 'Router['.implode(',', $this->getRoutes()).']';
 	}
 }
