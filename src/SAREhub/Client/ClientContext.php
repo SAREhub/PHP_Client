@@ -2,9 +2,7 @@
 
 namespace SAREhub\Client;
 
-
 use Psr\Log\LoggerInterface;
-use SAREhub\Client\Util\LoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Component\Worker\Service\Service;
 
@@ -13,6 +11,7 @@ interface ClientContext extends Service {
 	/**
 	 * @param string $name
 	 * @return mixed
+	 * @throws \OutOfBoundsException
 	 */
 	public function getProperty($name);
 	
@@ -23,8 +22,8 @@ interface ClientContext extends Service {
 	public function hasProperty($name);
 	
 	/**
-	 * @param $name
-	 * @param $value
+	 * @param string $name
+	 * @param mixed $value
 	 * @return mixed
 	 */
 	public function setProperty($name, $value);
@@ -37,13 +36,12 @@ interface ClientContext extends Service {
 	 */
 	public function registerService($name, Service $service);
 	
-	
 	/**
 	 * @param string $name
 	 * @return Service
+	 * @throws \OutOfBoundsException
 	 */
 	public function getService($name);
-	
 	
 	/**
 	 * @param string $name
@@ -52,24 +50,19 @@ interface ClientContext extends Service {
 	public function hasService($name);
 	
 	/**
+	 * @return Service[]
+	 */
+	public function getServices();
+	
+	/**
 	 * @return TimeProvider
 	 */
 	public function getTimeProvider();
 	
-	
-	/**
-	 * @param TimeProvider $provider
-	 */
-	public function setTimeProvider(TimeProvider $provider);
-	
 	/**
 	 * @param string $name
 	 * @return LoggerInterface
+	 * @throws \Exception
 	 */
 	public function createLogger($name);
-	
-	/**
-	 * @return LoggerFactory
-	 */
-	public function getLoggerFactory();
 }
