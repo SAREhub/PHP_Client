@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class AmqpServiceTest extends TestCase {
 	
-	private $connectionService;
+	private $channelFactory;
 	
 	/**
 	 * @var AmqpService
@@ -16,11 +16,11 @@ class AmqpServiceTest extends TestCase {
 	private $consumer;
 	
 	protected function setUp() {
-		$this->connectionService = $this->createMock(AmqpConnectionService::class);
-		$this->service = new AmqpService($this->connectionService);
+		$this->channelFactory = $this->createMock(AmqpChannelFactory::class);
+		$this->service = new AmqpService($this->channelFactory);
 		
 		$this->consumer = $this->createMock(AmqpConsumer::class);
-		$this->service->withConsumer($this->consumer);
+		$this->service->setConsumer($this->consumer);
 	}
 	
 	public function testStartThenConsumerStart() {

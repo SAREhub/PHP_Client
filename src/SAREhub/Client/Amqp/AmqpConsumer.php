@@ -35,7 +35,6 @@ class AmqpConsumer extends ServiceSupport {
 	 */
 	private $processor;
 	
-	
 	/**
 	 * @return AmqpConsumer
 	 */

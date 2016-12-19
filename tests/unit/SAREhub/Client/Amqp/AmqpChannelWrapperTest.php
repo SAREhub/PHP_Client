@@ -32,7 +32,7 @@ class AmqpChannelWrapperTest extends TestCase {
 	
 	protected function setUp() {
 		$this->channel = $this->createMock(AMQPChannel::class);
-		$this->service = $this->createMock(AmqpConnectionService::class);
+		$this->service = $this->createMock(AmqpService::class);
 		
 		$this->wrapper = new AmqpChannelWrapper($this->channel, $this->service);
 		$this->consumer = $this->createMock(AmqpConsumer::class);
