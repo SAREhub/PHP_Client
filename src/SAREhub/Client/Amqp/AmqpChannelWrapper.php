@@ -9,11 +9,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AmqpChannelWrapper {
 	
 	/**
-	 * @var AmqpConnectionService
-	 */
-	private $connectionService;
-	
-	/**
 	 * @var AMQPChannel
 	 */
 	private $channel;
@@ -28,14 +23,14 @@ class AmqpChannelWrapper {
 	 */
 	private $consumer;
 	
-	public function __construct(AMQPChannel $channel, AmqpConnectionService $service) {
+	public function __construct(AMQPChannel $channel) {
 		$this->channel = $channel;
 		$this->channel->basic_qos(0, 1, false);
-		$this->connectionService = $service;
 	}
 	
 	public function registerConsumer(AmqpConsumer $consumer) {
 		$this->consumer = $consumer;
+		
 		$this->getChannel()->basic_consume(
 		  $consumer->getQueueName(),
 		  $consumer->getConsumerTag(),
@@ -70,7 +65,7 @@ class AmqpChannelWrapper {
 	}
 	
 	public function publish(AMQPMessage $message, $exchange, RoutingKey $routingKey) {
-		$this->channel->basic_publish($message, $exchange, (string)$routingKey);
+		$this->getChannel()->basic_publish($message, $exchange, (string)$routingKey);
 	}
 	
 	/**

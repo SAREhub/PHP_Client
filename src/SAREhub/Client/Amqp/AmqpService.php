@@ -8,9 +8,9 @@ use SAREhub\Component\Worker\Service\ServiceSupport;
 class AmqpService extends ServiceSupport {
 	
 	/**
-	 * @var AmqpConnectionService
+	 * @var AmqpChannelFactory
 	 */
-	private $connectionService;
+	private $channelFactory;
 	
 	/**
 	 * @var AmqpConsumer
@@ -23,52 +23,35 @@ class AmqpService extends ServiceSupport {
 	private $producer;
 	
 	/**
-	 * @return AmqpService
+	 * @var AmqpMessageConverter
 	 */
-	public static function newInstance() {
-		return new self();
+	private $amqpMessageConverter;
+	
+	public function __construct(AmqpChannelFactory $channelFactory) {
+		$this->channelFactory = $channelFactory;
+		$this->amqpMessageConverter = new AmqpMessageConverter();
 	}
 	
 	/**
-	 * @param AmqpConsumer $consumer
-	 * @return $this
-	 */
-	public function withConsumer(AmqpConsumer $consumer) {
-		$this->consumer = $consumer;
-		return $this;
-	}
-	
-	/**
-	 * @param AmqpProducer $producer
-	 * @return $this
-	 */
-	public function withProducer(AmqpProducer $producer) {
-		$this->producer = $producer;
-		return $this;
-	}
-	
-	/**
-	 * @param AmqpConnectionService $connection
-	 * @param string $queueName
+	 * @param $queueName
 	 * @param Processor $processor
 	 * @return AmqpConsumer
 	 */
-	public static function createConsumer(AmqpConnectionService $connection, $queueName, Processor $processor) {
+	public function createConsumer($queueName, Processor $processor) {
 		return AmqpConsumer::newInstance()
-		  ->withChannel($connection->createChannel())
-		  ->withConverter(new AmqpMessageConverter())
+		  ->withChannel($this->channelFactory->create())
+		  ->withConverter($this->amqpMessageConverter)
 		  ->withQueueName($queueName)
 		  ->withProcessor($processor);
 	}
 	
 	/**
-	 * @param AmqpConnectionService $connection
 	 * @return AmqpProducer
 	 */
-	public static function createProducer(AmqpConnectionService $connection) {
+	public function createProducer() {
 		return AmqpProducer::newInstance()
-		  ->withChannel($connection->createChannel())
-		  ->withConverter(new AmqpMessageConverter());
+		  ->withChannel($this->channelFactory->create())
+		  ->withConverter($this->amqpMessageConverter);
 	}
 	
 	protected function doStart() {
@@ -84,6 +67,20 @@ class AmqpService extends ServiceSupport {
 	}
 	
 	/**
+	 * @return AmqpConsumer
+	 */
+	public function getConsumer() {
+		return $this->consumer;
+	}
+	
+	/**
+	 * @param AmqpConsumer $consumer
+	 */
+	public function setConsumer(AmqpConsumer $consumer) {
+		$this->consumer = $consumer;
+	}
+	
+	/**
 	 * @return AmqpProducer
 	 */
 	public function getProducer() {
@@ -91,9 +88,9 @@ class AmqpService extends ServiceSupport {
 	}
 	
 	/**
-	 * @return AmqpConsumer
+	 * @param AmqpProducer $producer
 	 */
-	public function getConsumer() {
-		return $this->consumer;
+	public function setProducer(AmqpProducer $producer) {
+		$this->producer = $producer;
 	}
 }
