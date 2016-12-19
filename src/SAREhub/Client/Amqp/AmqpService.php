@@ -22,8 +22,11 @@ class AmqpService extends ServiceSupport {
 	 */
 	private $producer;
 	
-	public function __construct(AmqpConnectionService $connectionService) {
-		$this->connectionService = $connectionService;
+	/**
+	 * @return AmqpService
+	 */
+	public static function newInstance() {
+		return new self();
 	}
 	
 	/**
@@ -45,32 +48,27 @@ class AmqpService extends ServiceSupport {
 	}
 	
 	/**
+	 * @param AmqpConnectionService $connection
 	 * @param string $queueName
 	 * @param Processor $processor
 	 * @return AmqpConsumer
 	 */
-	public function createConsumer($queueName, Processor $processor) {
+	public static function createConsumer(AmqpConnectionService $connection, $queueName, Processor $processor) {
 		return AmqpConsumer::newInstance()
-		  ->withChannel($this->createChannel())
+		  ->withChannel($connection->createChannel())
 		  ->withConverter(new AmqpMessageConverter())
 		  ->withQueueName($queueName)
 		  ->withProcessor($processor);
 	}
 	
 	/**
+	 * @param AmqpConnectionService $connection
 	 * @return AmqpProducer
 	 */
-	public function createProducer() {
+	public static function createProducer(AmqpConnectionService $connection) {
 		return AmqpProducer::newInstance()
-		  ->withChannel($this->createChannel())
+		  ->withChannel($connection->createChannel())
 		  ->withConverter(new AmqpMessageConverter());
-	}
-	
-	/**
-	 * @return AmqpChannelWrapper
-	 */
-	private function createChannel() {
-		return $this->connectionService->createChannel();
 	}
 	
 	protected function doStart() {
