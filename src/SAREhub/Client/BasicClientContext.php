@@ -72,6 +72,7 @@ class BasicClientContext extends ServiceSupport implements ClientContext {
 	
 	public function setProperty($name, $value) {
 		$this->properties[$name] = $value;
+		return $this;
 	}
 	
 	public function registerService($name, Service $service) {

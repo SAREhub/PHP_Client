@@ -24,7 +24,7 @@ interface ClientContext extends Service {
 	/**
 	 * @param string $name
 	 * @param mixed $value
-	 * @return mixed
+	 * @return $this
 	 */
 	public function setProperty($name, $value);
 	
