@@ -2,16 +2,66 @@
 
 namespace SAREhub\Client;
 
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SAREhub\Client\Util\LoggerFactory;
+use SAREhub\Client\Util\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Component\Worker\Service\Service;
+
+class TestServiceWithContextAware implements Service, ClientContextAware {
+	
+	private $context;
+	private $logger;
+	
+	public function getClientContext() {
+		return $this->context;
+	}
+	
+	public function setClientContext(ClientContext $context) {
+		$this->context = $context;
+	}
+	
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
+	
+	public function start() {
+		
+	}
+	
+	public function tick() {
+		
+	}
+	
+	
+	public function stop() {
+		
+	}
+	
+	public function isStarted() {
+	}
+	
+	public function isStopped() {
+		
+	}
+	
+	public function isRunning() {
+		
+	}
+	
+	public function getLogger() {
+		return $this->logger;
+	}
+}
 
 class BasicClientContextTest extends TestCase {
 	
 	/**
-	 * @var BasicClientContext
+	 * @var ClientContext
 	 */
 	private $context;
 	
@@ -24,8 +74,13 @@ class BasicClientContextTest extends TestCase {
 		$this->assertSame(TimeProvider::get(), $context->getTimeProvider());
 	}
 	
+	public function testCreateThenLoggerFactoryIsNullLoggerFactory() {
+		$context = BasicClientContext::newInstance();
+		$this->assertInstanceOf(NullLoggerFactory::class, $context->getLoggerFactory());
+	}
+	
 	public function testGetPropertyWhenNotExistsThenThrowException() {
-		$this->expectException(\OutOfBoundsException::class);
+		$this->expectException(\InvalidArgumentException::class);
 		$this->context->getProperty('prop');
 	}
 	
@@ -43,24 +98,28 @@ class BasicClientContextTest extends TestCase {
 		$this->assertTrue($this->context->hasProperty('prop'));
 	}
 	
-	public function testHasServiceWhenNotRegistered() {
-		$this->assertFalse($this->context->hasService('service1'));
-	}
-	
-	public function testGetServiceWhenNotRegisteredThenThrowException() {
-		$this->expectException(\OutOfBoundsException::class);
-		$this->context->getService('service1');
-	}
-	
-	public function testGetServiceWhenRegisteredThenReturn() {
+	public function testAddServiceThenContextHasProperty() {
 		$service = $this->createService();
-		$this->context->registerService('service1', $service);
-		$this->assertSame($service, $this->context->getService('service1'));
+		$this->context->addService('s', $service);
+		$this->assertSame($service, $this->context->getProperty('s'));
 	}
 	
-	public function testRegisterServiceThenRegistered() {
-		$this->context->registerService('service1', $this->createService());
-		$this->assertTrue($this->context->hasService('service1'));
+	public function testAddServiceWhenClientContextAwareThenServiceSetContext() {
+		$service = new TestServiceWithContextAware();
+		$this->context->addService('test', $service);
+		$this->assertSame($this->context, $service->getClientContext());
+	}
+	
+	public function testAddServiceThenServiceSetLogger() {
+		$service = new TestServiceWithContextAware();
+		$this->context->addService('test', $service);
+		$this->assertInstanceOf(NullLogger::class, $service->getLogger());
+	}
+	
+	public function testAddServiceThenServiceStart() {
+		$service = $this->createService();
+		$service->expects($this->once())->method('start');
+		$this->context->addService('service', $service);
 	}
 	
 	/**
@@ -70,37 +129,36 @@ class BasicClientContextTest extends TestCase {
 		return $this->createMock(Service::class);
 	}
 	
-	public function testCreateLoggerWhenEmptyLoggerFactoryThenThrowException() {
-		$this->expectException(\LogicException::class);
-		$this->context->createLogger('test');
+	public function testIsStoppedWhenNotStartedThenReturnTrue() {
+		$this->assertTrue($this->context->isStopped());
 	}
 	
-	public function testCreateLoggerThenLoggerFactoryCreate() {
-		$factory = $this->createMock(LoggerFactory::class);
-		$this->context->withLoggerFactory($factory);
-		$factory->expects($this->once())->method('create')->with('test');
-		$this->context->createLogger('test');
-	}
-	
-	public function testCreateLoggerThenReturn() {
-		$factory = $this->createMock(LoggerFactory::class);
-		$this->context->withLoggerFactory($factory);
-		$logger = $this->createMock(LoggerInterface::class);
-		$factory->method('create')->willReturn($logger);
-		$this->assertSame($logger, $this->context->createLogger('test'));
-	}
-	
-	public function testStartThenServicesStart() {
-		$service = $this->createService();
-		$service->expects($this->once())->method('start');
-		$this->context->registerService('s', $service);
+	public function testIsStoppedWhenStartedThenReturnFalse() {
 		$this->context->start();
+		$this->assertFalse($this->context->isStopped());
+	}
+	
+	public function testIsStartedWhenNotThenReturnFalse() {
+		$this->assertFalse($this->context->isStarted());
+	}
+	
+	public function testStartThenIsStartedReturnTrue() {
+		$this->context->start();
+		$this->assertTrue($this->context->isStarted());
+	}
+	
+	public function testIsRunningWhenNotStartedThenReturnFalse() {
+		$this->assertFalse($this->context->isRunning());
+	}
+	
+	public function testIsRunningWhenStartedThenReturnTrue() {
+		$this->assertFalse($this->context->isRunning());
 	}
 	
 	public function testTickThenServicesTick() {
 		$service = $this->createService();
 		$service->expects($this->once())->method('tick');
-		$this->context->registerService('s', $service);
+		$this->context->addService('s', $service);
 		$this->context->start();
 		$this->context->tick();
 	}
@@ -108,8 +166,29 @@ class BasicClientContextTest extends TestCase {
 	public function testStopThenServicesStop() {
 		$service = $this->createService();
 		$service->expects($this->once())->method('stop');
-		$this->context->registerService('s', $service);
+		$this->context->addService('s', $service);
 		$this->context->start();
 		$this->context->stop();
+	}
+	
+	public function testInjectLoggerThenLoggerFactoryCreate() {
+		$loggerFactory = $this->createMock(LoggerFactory::class);
+		$loggerFactory->expects($this->once())
+		  ->method('create')
+		  ->with('test')
+		  ->willReturn($this->createMock(Logger::class));
+		$this->context->setLoggerFactory($loggerFactory);
+		$this->context->injectLogger('test', $this->createMock(LoggerAwareInterface::class));
+	}
+	
+	public function testInjectLoggerThenAwareSetLogger() {
+		$logger = $this->createMock(Logger::class);
+		$loggerFactory = $this->createMock(LoggerFactory::class);
+		$loggerFactory->method('create')->willReturn($logger);
+		$this->context->setLoggerFactory($loggerFactory);
+		
+		$aware = $this->createMock(LoggerAwareInterface::class);
+		$aware->expects($this->once())->method('setLogger')->with($this->identicalTo($logger));
+		$this->context->injectLogger('test', $aware);
 	}
 }

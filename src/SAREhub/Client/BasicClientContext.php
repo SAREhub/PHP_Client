@@ -2,22 +2,25 @@
 
 namespace SAREhub\Client;
 
+use Pimple\Container;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use SAREhub\Client\Util\LoggerFactory;
+use SAREhub\Client\Util\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Component\Worker\Service\Service;
-use SAREhub\Component\Worker\Service\ServiceSupport;
 
-class BasicClientContext extends ServiceSupport implements ClientContext {
-	
-	/**
-	 * @var array
-	 */
-	private $properties = [];
+class BasicClientContext extends Container implements ClientContext {
 	
 	/**
 	 * @var Service[]
 	 */
 	private $services = [];
+	
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
 	
 	/**
 	 * @var TimeProvider
@@ -29,8 +32,14 @@ class BasicClientContext extends ServiceSupport implements ClientContext {
 	 */
 	private $loggerFactory;
 	
+	private $started = false;
+	
 	public function __construct() {
+		parent::__construct();
+		
 		$this->timeProvider = TimeProvider::get();
+		$this->loggerFactory = new NullLoggerFactory();
+		$this->logger = $this->loggerFactory->create('ClientContext');
 	}
 	
 	/**
@@ -40,88 +49,96 @@ class BasicClientContext extends ServiceSupport implements ClientContext {
 		return new self();
 	}
 	
-	/**
-	 * @param TimeProvider $provider
-	 * @return $this
-	 */
-	public function withTimeProvider(TimeProvider $provider) {
-		$this->timeProvider = $provider;
-		return $this;
-	}
-	
-	/**
-	 * @param LoggerFactory $factory
-	 * @return $this
-	 */
-	public function withLoggerFactory(LoggerFactory $factory) {
-		$this->loggerFactory = $factory;
-		return $this;
-	}
-	
 	public function getProperty($name) {
-		if ($this->hasProperty($name)) {
-			return $this->properties[$name];
-		}
-		
-		throw new \OutOfBoundsException("Property [$name] isn't exists in context");
+		return $this[$name];
 	}
 	
 	public function hasProperty($name) {
-		return isset($this->properties[$name]);
+		return $this->offsetExists($name);
 	}
 	
 	public function setProperty($name, $value) {
-		$this->properties[$name] = $value;
-		return $this;
+		$this[$name] = $value;
 	}
 	
-	public function registerService($name, Service $service) {
+	public function addFactory($name, callable $factory) {
+		$this->setProperty($name, $this->factory($factory));
+	}
+	
+	public function addService($name, Service $service) {
+		$this->setProperty($name, $service);
 		$this->services[$name] = $service;
-	}
-	
-	public function getService($name) {
-		if ($this->hasService($name)) {
-			return $this->services[$name];
+		if ($service instanceof ClientContextAware) {
+			$service->setClientContext($this);
 		}
 		
-		throw new \OutOfBoundsException("Service [$name] isn't registered");
+		$this->injectLogger($name, $service);
+		$service->start();
 	}
 	
-	public function hasService($name) {
-		return isset($this->services[$name]);
+	/**
+	 * @return int
+	 */
+	public function now() {
+		return $this->getProperty('timeProvider')->now();
 	}
 	
-	public function getServices() {
-		return $this->services;
+	public function start() {
+		$this->started = true;
+	}
+	
+	public function tick() {
+		foreach ($this->services as $service) {
+			$service->tick();
+		}
+	}
+	
+	public function stop() {
+		foreach ($this->services as $service) {
+			$service->stop();
+		}
+	}
+	
+	public function isStarted() {
+		return $this->started;
+	}
+	
+	public function isStopped() {
+		return !$this->isStarted();
+	}
+	
+	public function isRunning() {
+		return $this->isStarted();
+	}
+	
+	public function getLogger() {
+		return $this->getLogger();
+	}
+	
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
+	
+	public function getLoggerFactory() {
+		return $this->loggerFactory;
+	}
+	
+	public function setLoggerFactory(LoggerFactory $factory) {
+		return $this->loggerFactory = $factory;
 	}
 	
 	public function getTimeProvider() {
 		return $this->timeProvider;
 	}
 	
-	public function createLogger($name) {
-		if ($this->loggerFactory === null) {
-			throw new \LogicException("Logger factory isn't sets");
-		}
-		
-		return $this->loggerFactory->create($name);
+	public function setTimeProvider(TimeProvider $provider) {
+		$this->timeProvider = $provider;
 	}
 	
-	protected function doStart() {
-		foreach ($this->getServices() as $service) {
-			$service->start();
-		}
+	public function injectLogger($name, LoggerAwareInterface $aware) {
+		$logger = $this->getLoggerFactory()->create($name);
+		$aware->setLogger($logger);
 	}
 	
-	protected function doTick() {
-		foreach ($this->getServices() as $service) {
-			$service->tick();
-		}
-	}
 	
-	protected function doStop() {
-		foreach ($this->getServices() as $service) {
-			$service->stop();
-		}
-	}
 }
