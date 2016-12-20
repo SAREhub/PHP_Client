@@ -65,6 +65,7 @@ interface ClientContext extends Service {
 	
 	/**
 	 * @param TimeProvider $provider
+	 * @return $this
 	 */
 	public function setTimeProvider(TimeProvider $provider);
 	
@@ -81,6 +82,7 @@ interface ClientContext extends Service {
 	
 	/**
 	 * @param LoggerFactory $factory
+	 * @return $this
 	 */
 	public function setLoggerFactory(LoggerFactory $factory);
 	

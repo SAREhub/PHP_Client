@@ -19,7 +19,8 @@
     "respect/validation": "1.*",
     "php-amqplib/php-amqplib": "2.*",
     "sarehub/commons": "0.5.*",
-    "sarehub/component_worker": "0.1.*"
+    "sarehub/component_worker": "0.1.*",
+    "pimple/pimple": "3.0.*"
   },
   "autoload": {
     "psr-4": {

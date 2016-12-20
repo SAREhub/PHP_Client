@@ -59,10 +59,12 @@ class BasicClientContext extends Container implements ClientContext {
 	
 	public function setProperty($name, $value) {
 		$this[$name] = $value;
+		return $this;
 	}
 	
 	public function addFactory($name, callable $factory) {
 		$this->setProperty($name, $this->factory($factory));
+		return $this;
 	}
 	
 	public function addService($name, Service $service) {
@@ -74,6 +76,8 @@ class BasicClientContext extends Container implements ClientContext {
 		
 		$this->injectLogger($name, $service);
 		$service->start();
+		
+		return $this;
 	}
 	
 	/**
@@ -124,7 +128,8 @@ class BasicClientContext extends Container implements ClientContext {
 	}
 	
 	public function setLoggerFactory(LoggerFactory $factory) {
-		return $this->loggerFactory = $factory;
+		$this->loggerFactory = $factory;
+		return $this;
 	}
 	
 	public function getTimeProvider() {
@@ -133,6 +138,7 @@ class BasicClientContext extends Container implements ClientContext {
 	
 	public function setTimeProvider(TimeProvider $provider) {
 		$this->timeProvider = $provider;
+		return $this;
 	}
 	
 	public function injectLogger($name, LoggerAwareInterface $aware) {
