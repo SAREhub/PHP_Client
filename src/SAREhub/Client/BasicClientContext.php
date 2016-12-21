@@ -146,7 +146,11 @@ class BasicClientContext extends Container implements ClientContext {
 		$aware->setLogger($logger);
 	}
 	
-	public function registerProvider(ClientContextProvider $provider) {
+	/**
+	 * @param ContextProvider $provider
+	 * @return $this
+	 */
+	public function registerContextProvider(ContextProvider $provider) {
 		$provider->register($this);
 		return $this;
 	}

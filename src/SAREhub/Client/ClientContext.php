@@ -53,10 +53,10 @@ interface ClientContext extends Service {
 	public function addService($name, Service $service);
 	
 	/**
-	 * @param ClientContextProvider $provider
+	 * @param ContextProvider $provider
 	 * @return $this
 	 */
-	public function registerProvider(ClientContextProvider $provider);
+	public function registerContextProvider(ContextProvider $provider);
 	
 	/**
 	 * Returns current timestamp
