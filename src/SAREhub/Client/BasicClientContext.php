@@ -148,5 +148,6 @@ class BasicClientContext extends Container implements ClientContext {
 	
 	public function registerProvider(ClientContextProvider $provider) {
 		$provider->register($this);
+		return $this;
 	}
 }
