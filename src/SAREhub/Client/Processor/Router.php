@@ -2,18 +2,35 @@
 
 namespace SAREhub\Client\Processor;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SAREhub\Client\Message\Exchange;
 
 /**
  * Basic router processor.
  * Routing exchanges to processor defined by routing key value returns by routingFunction.
  */
-class Router implements Processor {
+class Router implements Processor, LoggerAwareInterface {
 	
-	/** @var Processor[] */
+	/**
+	 * @var Processor[]
+	 */
 	private $routes = [];
 	
+	/**
+	 * @var callable
+	 */
 	private $routingFunction;
+	
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+	
+	public function __construct() {
+		$this->logger = new NullLogger();
+	}
 	
 	/**
 	 * @return Router
@@ -32,8 +49,19 @@ class Router implements Processor {
 	}
 	
 	public function process(Exchange $exchange) {
-		if ($route = $this->getRoute($this->getRoutingKeyForExchange($exchange))) {
+		$routingKey = $this->getRoutingKeyForExchange($exchange);
+		if ($route = $this->getRoute($routingKey)) {
+			$this->getLogger()->debug('exchange has route', [
+			  'routingKey' => $routingKey,
+			  'exchange' => $exchange,
+			  'route' => $route
+			]);
 			$route->process($exchange);
+		} else {
+			$this->getLogger()->debug('route for exchange not found', [
+			  'routingKey' => $routingKey,
+			  'exchange' => $exchange
+			]);
 		}
 	}
 	
@@ -95,5 +123,13 @@ class Router implements Processor {
 	
 	public function __toString() {
 		return 'Router['.implode(',', $this->getRoutes()).']';
+	}
+	
+	public function getLogger() {
+		return $this->logger;
+	}
+	
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
 	}
 }
