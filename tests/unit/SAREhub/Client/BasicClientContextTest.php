@@ -191,4 +191,12 @@ class BasicClientContextTest extends TestCase {
 		$aware->expects($this->once())->method('setLogger')->with($this->identicalTo($logger));
 		$this->context->injectLogger('test', $aware);
 	}
+	
+	public function testRegisterProviderThenProviderRegister() {
+		$provider = $this->createMock(ClientContextProvider::class);
+		$provider->expects($this->once())
+		  ->method('register')
+		  ->with($this->identicalTo($this->context));
+		$this->context->registerProvider($provider);
+	}
 }
