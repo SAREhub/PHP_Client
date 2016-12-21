@@ -80,11 +80,8 @@ class BasicClientContext extends Container implements ClientContext {
 		return $this;
 	}
 	
-	/**
-	 * @return int
-	 */
 	public function now() {
-		return $this->getProperty('timeProvider')->now();
+		return $this->getTimeProvider()->now();
 	}
 	
 	public function start() {
