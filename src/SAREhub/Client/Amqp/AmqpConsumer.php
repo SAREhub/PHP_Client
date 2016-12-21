@@ -93,6 +93,9 @@ class AmqpConsumer extends ServiceSupport {
 	
 	public function consume(AMQPMessage $in) {
 		$exchange = $this->createExchange($in);
+		$orginalIn = $exchange->getIn()->copy();
+		
+		$this->getLogger()->debug('got message', ['message' => $orginalIn]);
 		$this->getProcessor()->process($exchange);
 		$this->confirmProcess($exchange, $in->get('delivery_tag'));
 	}
@@ -102,13 +105,19 @@ class AmqpConsumer extends ServiceSupport {
 	 * @return Exchange
 	 */
 	private function createExchange(AMQPMessage $in) {
-		return BasicExchange::withIn($this->converter->convertFrom($in));
+		return BasicExchange::newInstance()->setIn($this->convertMessage($in));
+	}
+	
+	private function convertMessage(AMQPMessage $in) {
+		return $this->converter->convertFrom($in);
 	}
 	
 	private function confirmProcess(Exchange $exchange, $deliveryTag) {
 		if ($exchange->isFailed()) {
+			$this->getLogger()->debug('process failed ', ['exchange' => $exchange]);
 			$this->getChannel()->nack($deliveryTag);
 		} else {
+			$this->getLogger()->debug('process success ', ['exchange' => $exchange]);
 			$this->getChannel()->ack($deliveryTag);
 		}
 	}
