@@ -70,4 +70,8 @@ class AmqpProducer implements Processor, LoggerAwareInterface {
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
 	}
+	
+	public function __toString() {
+		return 'AmqpProducer';
+	}
 }
