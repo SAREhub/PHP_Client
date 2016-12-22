@@ -55,15 +55,21 @@ class AmqpService extends ServiceSupport {
 	}
 	
 	protected function doStart() {
-		$this->getConsumer()->start();
+		if ($this->getConsumer()) {
+			$this->consumer->start();
+		}
 	}
 	
 	protected function doTick() {
-		$this->getConsumer()->tick();
+		if ($this->getConsumer()) {
+			$this->getConsumer()->tick();
+		}
 	}
 	
 	protected function doStop() {
-		$this->getConsumer()->stop();
+		if ($this->getConsumer()) {
+			$this->getConsumer()->stop();
+		}
 	}
 	
 	/**
