@@ -82,7 +82,7 @@ class Pipeline implements Processor {
 	}
 	
 	public function __toString() {
-		return 'Pipeline['.implode(', ', $this->getProcessors()).']';
+		return "Pipeline[".implode(" | ", $this->getProcessors())."]";
 	}
 	
 	

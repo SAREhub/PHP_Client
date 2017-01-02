@@ -86,7 +86,7 @@ class RouterTest extends TestCase {
 		$this->router
 		  ->addRoute('1', $this->createRoute('r1'))
 		  ->addRoute('2', $this->createRoute('r2'));
-		$this->assertEquals('Router[r1,r2]', (string)$this->router);
+		$this->assertEquals("Router[ {1 => r1}, {2 => r2}]", (string)$this->router);
 		
 	}
 	

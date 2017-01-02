@@ -122,7 +122,12 @@ class Router implements Processor, LoggerAwareInterface {
 	}
 	
 	public function __toString() {
-		return 'Router['.implode(',', $this->getRoutes()).']';
+		$routes = [];
+		foreach ($this->getRoutes() as $key => $route) {
+			$routes[] = $key.' => '.$route;
+		}
+		
+		return 'Router[ {'.implode('}, {', $routes).'}]';
 	}
 	
 	public function getLogger() {
