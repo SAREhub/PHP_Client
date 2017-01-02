@@ -23,6 +23,13 @@ class BasicExchange implements Exchange {
 	 */
 	private $exception = null;
 	
+	/**
+	 * @return BasicExchange
+	 */
+	public static function newInstance() {
+		return new self();
+	}
+	
 	public static function withIn(Message $message) {
 		$exchange = new self();
 		$exchange->setIn($message);

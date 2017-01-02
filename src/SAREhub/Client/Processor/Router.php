@@ -2,37 +2,66 @@
 
 namespace SAREhub\Client\Processor;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SAREhub\Client\Message\Exchange;
 
 /**
  * Basic router processor.
  * Routing exchanges to processor defined by routing key value returns by routingFunction.
  */
-class Router implements Processor {
-	
-	/** @var Processor[] */
-	protected $routes = [];
-	
-	protected $routingFunction;
+class Router implements Processor, LoggerAwareInterface {
 	
 	/**
-	 * @param callable $routingFunction
+	 * @var Processor[]
 	 */
-	public function __construct(callable $routingFunction) {
-		$this->routingFunction = $routingFunction;
+	private $routes = [];
+	
+	/**
+	 * @var callable
+	 */
+	private $routingFunction;
+	
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+	
+	public function __construct() {
+		$this->logger = new NullLogger();
 	}
 	
 	/**
-	 * @param callable $routingFunction
 	 * @return Router
 	 */
-	public static function withRoutingFunction(callable $routingFunction) {
-		return new self($routingFunction);
+	public static function newInstance() {
+		return new self();
+	}
+	
+	/**
+	 * @param callable $f
+	 * @return $this
+	 */
+	public function withRoutingFunction(callable $f) {
+		$this->routingFunction = $f;
+		return $this;
 	}
 	
 	public function process(Exchange $exchange) {
-		if ($route = $this->getRoute($this->getRoutingKeyForExchange($exchange))) {
+		$routingKey = $this->getRoutingKeyForExchange($exchange);
+		if ($route = $this->getRoute($routingKey)) {
+			$this->getLogger()->debug('exchange has route', [
+			  'routingKey' => $routingKey,
+			  'exchange' => $exchange,
+			  'route' => $route
+			]);
 			$route->process($exchange);
+		} else {
+			$this->getLogger()->debug('route for exchange not found', [
+			  'routingKey' => $routingKey,
+			  'exchange' => $exchange
+			]);
 		}
 	}
 	
@@ -90,5 +119,22 @@ class Router implements Processor {
 	 */
 	public function getRoutingFunction() {
 		return $this->routingFunction;
+	}
+	
+	public function __toString() {
+		$routes = [];
+		foreach ($this->getRoutes() as $key => $route) {
+			$routes[] = $key.' => '.$route;
+		}
+		
+		return 'Router[ {'.implode('}, {', $routes).'}]';
+	}
+	
+	public function getLogger() {
+		return $this->logger;
+	}
+	
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
 	}
 }

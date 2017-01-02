@@ -21,4 +21,9 @@ class TransformProcessorTest extends TestCase {
 		  ->with($exchange);
 		$this->processor->process($exchange);
 	}
+	
+	public function testToString() {
+		$this->processor->setId('t_id');
+		$this->assertEquals('Transform[t_id]', (string)$this->processor);
+	}
 }

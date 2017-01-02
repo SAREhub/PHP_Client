@@ -11,11 +11,19 @@ class BasicMessage implements Message {
 	protected $body = null;
 	
 	/**
-	 * @param mixed $body
+	 * @return BasicMessage
+	 */
+	public static function newInstance() {
+		return new self();
+	}
+	
+	/**
 	 * @return $this
 	 */
-	public static function withBody($body) {
-		return (new self())->setBody($body);
+	public function copy() {
+		return self::newInstance()
+		  ->setHeaders($this->getHeaders())
+		  ->setBody($this->getBody());
 	}
 	
 	public function getHeader($name, $defaultValue = null) {
@@ -23,15 +31,20 @@ class BasicMessage implements Message {
 	}
 	
 	public function hasHeader($name) {
-		return $this->hasAnyHeader() && isset($this->headers[$name]);
+		return isset($this->headers[$name]);
 	}
 	
 	public function getHeaders() {
-		return $this->hasAnyHeader() ? $this->headers : [];
+		return $this->headers;
 	}
 	
 	public function hasAnyHeader() {
 		return !empty($this->headers);
+	}
+	
+	public function setHeaders(array $headers) {
+		$this->headers = $headers;
+		return $this;
 	}
 	
 	public function setHeader($name, $value) {

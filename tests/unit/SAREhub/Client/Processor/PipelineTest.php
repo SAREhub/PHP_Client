@@ -7,17 +7,23 @@ use SAREhub\Client\Message\Exchange;
 use SAREhub\Client\Processor\Pipeline;
 use SAREhub\Client\Processor\Processor;
 
+
+class PipelineTestProcessorOutSetter implements Processor {
+	
+	public $out;
+	public $lastIn;
+	
+	public function __construct() {
+		$this->out = BasicMessage::newInstance();
+	}
+	
+	public function process(Exchange $exchange) {
+		$this->lastIn = $exchange->getIn()->copy();
+		$exchange->setOut($this->out);
+	}
+}
+
 class PipelineTest extends TestCase {
-	
-	/**
-	 * @var PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $processorMock1;
-	
-	/**
-	 * @var PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $processorMock2;
 	
 	/**
 	 * @var Pipeline
@@ -25,59 +31,105 @@ class PipelineTest extends TestCase {
 	private $pipeline;
 	
 	public function setUp() {
-		$this->processorMock1 = $this->createMock(Processor::class);
-		$this->processorMock2 = $this->createMock(Processor::class);
-		
 		$this->pipeline = new Pipeline();
 	}
 	
-	public function testAdd() {
-		$this->assertSame($this->pipeline, $this->pipeline->add($this->processorMock1));
-		$this->assertEquals([$this->processorMock1], $this->pipeline->getProcessors());
+	public function testAddThenProcessors() {
+		$processor = $this->createProcessor();
+		$this->pipeline->add($processor);
+		$this->assertEquals([$processor], $this->pipeline->getProcessors());
 	}
 	
-	public function testNextAdd() {
-		$this->pipeline->add($this->processorMock1)->add($this->processorMock2);
-		$this->assertEquals([$this->processorMock1, $this->processorMock2], $this->pipeline->getProcessors());
+	public function testNextAddThenProcessors() {
+		$processor1 = $this->createProcessor();
+		$processor2 = $this->createProcessor();
+		$this->pipeline->add($processor1)->add($processor2);
+		$this->assertEquals([$processor1, $processor2], $this->pipeline->getProcessors());
 	}
 	
 	public function testAddAll() {
-		$this->pipeline->addAll([$this->processorMock1, $this->processorMock2]);
-		$this->assertEquals([$this->processorMock1, $this->processorMock2], $this->pipeline->getProcessors());
+		$processors = [$this->createProcessor(), $this->createProcessor()];
+		$this->pipeline->addAll($processors);
+		$this->assertEquals($processors, $this->pipeline->getProcessors());
 	}
 	
 	public function testClear() {
-		$this->assertSame($this->pipeline, $this->pipeline->add($this->processorMock1)->clear());
+		$this->pipeline->add($this->createProcessor())->clear();
 		$this->assertEmpty($this->pipeline->getProcessors());
 	}
 	
-	public function testProcess() {
-		$this->pipeline->add($this->processorMock1)->add($this->processorMock2);
-		$exchange = new BasicExchange();
-		$orginalMessage = BasicMessage::withBody('start');
-		$exchange->setIn($orginalMessage);
-		
-		$this->processorMock1->expects($this->once())
+	public function testProcessThenOrginalMessageInPreserved() {
+		$this->pipeline->add(new PipelineTestProcessorOutSetter());
+		$orginalIn = BasicMessage::newInstance()->setBody('start');
+		$exchange = BasicExchange::newInstance()->setIn($orginalIn);
+		$this->pipeline->process($exchange);
+		$this->assertEquals($orginalIn, $exchange->getIn());
+	}
+	
+	public function testProcessThenMessageOut() {
+		$p1 = new PipelineTestProcessorOutSetter();
+		$this->pipeline->add($p1);
+		$exchange = $this->createExchange('start');
+		$this->pipeline->process($exchange);
+		$this->assertSame($p1->out, $exchange->getOut());
+	}
+	
+	public function testProcessWhenProcessorSetsOutThenNextProcessorGetIt() {
+		$p1 = new PipelineTestProcessorOutSetter();
+		$p2 = $this->createProcessor();
+		$this->pipeline->add($p1)->add($p2);
+		$p2->expects($this->once())
 		  ->method('process')
-		  ->with($this->callback(function ($exchange) {
-			  return $exchange instanceof Exchange && $exchange->getIn()->getBody() === 'start';
-		  }))
-		  ->willReturnCallback(function () use ($exchange) {
-			  $exchange->getOut()->setBody('afterProcess1');
-		  });
+		  ->with($this->callback(function (Exchange $exchange) use ($p1) {
+			  return $p1->out === $exchange->getIn();
+		  }));
+		$this->pipeline->process($this->createExchange());
+	}
+	
+	public function testProcessWhenProcessorNotSetsOutThenNextLastIn() {
+		$p2 = $this->createProcessor();
+		$this->pipeline->add($this->createProcessor())->add($p2);
+		$exchange = $this->createExchange();
+		$orginalIn = $exchange->getIn();
 		
-		$this->processorMock2->expects($this->once())
+		$p2->expects($this->once())
 		  ->method('process')
-		  ->with($this->callback(function ($exchange) {
-			  return $exchange instanceof Exchange && $exchange->getIn()->getBody() === 'afterProcess1';
-		  }))
-		  ->willReturnCallback(function () use ($exchange) {
-			  $exchange->getOut()->setBody('afterProcess2');
-		  });
+		  ->with($this->callback(function (Exchange $exchange) use ($orginalIn) {
+			  return $exchange->getIn() === $orginalIn;
+		  }));
 		
 		$this->pipeline->process($exchange);
+	}
+	
+	public function testToString() {
+		$this->pipeline
+		  ->add($this->createProcessorWithToString('processor1'))
+		  ->add($this->createProcessorWithToString('processor2'));
 		
-		$this->assertSame($orginalMessage, $exchange->getIn());
-		$this->assertEquals('afterProcess2', $exchange->getOut()->getBody());
+		$this->assertEquals('Pipeline[processor1 | processor2]', (string)$this->pipeline);
+	}
+	/**
+	 * @return Processor|PHPUnit_Framework_MockObject_MockObject
+	 */
+	private function createProcessor() {
+		return $this->createMock(Processor::class);
+	}
+	
+	private function createProcessorWithToString($return) {
+		$p = $this->createPartialMock(Processor::class, ['__toString', 'process']);
+		$p->method('__toString')->willReturn($return);
+		return $p;
+	}
+	
+	/**
+	 * @param mixed $inBody
+	 * @return Exchange
+	 */
+	private function createExchange($inBody = 'start') {
+		return BasicExchange::newInstance()
+		  ->setIn(BasicMessage::newInstance()
+			->setBody($inBody)
+		  );
 	}
 }
+

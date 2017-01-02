@@ -3,18 +3,21 @@
 namespace SAREhub\Client\Event;
 
 
+use SAREhub\Client\User\User;
+
 class BasicEvent implements Event {
 	
 	private $eventType;
 	private $time;
-	private $attributes = [];
+	private $user;
+	private $properties = [];
 	
 	protected function __construct($eventType) {
 		$this->eventType = $eventType;
 	}
 	
 	/**
-	 * @param $eventType
+	 * @param string $eventType
 	 * @return BasicEvent
 	 */
 	public static function newInstanceOf($eventType) {
@@ -31,11 +34,20 @@ class BasicEvent implements Event {
 	}
 	
 	/**
-	 * @param array $attributes
+	 * @param User $user
 	 * @return $this
 	 */
-	public function withAttributes(array $attributes) {
-		$this->attributes = $attributes;
+	public function withUser(User $user) {
+		$this->user = $user;
+		return $this;
+	}
+	
+	/**
+	 * @param array $properties
+	 * @return $this
+	 */
+	public function withProperties(array $properties) {
+		$this->properties = $properties;
 		return $this;
 	}
 	
@@ -44,8 +56,8 @@ class BasicEvent implements Event {
 	 * @param mixed $value
 	 * @return $this
 	 */
-	public function withAttribute($name, $value) {
-		$this->attributes[$name] = $value;
+	public function withProperty($name, $value) {
+		$this->properties[$name] = $value;
 		return $this;
 	}
 	
@@ -57,19 +69,27 @@ class BasicEvent implements Event {
 		return $this->time;
 	}
 	
-	public function getAttributes() {
-		return $this->attributes;
+	public function getUser() {
+		return $this->user;
 	}
 	
-	public function getAttribute($name) {
-		if ($this->hasAttribute($name)) {
-			return $this->attributes[$name];
+	public function hasUser() {
+		return $this->user !== null;
+	}
+	
+	public function getProperties() {
+		return $this->properties;
+	}
+	
+	public function getProperty($name) {
+		if ($this->hasProperty($name)) {
+			return $this->properties[$name];
 		}
 		
-		throw new EventAttributeNotFoundException($this, $name);
+		throw new EventPropertyNotFoundException($this, $name);
 	}
 	
-	public function hasAttribute($name) {
-		return isset($this->attributes[$name]);
+	public function hasProperty($name) {
+		return isset($this->properties[$name]);
 	}
 }

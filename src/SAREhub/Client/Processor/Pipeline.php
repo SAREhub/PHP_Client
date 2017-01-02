@@ -37,9 +37,12 @@ class Pipeline implements Processor {
 	}
 	
 	protected function createNextExchange(Exchange $previousExchange) {
-		$out = $previousExchange->getOut();
-		$previousExchange->clearOut();
-		return $previousExchange->setIn($out);
+		if ($previousExchange->hasOut()) {
+			$out = $previousExchange->getOut();
+			$previousExchange->clearOut();
+			$previousExchange->setIn($out);
+		}
+		return $previousExchange;
 	}
 	
 	/**
@@ -77,4 +80,10 @@ class Pipeline implements Processor {
 	public function getProcessors() {
 		return $this->processors;
 	}
+	
+	public function __toString() {
+		return "Pipeline[".implode(" | ", $this->getProcessors())."]";
+	}
+	
+	
 }

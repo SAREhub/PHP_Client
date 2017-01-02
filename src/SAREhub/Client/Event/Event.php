@@ -2,6 +2,8 @@
 
 namespace SAREhub\Client\Event;
 
+use SAREhub\Client\User\User;
+
 /**
  * Base event class
  */
@@ -19,19 +21,29 @@ interface Event {
 	public function getTime();
 	
 	/**
+	 * @return User
+	 */
+	public function getUser();
+	
+	/**
+	 * @return bool
+	 */
+	public function hasUser();
+	
+	/**
 	 * @param string $name
 	 * @return mixed
 	 */
-	public function getAttribute($name);
+	public function getProperty($name);
 	
 	/**
 	 * @param string $name
 	 * @return bool
 	 */
-	public function hasAttribute($name);
+	public function hasProperty($name);
 	
 	/**
 	 * @return array
 	 */
-	public function getAttributes();
+	public function getProperties();
 }

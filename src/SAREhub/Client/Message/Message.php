@@ -5,6 +5,11 @@ namespace SAREhub\Client\Message;
 interface Message {
 	
 	/**
+	 * @return Message
+	 */
+	public function copy();
+	
+	/**
 	 * @param $name
 	 * @param mixed $defaultValue
 	 * @return mixed
@@ -26,6 +31,13 @@ interface Message {
 	 * @return bool
 	 */
 	public function hasAnyHeader();
+	
+	/**
+	 * Sets all headers to new.
+	 * @param array $headers
+	 * @return $this
+	 */
+	public function setHeaders(array $headers);
 	
 	/**
 	 * @param string $name

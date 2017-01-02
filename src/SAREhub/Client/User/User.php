@@ -8,33 +8,44 @@ namespace SAREhub\Client\User;
  */
 class User {
 	
-	/** @var UserKey[] */
+	/**
+	 * @var array
+	 */
 	private $keys;
 	
 	/**
-	 * @param UserKey[] $keys
+	 * @param array $keys
 	 */
-	public function __construct(array $keys) {
-		$this->keys = $keys;
+	public function __construct(array $keys = null) {
+		$this->keys = $keys ? $keys : [];
 	}
 	
 	/**
-	 * Finds user key by type
-	 * @param string $keyType = $type;
-	 * @return UserKey|null
+	 * @param string $type
+	 * @return mixed|null
 	 */
-	public function findKeyByType($keyType) {
-		foreach ($this->keys as $key) {
-			if ($key->getKeyType() === $keyType) {
-				return $key;
-			}
-		}
-		
-		return null;
+	public function getKey($type) {
+		return $this->hasKey($type) ? $this->keys[$type] : null;
 	}
 	
 	/**
-	 * @return UserKey[]
+	 * @param string $type
+	 * @return bool
+	 */
+	public function hasKey($type) {
+		return isset($this->keys[$type]);
+	}
+	
+	/**
+	 * @param string $type
+	 * @param mixed $value
+	 */
+	public function setKey($type, $value) {
+		$this->keys[$type] = $value;
+	}
+	
+	/**
+	 * @return string[]
 	 */
 	public function getKeys() {
 		return $this->keys;

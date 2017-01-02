@@ -11,15 +11,15 @@
   "require-dev": {
     "phpunit/phpunit": "5.*",
     "codeclimate/php-test-reporter": "dev-master",
-    "fig-r/psr2r-sniffer": "0.*",
-    "phpdocumentor/phpdocumentor": "2.*"
+    "fig-r/psr2r-sniffer": "0.*"
   },
   "require": {
-    "php": "^5.6 || ^7.0",
-    "guzzlehttp/promises": "1.*",
+    "php": "^7.0",
     "respect/validation": "1.*",
     "php-amqplib/php-amqplib": "2.*",
-    "sarehub/commons": "0.5.*"
+    "sarehub/commons": "0.5.*",
+    "sarehub/component_worker": "0.1.*",
+    "pimple/pimple": "3.0.*"
   },
   "autoload": {
     "psr-4": {
