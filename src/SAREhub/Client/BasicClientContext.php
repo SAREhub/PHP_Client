@@ -113,7 +113,7 @@ class BasicClientContext extends Container implements ClientContext {
 	}
 	
 	public function getLogger() {
-		return $this->getLogger();
+		return $this->logger;
 	}
 	
 	public function setLogger(LoggerInterface $logger) {
