@@ -2,7 +2,6 @@
 
 namespace SAREhub\Client\Event;
 
-
 use SAREhub\Client\User\User;
 
 class BasicEvent implements Event {
@@ -61,6 +60,13 @@ class BasicEvent implements Event {
 		return $this;
 	}
 	
+	public function getType() {
+		return $this->eventType;
+	}
+	
+	/**
+	 * @deprecated Use getType
+	 */
 	public function getEventType() {
 		return $this->eventType;
 	}
@@ -92,4 +98,5 @@ class BasicEvent implements Event {
 	public function hasProperty($name) {
 		return isset($this->properties[$name]);
 	}
+	
 }

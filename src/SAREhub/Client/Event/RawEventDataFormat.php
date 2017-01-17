@@ -7,10 +7,14 @@ use SAREhub\Client\User\User;
 
 class RawEventDataFormat implements DataFormat {
 	
+	/**
+	 * @param Exchange $exchange
+	 * @return array
+	 */
 	public function marshal(Exchange $exchange) {
 		$event = EventHelper::extract($exchange->getIn());
 		$eventData = [
-		  'type' => $event->getEventType(),
+		  'type' => $event->getType(),
 		  'time' => $event->getTime()
 		];
 		
@@ -21,11 +25,12 @@ class RawEventDataFormat implements DataFormat {
 		EventLegacyHelper::copyFromEventToEventData($event, $eventData);
 		$eventData['params'] = $event->getProperties();
 		
-		$exchange->getOut()->setBody($eventData);
+		return $eventData;
 	}
 	
 	/**
 	 * @param Exchange $exchange
+	 * @return Event
 	 */
 	public function unmarshal(Exchange $exchange) {
 		$eventData = $exchange->getIn()->getBody();
@@ -38,7 +43,7 @@ class RawEventDataFormat implements DataFormat {
 		}
 		
 		EventLegacyHelper::copyFromDataToEvent($eventData, $event);
-		$exchange->getOut()->setBody($event);
+		return $event;
 	}
 	
 	public function __toString() {

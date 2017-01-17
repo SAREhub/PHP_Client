@@ -8,18 +8,18 @@ class JsonDataFormat implements DataFormat {
 	
 	/**
 	 * @param Exchange $exchange
+	 * @return string
 	 */
 	public function marshal(Exchange $exchange) {
-		$marshaled = json_encode($exchange->getIn()->getBody());
-		$exchange->getOut()->setBody($marshaled);
+		return json_encode($exchange->getIn()->getBody());
 	}
 	
 	/**
 	 * @param Exchange $exchange
+	 * @return array
 	 */
 	public function unmarshal(Exchange $exchange) {
-		$unmarshaled = json_decode($exchange->getIn()->getBody(), true);
-		$exchange->getOut()->setBody($unmarshaled);
+		return json_decode($exchange->getIn()->getBody(), true);
 	}
 	
 	public function __toString() {

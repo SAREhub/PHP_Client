@@ -22,7 +22,9 @@ class UnmarshalProcessor implements Processor {
 	}
 	
 	public function process(Exchange $exchange) {
-		$this->dataFormat->unmarshal($exchange);
+		$exchange->setOut($exchange->getIn()->copy());
+		$unmarshaled = $this->dataFormat->unmarshal($exchange);
+		$exchange->getOut()->setBody($unmarshaled);
 	}
 	
 	/**

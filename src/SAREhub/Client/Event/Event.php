@@ -10,7 +10,14 @@ use SAREhub\Client\User\User;
 interface Event {
 	
 	/**
+	 * Returns event type id
+	 * @return string
+	 */
+	public function getType();
+	
+	/**
 	 * Returns event type name
+	 * @deprecated Use getType
 	 * @return string
 	 */
 	public function getEventType();
