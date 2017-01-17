@@ -20,7 +20,6 @@ class JsonDataFormat implements DataFormat {
 	 */
 	public function unmarshal(Exchange $exchange) {
 		return json_decode($exchange->getIn()->getBody(), true);
-		
 	}
 	
 	public function __toString() {
