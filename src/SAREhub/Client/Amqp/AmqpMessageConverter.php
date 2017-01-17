@@ -22,10 +22,10 @@ class AmqpMessageConverter {
 			AMH::DELIVERY_TAG => $message->get('delivery_tag'),
 			AMH::REDELIVERED => $message->get('redelivered'),
 			AMH::EXCHANGE => $message->get('exchange'),
-		    AMH::ROUTING_KEY => RoutingKey::createFromString($message->get('routing_key')),
+		    AMH::ROUTING_KEY => $message->get('routing_key'),
 		    AMH::CONTENT_TYPE => $this->extractProperty('content_type', $message),
 		    AMH::CONTENT_ENCODING => $this->extractProperty('content_encoding', $message),
-		    AMH::REPLY_TO => new RoutingKey($this->extractProperty('reply_to', $message)),
+		    AMH::REPLY_TO => $this->extractProperty('reply_to', $message),
 		    AMH::CORRELATION_ID => $this->extractProperty('correlation_id', $message),
 		    AMH::PRIORITY => $this->extractProperty('priority', $message)
 		  ]);
