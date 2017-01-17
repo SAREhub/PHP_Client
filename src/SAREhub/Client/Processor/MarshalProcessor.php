@@ -13,7 +13,7 @@ class MarshalProcessor implements Processor {
 	/**
 	 * @var DataFormat
 	 */
-	protected $dataFormat;
+	private $dataFormat;
 	
 	public function __construct(DataFormat $dataFormat) {
 		$this->dataFormat = $dataFormat;
@@ -28,7 +28,9 @@ class MarshalProcessor implements Processor {
 	}
 	
 	public function process(Exchange $exchange) {
-		$this->getDataFormat()->marshal($exchange);
+		$exchange->setOut($exchange->getIn()->copy());
+		$marshaled = $this->getDataFormat()->marshal($exchange);
+		$exchange->getOut()->setBody($marshaled);
 	}
 	
 	/**
