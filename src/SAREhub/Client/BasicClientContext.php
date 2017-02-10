@@ -37,7 +37,7 @@ class BasicClientContext extends Container implements ClientContext {
 	public function __construct() {
 		parent::__construct();
 		
-		$this->timeProvider = TimeProvider::get();
+		$this->timeProvider = new TimeProvider();
 		$this->loggerFactory = new NullLoggerFactory();
 		$this->logger = $this->loggerFactory->create('ClientContext');
 	}
