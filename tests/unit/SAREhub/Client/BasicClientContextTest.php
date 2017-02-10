@@ -71,7 +71,7 @@ class BasicClientContextTest extends TestCase {
 	
 	public function testCreateThenTimeProviderIsDefault() {
 		$context = BasicClientContext::newInstance();
-		$this->assertSame(TimeProvider::get(), $context->getTimeProvider());
+		$this->assertInstanceOf(TimeProvider::class, $context->getTimeProvider());
 	}
 	
 	public function testCreateThenLoggerFactoryIsNullLoggerFactory() {
