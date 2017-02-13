@@ -49,7 +49,7 @@ class AmqpProducer implements Processor, LoggerAwareInterface {
 		
 		$message = $this->converter->convertTo($in);
 		$publishExchange = $in->getHeader(AmqpMessageHeaders::EXCHANGE);
-		$routingKey = $in->getHeader(AmqpMessageHeaders::ROUTING_KEY);
+		$routingKey = (string)$in->getHeader(AmqpMessageHeaders::ROUTING_KEY);
 		$this->getChannel()->publish($message, $publishExchange, $routingKey);
 	}
 	

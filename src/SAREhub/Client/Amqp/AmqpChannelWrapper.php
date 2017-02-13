@@ -64,8 +64,8 @@ class AmqpChannelWrapper {
 		$this->getChannel()->basic_nack($deliveryTag, false, true);
 	}
 	
-	public function publish(AMQPMessage $message, $exchange, RoutingKey $routingKey) {
-		$this->getChannel()->basic_publish($message, $exchange, (string)$routingKey);
+	public function publish(AMQPMessage $message, $exchange, $routingKey) {
+		$this->getChannel()->basic_publish($message, $exchange, $routingKey);
 	}
 	
 	/**
