@@ -101,6 +101,22 @@ class PipelineTest extends TestCase {
 		$this->pipeline->process($exchange);
 	}
 	
+	public function testProcessWhenLastProcessorNotSetsOutThenLastInIsOut() {
+		$exchange = $this->createExchange();
+		$p1 = new PipelineTestProcessorOutSetter();
+		$this->pipeline->add($p1);
+		$this->pipeline->add($this->createProcessor());
+		$this->pipeline->process($exchange);
+		$this->assertSame($p1->out, $exchange->getOut());
+	}
+	
+	public function testProcessWhenLastProcessorNotSetsOutAndInIsOrginalThenEmptyOut() {
+		$exchange = $this->createExchange();
+		$this->pipeline->add($this->createProcessor());
+		$this->pipeline->process($exchange);
+		$this->assertFalse($exchange->hasOut());
+	}
+	
 	public function testToString() {
 		$this->pipeline
 		  ->add($this->createProcessorWithToString('processor1'))

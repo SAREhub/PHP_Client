@@ -33,6 +33,10 @@ class Pipeline implements Processor {
 			$processor->process($currentExchange);
 		}
 		
+		if (!$currentExchange->hasOut() && $currentExchange->getIn() !== $orginalMessage) {
+			$currentExchange->setOut($currentExchange->getIn());
+		}
+		
 		$currentExchange->setIn($orginalMessage);
 	}
 	
