@@ -67,12 +67,17 @@ class AmqpChannelWrapperTest extends TestCase {
 	
 	public function testWaitWhenConsumerThenChannelWait() {
 		$this->wrapper->registerConsumer($this->consumer);
-		$this->channel->expects($this->once())->method('wait')->with(null, true, $this->wrapper->getWaitTimeout());
+		//$this->channel->expects($this->once())->method('wait')->with(null, true, $this->wrapper->getWaitTimeout());
+		$this->channel->expects($this->once())->method('wait')
+		  ->with(null, $this->callback(function ($c) {
+			  return $c;
+		  }), $this->wrapper->getWaitTimeout());
 		$this->wrapper->wait();
 	}
 	
 	public function testWaitWhenConsumerAndTimeoutThenSilent() {
 		$this->wrapper->registerConsumer($this->consumer);
+		$this->assertTrue(true);
 		$this->channel->method('wait')->willThrowException(new AMQPTimeoutException());
 		$this->wrapper->wait();
 	}
