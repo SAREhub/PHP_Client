@@ -10,7 +10,7 @@ use Psr\Log\NullLogger;
 use SAREhub\Client\Util\LoggerFactory;
 use SAREhub\Client\Util\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
-use SAREhub\Component\Worker\Service\Service;
+use SAREhub\Commons\Service\Service;
 
 class TestServiceWithContextAware implements Service, ClientContextAware {
 	

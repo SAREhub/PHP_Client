@@ -38,9 +38,11 @@ class AmqpChannelWrapperTest extends TestCase {
 		$this->consumer = $this->createMock(AmqpConsumer::class);
 		$this->consumer->method('getQueueName')->willReturn('queue');
 		$this->consumer->method('getConsumerTag')->willReturn('tag');
+		$this->consumer->method('getPrefetchCount')->willReturn(1);
 	}
 	
 	public function testRegisterConsumerThenChannelConsume() {
+		$this->channel->expects($this->once())->method('basic_qos')->with(0, 1, false);
 		$this->channel->expects($this->once())->method('basic_consume')
 		  ->with('queue', 'tag', false, false, false, false, [$this->consumer, 'consume']);
 		$this->wrapper->registerConsumer($this->consumer);
@@ -55,7 +57,7 @@ class AmqpChannelWrapperTest extends TestCase {
 		$this->wrapper->registerConsumer($this->consumer);
 		$this->channel->expects($this->once())
 		  ->method('basic_cancel')
-		  ->with($this->consumer->getConsumerTag());
+		  ->with($this->consumer->getConsumerTag(), false, true);
 		$this->wrapper->cancelConsume();
 	}
 	
@@ -83,13 +85,13 @@ class AmqpChannelWrapperTest extends TestCase {
 	}
 	
 	public function testAckThenChannelAck() {
-		$this->channel->expects($this->once())->method('basic_ack')->with(1000, false);
-		$this->wrapper->ack(1000);
+		$this->channel->expects($this->once())->method('basic_ack')->with(1, false);
+		$this->wrapper->ack(1);
 	}
 	
 	public function testNackThenChannelNack() {
-		$this->channel->expects($this->once())->method('basic_nack')->with(1000, false, true);
-		$this->wrapper->nack(1000);
+		$this->channel->expects($this->once())->method('basic_nack')->with(1, false, true);
+		$this->wrapper->nack(1);
 	}
 	
 	public function testPublishThenChannelBasicPublish() {
