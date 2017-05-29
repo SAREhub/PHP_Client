@@ -5,7 +5,7 @@ namespace SAREhub\Client;
 use Psr\Log\LoggerAwareInterface;
 use SAREhub\Client\Util\LoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
-use SAREhub\Component\Worker\Service\Service;
+use SAREhub\Commons\Service\Service;
 
 interface ClientContext extends Service {
 	

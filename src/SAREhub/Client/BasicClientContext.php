@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 use SAREhub\Client\Util\LoggerFactory;
 use SAREhub\Client\Util\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
-use SAREhub\Component\Worker\Service\Service;
+use SAREhub\Commons\Service\Service;
 
 class BasicClientContext extends Container implements ClientContext {
 	

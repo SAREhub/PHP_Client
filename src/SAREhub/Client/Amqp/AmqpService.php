@@ -3,7 +3,7 @@
 namespace SAREhub\Client\Amqp;
 
 use SAREhub\Client\Processor\Processor;
-use SAREhub\Component\Worker\Service\ServiceSupport;
+use SAREhub\Commons\Service\ServiceSupport;
 
 class AmqpService extends ServiceSupport {
 	

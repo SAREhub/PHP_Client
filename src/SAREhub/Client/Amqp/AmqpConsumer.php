@@ -6,7 +6,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\Exchange;
 use SAREhub\Client\Processor\Processor;
-use SAREhub\Component\Worker\Service\ServiceSupport;
+use SAREhub\Commons\Service\ServiceSupport;
 
 class AmqpConsumer extends ServiceSupport {
 	
