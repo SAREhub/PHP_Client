@@ -26,6 +26,11 @@ class AmqpConsumer extends ServiceSupport {
 	private $consumerTag = '';
 	
 	/**
+	 * @var int
+	 */
+	private $prefetchCount = 1;
+	
+	/**
 	 * @var AmqpMessageConverter
 	 */
 	private $converter;
@@ -75,6 +80,11 @@ class AmqpConsumer extends ServiceSupport {
 	 */
 	public function withConverter(AmqpMessageConverter $converter) {
 		$this->converter = $converter;
+		return $this;
+	}
+	
+	public function withPrefetchCount(int $count) {
+		$this->prefetchCount = $count;
 		return $this;
 	}
 	
@@ -149,6 +159,10 @@ class AmqpConsumer extends ServiceSupport {
 	 */
 	public function getConsumerTag() {
 		return $this->consumerTag;
+	}
+	
+	public function getPrefetchCount() {
+		return $this->prefetchCount;
 	}
 	
 	/**

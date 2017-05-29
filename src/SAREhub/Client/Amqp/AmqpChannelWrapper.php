@@ -25,12 +25,11 @@ class AmqpChannelWrapper {
 	
 	public function __construct(AMQPChannel $channel) {
 		$this->channel = $channel;
-		$this->channel->basic_qos(0, 1, false);
 	}
 	
 	public function registerConsumer(AmqpConsumer $consumer) {
 		$this->consumer = $consumer;
-		
+		$this->channel->basic_qos(0, $this->consumer->getPrefetchCount(), false);
 		$this->getChannel()->basic_consume(
 		  $consumer->getQueueName(),
 		  $consumer->getConsumerTag(),
@@ -42,7 +41,7 @@ class AmqpChannelWrapper {
 	}
 	
 	public function cancelConsume() {
-		$this->channel->basic_cancel($this->consumer->getConsumerTag());
+		$this->channel->basic_cancel($this->consumer->getConsumerTag(), false, true);
 		$this->consumer = null;
 	}
 	
