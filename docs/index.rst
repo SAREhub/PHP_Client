@@ -14,5 +14,5 @@ Wstęp
 
 Czym jest PHP Client ?
 ======================
-Jest to framework do języka PHP, który umożliwia prostszą obsługę protokołu AMQP oraz
+Jest to framework napisany w języku PHP, który umożliwia prostszą obsługę protokołu AMQP oraz
 unifikuje logikę tworzonej aplikacji.
