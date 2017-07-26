@@ -30,7 +30,7 @@ Aby wywołać wykonanie rurociągu należy wywołać metodę **process()** na in
 
 .. code-block:: PHP
 
-  <?php>
+  <?php
     Pipeline::start()
     ->add(new Processor1())
     ->process();
