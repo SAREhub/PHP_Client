@@ -1,12 +1,9 @@
 #################################################
-Cookbook
+Rurociągi
 #################################################
 
-Rurociągi
-====================
-
 Tworzenie rurociągu
---------------------
+===================
 
 Rurociągi w kliencie PHP służą do implementowania procesorów, które wykonują
 procesy wymagane do wykonania ustalonych funkcjonalności.
@@ -23,7 +20,7 @@ W pokazany powyżej sposób tworzymy nowy rurociąg, do którego za pomocą meto
 wrzucamy nowe procesory.
 
 Uruchamianie rurociągu
-----------------------
+===================
 
 Aby wywołać wykonanie rurociągu należy wywołać metodę **process()** na instancji klasy Pipeline.
 
