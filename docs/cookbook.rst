@@ -32,7 +32,7 @@ Przykładowa ich obsługa jest pokazana w tej fabryce:
    	private $context;
 
    	/**
-   	 * UserTagsPipelineFactory constructor.
+   	 * ConfigChangedPipelineFactory constructor.
    	 * @param ClientContext $context
    	 */
    	public function __construct(ClientContext $context) {
@@ -40,7 +40,6 @@ Przykładowa ich obsługa jest pokazana w tej fabryce:
    	}
 
    	/**
-   	 * Method called on create.
    	 * @return Pipeline
    	 */
    	public function create() {
