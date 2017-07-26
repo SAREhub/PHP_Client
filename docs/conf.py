@@ -1,6 +1,6 @@
 master_doc = 'index'
 
-project = u'SAREhub'
+project = u'SAREhub PHP Client'
 copyright = u'2016, SARE SA'
 author = u'SARE SA'
 

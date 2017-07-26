@@ -9,7 +9,8 @@ Wstęp
 .. toctree::
    :maxdepth: 2
 
-   cookbook
+   pipelines
+   processors
 
 Czym jest PHP Client ?
 ======================
