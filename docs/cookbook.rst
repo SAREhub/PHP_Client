@@ -35,5 +35,5 @@ Aby wywołać wykonanie rurociągu należy wywołać metodę **process()** na in
     ->add(new Processor1())
     ->process();
 
-W taki sposób akcje, które zostały zdefiniowane w procesorze o nazwie Processor1 zostaną wykonane przez
-wywołanie metody process().    
+W taki sposób akcje, które zostały zdefiniowane w procesorze o nazwie Processor1 zostaną wykonane poprzez
+wywołanie metody process() na obiekcie klasy Pipeline.
