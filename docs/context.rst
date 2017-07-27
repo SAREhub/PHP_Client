@@ -58,10 +58,35 @@ przekazać do drugiej klasy za pomocą kontekstu, przypisując do niego serwis m
     class AppContextProvider implements ContextProvider {
 
       public function register(ClientContext $c) {
-        $c->addService(new DatabaseManagerService('localhost', 'root', 'testpasswd', 'db'));
+        $c->addService(DatabaseManagerService::ENTRY, new DatabaseManagerService('localhost', 'root', 'testpasswd', 'db'));
       }
     }
    ?>
 
 
 W taki sposób dodaliśmy do kontekstu serwis, aby go pobrać możemy użyć metody **getProperty()**.
+
+.. code-block:: php
+
+    <?php
+      class TestClass {
+        /**
+        * @var ClientContext
+        */
+        private $context;
+
+        public function __construct(ClientContext $c) {
+          $this->context = $c;
+        }
+
+        private function updateProfile($profile) {
+          /** @var DatabaseManagerService $manager */
+          $manager = $this->getProperty(DatabaseManagerService::ENTRY);
+
+          $manager
+            ->getProfile($profile->getKey())
+            ->setData($profile)
+            ->update();
+        }
+      }
+     ?>
