@@ -13,7 +13,7 @@ Tworzenie wymiany
 ==================
 
 Wymiane tworzymy poprzez stworzenie nowej instancji klasy *BasicExchange*.
-Następnie ustawiamy różne wartości wejścia i wyjścia(metody ***setIn()*** oraz ***setOut()***),
+Następnie ustawiamy różne wartości wejścia i wyjścia(metody **setIn()** oraz **setOut()**),
 w których wrzucamy instancje klasy implementującej interfejs wiadomości, przykładowo
 *BasicMessage*.
 

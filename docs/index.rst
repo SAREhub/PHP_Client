@@ -13,6 +13,7 @@ Wstęp
    processors
    context
    exchange
+   messages
 
 Czym jest PHP Client ?
 ======================
