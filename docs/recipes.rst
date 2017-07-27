@@ -3,7 +3,7 @@ Przepisy
 ########
 
 Jak wrzucić zdarzenie do wymiany?
-=================================
+==================================
 Na początku aby wrzucić zdarzenie do wymiany musimy zdecydować,
 co w zdarzeniu ma się znajdować. Załóżmy, że chcemy wysłać zdarzenie,
 które poinformuje system o wysłaniu wiadomości, którą system zarządał wysłać.
