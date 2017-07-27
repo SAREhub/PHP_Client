@@ -17,7 +17,7 @@ Typy identyfikatorów są przechowywane w interfejsie UserKeys jako stałe.
 Tworzenie użytkownika
 ======================
 Do stworzenia użytkownika potrzebna będzie kreacja nowej instancji klasy User,
-następnie należy przypisać instancji odpowiednie atrybuty. Wygląda to w nastepujący
+następnie należy przypisać instancji odpowiednie atrybuty. Wygląda to w następujący
 sposób:
 
 .. code-block:: php
@@ -26,6 +26,6 @@ sposób:
     $user = new User([
       UserKeys::ID => 123,
       UserKeys::COOKIE => 14321123416123413215,
-      UserKeys::EMAIL =>
+      UserKeys::EMAIL => 'jan.kowalski@sarehub.com'
     ]);
    ?>
