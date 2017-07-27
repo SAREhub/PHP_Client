@@ -57,7 +57,7 @@ rurociągu i mamy aktualnie następujący kod.
 Teraz, by przekonwertować wiadomość do formatu JSON wystarczy dodać nową instancje
 procesora MarshalProcessor ustawiając typ konwertowania na dany format i wiadomość,
 która przechodzi przez rurociąg zostanie przetworzona na żądany typ. W praktyce
-wygląa to mniejwięcej tak:
+wygląda to mniejwięcej tak:
 
 .. code-block:: PHP
 
