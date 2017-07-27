@@ -12,6 +12,7 @@ Wstęp
    pipelines
    processors
    context
+   exchange
 
 Czym jest PHP Client ?
 ======================
