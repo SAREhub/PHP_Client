@@ -14,6 +14,7 @@ Wstęp
    context
    exchange
    messages
+   user
 
 Czym jest PHP Client ?
 ======================
