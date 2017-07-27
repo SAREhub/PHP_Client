@@ -15,6 +15,7 @@ Wstęp
    exchange
    messages
    user
+   events
 
 Czym jest PHP Client ?
 ======================
