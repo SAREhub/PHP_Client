@@ -81,7 +81,7 @@ W taki sposób dodaliśmy do kontekstu serwis, aby go pobrać możemy użyć met
 
         private function updateProfile($profile) {
           /** @var DatabaseManagerService $manager */
-          $manager = $this->getProperty(DatabaseManagerService::ENTRY);
+          $manager = $this->context->getProperty(DatabaseManagerService::ENTRY);
 
           $manager
             ->getProfile($profile->getKey())
