@@ -16,6 +16,7 @@ Wstęp
    messages
    user
    events
+   recipes
 
 Czym jest PHP Client ?
 ======================
