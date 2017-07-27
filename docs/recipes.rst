@@ -6,7 +6,7 @@ Jak wrzucić zdarzenie do wymiany?
 ==================================
 Na początku aby wrzucić zdarzenie do wymiany musimy zdecydować,
 co w zdarzeniu ma się znajdować. Załóżmy, że chcemy wysłać zdarzenie,
-które poinformuje system o wysłaniu wiadomości, którą system zarządał wysłać.
+które poinformuje system o wysłaniu wiadomości, którą system zażądał wysłać.
 
 .. code-block:: php
 
@@ -36,7 +36,7 @@ procesora, aby ten przesłał informację o tym do systemu.
         }
 
         private function sendMessage(Message $message) {
-          //Wysyłanie wiadomości requestem, przykładowo do API.
+          //Wysyłanie wiadomości do brokera.
         }
       }
    ?>
