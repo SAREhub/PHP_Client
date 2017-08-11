@@ -8,19 +8,36 @@ use SAREhub\Client\Message\BasicMessage;
 
 class BasicExchangeTest extends TestCase {
 	
+	/**
+	 * @var BasicExchange
+	 */
+	private $exchange;
+	
+	protected function setUp() {
+		$this->exchange = new BasicExchange();
+	}
+	
 	public function testWithInThenGetIn() {
 		$message = new BasicMessage();
 		$this->assertSame($message, BasicExchange::withIn($message)->getIn());
 	}
 	
 	public function testIsFailedWhenNoExceptionSetsThenReturnFalse() {
-		$exchange = new BasicExchange();
-		$this->assertFalse($exchange->isFailed());
+		$this->assertFalse($this->exchange->isFailed());
 	}
 	
 	public function testIsFailedWhenExceptionSetsThenReturnTrue() {
-		$exchange = new BasicExchange();
-		$exchange->setException(new \Exception());
-		$this->assertTrue($exchange->isFailed());
+		$this->exchange->setException(new \Exception());
+		$this->assertTrue($this->exchange->isFailed());
+	}
+	
+	public function testJsonSerializeWhenEmptyOut() {
+		$expected = [
+		  "in" => null,
+		  "out" => null,
+		  "exception" => null
+		];
+		
+		$this->assertEquals($expected, $this->exchange->jsonSerialize());
 	}
 }

@@ -5,7 +5,7 @@ namespace SAREhub\Client\Message;
 /**
  * Basic implementation of Message interface
  */
-class BasicMessage implements Message {
+class BasicMessage implements Message, \JsonSerializable {
 	
 	protected $headers = [];
 	protected $body = null;
@@ -68,5 +68,12 @@ class BasicMessage implements Message {
 	public function setBody($body) {
 		$this->body = $body;
 		return $this;
+	}
+	
+	public function jsonSerialize() {
+		return [
+		  "headers" => $this->getHeaders(),
+		  "body" => $this->getBody()
+		];
 	}
 }
