@@ -82,7 +82,7 @@ class BasicExchange implements Exchange, \JsonSerializable {
 	public function jsonSerialize() {
 		return [
 		  "in" => $this->getIn(),
-		  "out" => $this->getOut(),
+		  "out" => $this->hasOut() ? $this->getOut() : null,
 		  "exception" => $this->getException()
 		];
 	}
