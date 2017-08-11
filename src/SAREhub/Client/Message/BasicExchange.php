@@ -1,12 +1,13 @@
 <?php
 
 namespace SAREhub\Client\Message;
+
 use Prophecy\Exception\Exception;
 
 /**
  * Basic implementation of Exchange interface
  */
-class BasicExchange implements Exchange {
+class BasicExchange implements Exchange, \JsonSerializable {
 	
 	/**
 	 * @var Message|null
@@ -52,13 +53,13 @@ class BasicExchange implements Exchange {
 		return $this->out;
 	}
 	
-	public function hasOut() {
-		return $this->out !== null;
-	}
-	
 	public function setOut(Message $message) {
 		$this->out = $message;
 		return $this;
+	}
+	
+	public function hasOut() {
+		return $this->out !== null;
 	}
 	
 	public function clearOut() {
@@ -77,4 +78,13 @@ class BasicExchange implements Exchange {
 	public function setException(\Exception $exception) {
 		$this->exception = $exception;
 	}
+	
+	public function jsonSerialize() {
+		return [
+		  "in" => $this->getIn(),
+		  "out" => $this->getOut(),
+		  "exception" => $this->getException()
+		];
+	}
 }
+
