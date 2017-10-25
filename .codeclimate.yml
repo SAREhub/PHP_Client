@@ -3,7 +3,7 @@ engines:
   enabled: true
   config:
    file_extensions: "php"
-   standard: "utility/PSR2R/ruleset.xml"
+   standard: "PSR1,PSR2"
    ignore_warnings: false
    encoding: utf-8
  duplication:
@@ -24,4 +24,3 @@ ratings:
  - "**.php"
 exclude_paths:
 - tests/
-- utility/
