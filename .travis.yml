@@ -17,6 +17,8 @@ script:
 - phpunit --coverage-clover build/logs/clover.xml
 after_script:
 - vendor/bin/test-reporter
+after_success:
+- bash .travis_after_success.sh
 addons:
   code_climate:
     repo_token: "$CODECLIMATE_TOKEN"
