@@ -40,7 +40,7 @@ class LogProcessorTest extends TestCase
     {
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
-        $this->logger->allows("log")->with($logLevel, (string)$this->processor, ["exchange" => $this->exchange])->once();
+        $this->logger->expects("log")->with($logLevel, (string)$this->processor, ["exchange" => $this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
@@ -49,17 +49,22 @@ class LogProcessorTest extends TestCase
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
         $this->processor->setId("id");
-        $this->logger->allows("log")->with($logLevel, (string)$this->processor, ["exchange" => $this->exchange])->once();
+        $this->logger->expects("log")->with($logLevel, (string)$this->processor, ["exchange" => $this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
-    public function testLogExchangeWhenLogLevelIsInvalid()
+    public function testSetLogLevelWhenIsInvalid()
     {
         $logLevel = "aesf";
-        $this->processor->setLogLevel($logLevel);
-        $this->logger->allows("log")->once()->andThrow(\InvalidArgumentException::class);
         $this->expectException(\InvalidArgumentException::class);
-        $this->processor->process($this->exchange);
+        $this->processor->setLogLevel($logLevel);
+    }
+
+    public function testSetLogLevelWhenIsValid()
+    {
+        $logLevel = "debug";
+        $this->processor->setLogLevel($logLevel);
+        $this->assertEquals($logLevel, $this->processor->getLogLevel());
     }
 
     private function createExchange(): Exchange

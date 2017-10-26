@@ -6,6 +6,7 @@ namespace SAREhub\Client\Processor;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use SAREhub\Client\Message\Exchange;
 use SAREhub\Client\Util\IdAware;
 
@@ -35,7 +36,6 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        return $this;
     }
 
     public function getId()
@@ -55,8 +55,18 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
 
     public function setLogLevel(string $logLevel)
     {
+        $this->isValidLogLevel($logLevel);
         $this->logLevel = $logLevel;
-        return $this;
+    }
+
+    private function isValidLogLevel(string $logLevel): void
+    {
+        $logLevelReflection = new \ReflectionClass(LogLevel::class);
+        $count = 0;
+        foreach ($logLevelReflection->getConstants() as $constant) {
+            if ($logLevel === $constant) $count++;
+        }
+        if ($count == 0) throw new \InvalidArgumentException("invalid LogLevel founded");
     }
 
     public function __toString()
