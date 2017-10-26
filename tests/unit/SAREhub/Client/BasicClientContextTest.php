@@ -7,8 +7,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use SAREhub\Client\Util\LoggerFactory;
-use SAREhub\Client\Util\NullLoggerFactory;
+use SAREhub\Commons\Logger\LoggerFactory;
+use SAREhub\Commons\Logger\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Commons\Service\Service;
 
