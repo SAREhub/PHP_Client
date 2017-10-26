@@ -5,6 +5,8 @@ namespace SAREhub\Client;
 use Pimple\Container;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use SAREhub\Commons\Logger\LoggerFactory;
+use SAREhub\Commons\Logger\NullLoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Commons\Service\Service;
 
