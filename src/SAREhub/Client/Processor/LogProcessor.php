@@ -38,12 +38,9 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
 
     public function process(Exchange $exchange)
     {
-        $this->logger->log($this->logLevel, "logProcessor output[id: " . $this->putIdToLogMessage() . "]", [$exchange]);
-    }
-
-    private function putIdToLogMessage()
-    {
-        return $this->getId() ?? 'null';
+        $this->logger->log($this->logLevel, "logProcessor output[id: " . ($this->getId() ?? 'null') . "]", [
+            "exchange" => $exchange
+        ]);
     }
 
     public function setLogger(LoggerInterface $logger): self

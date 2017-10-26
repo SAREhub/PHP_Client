@@ -40,7 +40,7 @@ class LogProcessorTest extends TestCase
     {
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
-        $this->logger->shouldReceive("log")->with($logLevel, "logProcessor output[id: null]", [$this->exchange])->once();
+        $this->logger->allows("log")->with($logLevel, "logProcessor output[id: null]", ["exchange" => $this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
@@ -49,7 +49,7 @@ class LogProcessorTest extends TestCase
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
         $this->processor->setId("id");
-        $this->logger->shouldReceive("log")->with($logLevel, "logProcessor output[id: id]", [$this->exchange])->once();
+        $this->logger->allows("log")->with($logLevel, "logProcessor output[id: id]", ["exchange" => $this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
