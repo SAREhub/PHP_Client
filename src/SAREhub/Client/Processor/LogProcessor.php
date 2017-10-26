@@ -59,8 +59,8 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         return 'LogProcessor[' . $this->getId() . ']';
     }
 
-    public function getLogLevel(): string
+    public function getLogger(): LoggerInterface
     {
-        return $this->logLevel;
+        return $this->logger;
     }
 }
