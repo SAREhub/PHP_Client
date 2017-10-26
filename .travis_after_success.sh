@@ -1,28 +1,25 @@
 #!/bin/bash
 
-if [ "$TRAVIS_REPO_SLUG" == "SAREhub/PHP_Client" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then
+if [ "$TRAVIS_REPO_SLUG" == "SAREhub/PHP_Client" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then
 
-  echo -e "Publishing PHPDoc...\n"
-  cp -R build/docs $HOME/docs-latest
+    # Get ApiGen.phar
+    wget http://www.apigen.org/apigen.phar
 
-  cd $HOME
+    # Generate Api
+    php apigen.phar generate -s src -d ../gh-pages --template-theme bootstrap
+    cd ../gh-pages
 
-  git config --global user.email "travis@travis-ci.org"
-  git config --global user.name "travis-ci"
-  git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG} > /dev/null
+    # Set identity
+    git config --global user.email "travis@travis-ci.org"
+    git config --global user.name "Travis"
 
-  cd PHP_Client
+    # Add branch
+    git init
+    git remote add origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git > /dev/null
+    git checkout -B gh-pages
 
-  git rm -rf ./docs/$TRAVIS_BRANCH
-
-  mkdir docs
-  cd docs
-  mkdir $TRAVIS_BRANCH
-
-  cp -Rf $HOME/docs-latest/* ./$TRAVIS_BRANCH/
-
-  git add -f .
-  git commit -m "PHPDocumentor (Travis Build : $TRAVIS_BUILD_NUMBER  - Branch : $TRAVIS_BRANCH)"
-  git push -fq origin gh-pages > /dev/null
-  echo -e "Published PHPDoc to gh-pages.\n"
+    # Push generated files
+    git add .
+    git commit -m "APIGEN (Travis Build : $TRAVIS_BUILD_NUMBER  - Branch : $TRAVIS_BRANCH)"
+    git push origin gh-pages -fq > /dev/null
 fi

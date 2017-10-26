@@ -3,6 +3,7 @@
 namespace SAREhub\Client\Amqp;
 
 
-class AmqpException extends \Exception {
-	
+class AmqpException extends \Exception
+{
+
 }

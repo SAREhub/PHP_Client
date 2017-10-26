@@ -1,7 +1,7 @@
 sudo: false
 language: php
 php:
-- 7.0
+- 7.1
 branches:
   only:
   - master
@@ -12,12 +12,13 @@ install:
 - mv /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ~/xdebug.ini
 before_script:
 - composer update --no-interaction --prefer-dist
-- mkdir -p build/docs
 - mv ~/xdebug.ini /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
 script:
 - phpunit --coverage-clover build/logs/clover.xml
 after_script:
 - vendor/bin/test-reporter
+after_success:
+- bash .travis_after_success.sh
 addons:
   code_climate:
     repo_token: "$CODECLIMATE_TOKEN"
