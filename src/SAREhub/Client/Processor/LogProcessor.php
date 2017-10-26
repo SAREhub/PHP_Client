@@ -58,4 +58,9 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
     {
         $this->id = $id;
     }
+
+    public function __toString()
+    {
+        return 'LogProcessor[' . $this->getId() . ']';
+    }
 }
