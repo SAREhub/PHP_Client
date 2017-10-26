@@ -24,21 +24,46 @@ class LogProcessorTest extends TestCase
      */
     private $processor;
 
+    /**
+     * @var Exchange
+     */
+    private $exchange;
+
     public function setUp()
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->processor = new LogProcessor();
-        $this->processor->setLogger($this->logger);
+        $this->processor = new LogProcessor($this->logger);
+        $this->exchange = $this->createExchange();
     }
 
-    public function testLogExchange()
+    public function testLogExchangeWhenLogLevelIsFoundAndIdIsNull()
     {
-        $exchange = $this->createExchange();
-        $this->logger->shouldReceive("info")->with($exchange)->once();
-        $this->processor->process($exchange);
+        $logLevel = "error";
+        $this->processor->setLogLevel($logLevel);
+        $this->logger->shouldReceive($logLevel)->with("logProcessor output[id: null]", [$this->exchange])->once();
+        $this->processor->process($this->exchange);
     }
 
-    private function createExchange(): Exchange {
+    public function testLogExchangeWhenLogLevelIsFoundAndIdIsSet()
+    {
+        $logLevel = "error";
+        $this->processor->setLogLevel($logLevel);
+        $this->processor->setId("id");
+        $this->logger->shouldReceive($logLevel)->with("logProcessor output[id: id]", [$this->exchange])->once();
+        $this->processor->process($this->exchange);
+    }
+
+    public function testLogExchangeWhenLogLevelIsNotFound()
+    {
+        $logLevel = "aesf";
+        $this->processor->setLogLevel($logLevel);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("specified log level in LogProcessor not found");
+        $this->processor->process($this->exchange);
+    }
+
+    private function createExchange(): Exchange
+    {
         return BasicExchange::newInstance()->setIn(BasicMessage::newInstance()->setBody("test"));
     }
 }
