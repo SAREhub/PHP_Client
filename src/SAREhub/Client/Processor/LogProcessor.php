@@ -25,12 +25,6 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         $this->logger = $logger;
     }
 
-    public function setLogLevel(string $logLevel)
-    {
-        $this->logLevel = $logLevel;
-        return $this;
-    }
-
     public function process(Exchange $exchange)
     {
         $this->logger->log($this->logLevel, (string)$this, [
@@ -54,14 +48,20 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         $this->id = $id;
     }
 
-    public function __toString()
-    {
-        return 'LogProcessor[' . $this->getId() . ']';
-    }
-
     public function getLogLevel(): string
     {
         return $this->logLevel;
+    }
+
+    public function setLogLevel(string $logLevel)
+    {
+        $this->logLevel = $logLevel;
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return 'LogProcessor[' . $this->getId() . ']';
     }
 
 }
