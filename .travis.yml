@@ -10,7 +10,6 @@ cache:
   - "$HOME/.composer/cache/files"
 install:
 - mv /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ~/xdebug.ini
-before_script:
 - composer update --no-interaction --prefer-dist
 - mv ~/xdebug.ini /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
 script:
@@ -20,8 +19,11 @@ after_script:
 after_success:
 - bash .travis_after_success.sh
 addons:
-  code_climate:
-    repo_token: "$CODECLIMATE_TOKEN"
+ code_climate:
+  repo_token: "$CODECLIMATE_TOKEN"
+ apt:
+  packages:
+   - libzmq3-dev
 env:
   global:
     secure: IvQecATRWniF1/CV0ElLaJhiQuwOWQnz0M3zPti/s8p02BRjaHU2aI+pprn6WzqIw9RmoDBMqYLo3xGnAcbIpzK60p1rBuRxqACPHtcueGNR08tgFTds+7q5K0eIPdntoSgPHuF1+XE2gkrBP/BCz1t8UQ6M1Vy6aYdYPyvGg38sYyxSfmgoC28xPHMyqphGgNY8IVVxbnSPKodDSoHIWSjxf/1QVBUqIQQRbA8cSk00Q0Saw5P65Siy+JoVGIUoII7lcVg0S5+f35dcl+ac+TkUngPQkH7zaOkUbn1n//JNOBNy3ERg+f00gMgTNoDCq3NqUIjR5/oQKJMgC89T9LYJOdlZ9X5M9Ed+LEw8feeKv25Rewgiu/GmlRYhNHcn8dS5I11qZKgAMEtECkQ1PSKpnRvIWTyGLAzD03uC0SdInn6wERe+NCBOy4kffVqeqtFgEi7ipDCNSvlxRXXKIWu85mMIokNKR+nx+ucngRF6u4Ud4OshKRD0M4dN3ZTQP+SrglQDiAag+E8LbK3maOkSVQoi+VFh/5CT/ClEk6DVSht64spWfKN/aTJT23x9PFwOggQzXvDizFW5zrMagFefYBIb8ADhCu+sPVenENU+2aKNM2w1GbPvcpkNymPnr4l+I6kBm9Q+osYeoa8Gims2dwMxMfLIeQzMW+ZlYuM=

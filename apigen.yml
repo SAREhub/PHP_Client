@@ -1,0 +1,4 @@
+parameters:
+    title: "SAREhub PHP Client"
+    visibilityLevels: [public, protected]
+    baseUrl: https://sarehub.github.io/PHP_Client/
