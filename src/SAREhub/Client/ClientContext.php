@@ -3,7 +3,7 @@
 namespace SAREhub\Client;
 
 use Psr\Log\LoggerAwareInterface;
-use SAREhub\Client\Util\LoggerFactory;
+use SAREhub\Commons\Logger\LoggerFactory;
 use SAREhub\Commons\Misc\TimeProvider;
 use SAREhub\Commons\Service\Service;
 
