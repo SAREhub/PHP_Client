@@ -18,7 +18,7 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
 
     private $id;
 
-    private $logLevel = "info";
+    private $logLevel = "debug";
 
     public function __construct(LoggerInterface $logger)
     {
@@ -38,11 +38,7 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
 
     public function process(Exchange $exchange)
     {
-        try {
-            $this->logger->{$this->logLevel}("logProcessor output[id: " . $this->putIdToLogMessage() . "]", [$exchange]);
-        } catch (\Exception $e) {
-            throw new \InvalidArgumentException("specified log level in LogProcessor not found");
-        }
+        $this->logger->log($this->logLevel, "logProcessor output[id: " . $this->putIdToLogMessage() . "]", [$exchange]);
     }
 
     private function putIdToLogMessage()

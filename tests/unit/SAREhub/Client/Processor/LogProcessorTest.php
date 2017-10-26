@@ -40,7 +40,7 @@ class LogProcessorTest extends TestCase
     {
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
-        $this->logger->shouldReceive($logLevel)->with("logProcessor output[id: null]", [$this->exchange])->once();
+        $this->logger->shouldReceive("log")->with($logLevel, "logProcessor output[id: null]", [$this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
@@ -49,16 +49,16 @@ class LogProcessorTest extends TestCase
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
         $this->processor->setId("id");
-        $this->logger->shouldReceive($logLevel)->with("logProcessor output[id: id]", [$this->exchange])->once();
+        $this->logger->shouldReceive("log")->with($logLevel, "logProcessor output[id: id]", [$this->exchange])->once();
         $this->processor->process($this->exchange);
     }
 
-    public function testLogExchangeWhenLogLevelIsNotFound()
+    public function testLogExchangeWhenLogLevelIsInvalid()
     {
         $logLevel = "aesf";
         $this->processor->setLogLevel($logLevel);
+        $this->logger->allows("log")->once()->andThrow(\InvalidArgumentException::class);
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("specified log level in LogProcessor not found");
         $this->processor->process($this->exchange);
     }
 
