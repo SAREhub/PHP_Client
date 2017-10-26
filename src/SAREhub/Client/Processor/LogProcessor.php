@@ -25,12 +25,7 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         $this->logger = $logger;
     }
 
-    public static function newInstance(LoggerInterface $logger)
-    {
-        return new self($logger);
-    }
-
-    public function setLogLevel(string $logLevel): self
+    public function setLogLevel(string $logLevel)
     {
         $this->logLevel = $logLevel;
         return $this;
@@ -38,12 +33,12 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
 
     public function process(Exchange $exchange)
     {
-        $this->logger->log($this->logLevel, "logProcessor output[id: " . ($this->getId() ?? 'null') . "]", [
+        $this->logger->log($this->logLevel, (string)$this, [
             "exchange" => $exchange
         ]);
     }
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
         return $this;
