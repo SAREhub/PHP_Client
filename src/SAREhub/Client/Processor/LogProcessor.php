@@ -40,8 +40,7 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
     {
         try {
             $this->logger->{$this->logLevel}("logProcessor output[id: " . $this->putIdToLogMessage() . "]", [$exchange]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new \InvalidArgumentException("specified log level in LogProcessor not found");
         }
     }
