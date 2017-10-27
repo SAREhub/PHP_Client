@@ -2,8 +2,6 @@
 
 namespace SAREhub\Client\Message;
 
-use Prophecy\Exception\Exception;
-
 /**
  * Basic implementation of Exchange interface
  */
