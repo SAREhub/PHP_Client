@@ -63,7 +63,7 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
     {
         $logLevelReflection = new \ReflectionClass(LogLevel::class);
         if (!in_array(strtolower($logLevel), $logLevelReflection->getConstants()))
-            throw new \InvalidArgumentException("invalid LogLevel founded");
+            throw new \InvalidArgumentException("invalid LogLevel: $logLevel");
     }
 
     public function __toString()

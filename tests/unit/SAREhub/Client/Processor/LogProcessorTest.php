@@ -36,7 +36,7 @@ class LogProcessorTest extends TestCase
         $this->exchange = $this->createExchange();
     }
 
-    public function testLogExchangeWhenLogLevelIsFoundAndIdIsNull()
+    public function testProcessWhenIdIsNull()
     {
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
@@ -44,7 +44,7 @@ class LogProcessorTest extends TestCase
         $this->processor->process($this->exchange);
     }
 
-    public function testLogExchangeWhenLogLevelIsFoundAndIdIsSet()
+    public function testProcessWhenIdIsSet()
     {
         $logLevel = "error";
         $this->processor->setLogLevel($logLevel);
@@ -57,6 +57,7 @@ class LogProcessorTest extends TestCase
     {
         $logLevel = "aesf";
         $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("invalid LogLevel: $logLevel");
         $this->processor->setLogLevel($logLevel);
     }
 
