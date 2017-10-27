@@ -62,11 +62,8 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
     private function isValidLogLevel(string $logLevel): void
     {
         $logLevelReflection = new \ReflectionClass(LogLevel::class);
-        $count = 0;
-        foreach ($logLevelReflection->getConstants() as $constant) {
-            if ($logLevel === $constant) $count++;
-        }
-        if ($count == 0) throw new \InvalidArgumentException("invalid LogLevel founded");
+        if (!in_array(strtolower($logLevel), $logLevelReflection->getConstants()))
+            throw new \InvalidArgumentException("invalid LogLevel founded");
     }
 
     public function __toString()
