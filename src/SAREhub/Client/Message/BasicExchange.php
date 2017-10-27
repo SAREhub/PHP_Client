@@ -21,7 +21,7 @@ class BasicExchange implements Exchange, \JsonSerializable
     private $out = null;
 
     /**
-     * @var Exception|null
+     * @var \Throwable|null
      */
     private $exception = null;
 
@@ -40,18 +40,18 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $exchange;
     }
 
-    public function getIn()
+    public function getIn(): ?Message
     {
         return $this->in;
     }
 
-    public function setIn(Message $message)
+    public function setIn(Message $message): Exchange
     {
         $this->in = $message;
         return $this;
     }
 
-    public function getOut()
+    public function getOut(): Message
     {
         if (!$this->hasOut()) {
             $this->setOut(new BasicMessage());
@@ -59,36 +59,36 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $this->out;
     }
 
-    public function setOut(Message $message)
+    public function setOut(Message $message): Exchange
     {
         $this->out = $message;
         return $this;
     }
 
-    public function hasOut()
+    public function hasOut(): bool
     {
         return $this->out !== null;
     }
 
-    public function clearOut()
+    public function clearOut(): Exchange
     {
         $this->out = null;
         return $this;
     }
 
-    public function isFailed()
+    public function isFailed(): bool
     {
-        return $this->getException() !== null;
+        return $this->exception !== null;
     }
 
-    public function getException()
+    public function getException(): ?\Throwable
     {
         return $this->exception;
     }
 
-    public function setException(\Exception $exception)
+    public function setException(\Throwable $e)
     {
-        $this->exception = $exception;
+        $this->exception = $e;
     }
 
     public function jsonSerialize()
@@ -96,7 +96,7 @@ class BasicExchange implements Exchange, \JsonSerializable
         return [
             "in" => $this->getIn(),
             "out" => $this->hasOut() ? $this->getOut() : null,
-            "exception" => $this->getException()
+            "exception" => $this->isFailed() ? $this->getException() : null
         ];
     }
 }
