@@ -67,6 +67,13 @@ class LogProcessorTest extends TestCase
         $this->assertEquals($logLevel, $this->processor->getLogLevel());
     }
 
+    public function testSetLogLevelWhenContentIsValidAndInvalidCases()
+    {
+        $logLevel = "dEbUg";
+        $this->processor->setLogLevel($logLevel);
+        $this->assertEquals($logLevel, $this->processor->getLogLevel());
+    }
+
     private function createExchange(): Exchange
     {
         return BasicExchange::newInstance()->setIn(BasicMessage::newInstance()->setBody("test"));
