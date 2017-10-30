@@ -38,8 +38,12 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $exchange;
     }
 
-    public function getIn(): ?Message
+    public function getIn(): Message
     {
+        if ($this->in === null) {
+            $this->in = BasicMessage::newInstance();
+        }
+
         return $this->in;
     }
 
