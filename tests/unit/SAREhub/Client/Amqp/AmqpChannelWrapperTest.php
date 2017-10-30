@@ -30,6 +30,11 @@ class AmqpChannelWrapperTest extends TestCase
     private $messageConverter;
 
     /**
+     * @var Mockery\Mock | AmqpProcessConfirmStrategy
+     */
+    private $processConfirmStrategy;
+
+    /**
      * @var AmqpChannelWrapper
      */
     private $wrapper;
@@ -42,16 +47,18 @@ class AmqpChannelWrapperTest extends TestCase
     protected function setUp()
     {
         $this->channel = Mockery::mock(AMQPChannel::class);
-        $this->messageConverter = Mockery::mock(AmqpMessageConverter::class);
         $this->wrapper = new AmqpChannelWrapper($this->channel);
+
+        $this->messageConverter = Mockery::mock(AmqpMessageConverter::class);
         $this->wrapper->setMessageConverter($this->messageConverter);
 
-        $this->consumer = Mockery::mock(AmqpConsumer::class, [
-            "getOptions" => AmqpConsumerOptions::newInstance()
-                ->setQueueName("test_queue")
-                ->setTag("test_consumer_tag")
-                ->setExclusive(true)
-        ]);
+        $this->processConfirmStrategy = Mockery::mock(AmqpProcessConfirmStrategy::class);
+        $this->wrapper->setProcessConfirmStrategy($this->processConfirmStrategy);
+
+        $this->consumer = $this->createConsumer(AmqpConsumerOptions::newInstance()
+            ->setQueueName("test_queue")
+            ->setTag("test_consumer_tag")
+            ->setExclusive(true));
     }
 
     public function testSetChannelPrefetchCount()
@@ -77,7 +84,7 @@ class AmqpChannelWrapperTest extends TestCase
             $opts->getQueueName(),
             $opts->getTag(),
             false,
-            $opts->isAutoAck(),
+            $opts->isAutoAckMode(),
             $opts->isExclusive(),
             [$this->wrapper, "onMessage"],
             null,
@@ -107,50 +114,44 @@ class AmqpChannelWrapperTest extends TestCase
         $this->wrapper->unregisterConsumer($this->consumer->getOptions()->getTag());
     }
 
-    public function testWaitThenChannelWait()
+    public function testTickThenChannelWait()
     {
+        $this->wrapper->start();
         $this->channel->expects("wait")->with(null, true, $this->wrapper->getWaitTimeout());
-        $this->wrapper->wait();
+        $this->wrapper->tick();
     }
 
-    public function testWaitWhenConsumerAndTimeoutExceptionThenLog()
+    public function testTickWhenTimeoutExceptionThenLog()
     {
-        $e = new AMQPTimeoutException("test");
+        $this->wrapper->start();
+        $e = new AMQPTimeoutException("exception message");
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->expects("debug")->with(
-            "channel wait timeout: " . $e->getMessage(),
-            ["exception" => $e]
-        );
+        $logger->expects("debug")->with("channel wait timeout: exception message", ["exception" => $e]);
         $this->wrapper->setLogger($logger);
 
         $this->channel->expects("wait")->andThrow($e);
-        $this->wrapper->wait();
+        $this->wrapper->tick();
     }
 
-    public function testOnMessageThenConvertMessage()
+    public function testOnMessage()
     {
         $this->channel->allows("basic_consume");
-        $this->consumer->allows("process");
-
         $this->wrapper->registerConsumer($this->consumer);
-        $inMessage = new AMQPMessage("test");
-        $converted = BasicMessage::newInstance()
-            ->setHeader(AMH::CONSUMER_TAG, $this->consumer->getOptions()->getTag());
 
+        $inMessage = new AMQPMessage();
+        $converted = BasicMessage::newInstance()->setHeader(AMH::CONSUMER_TAG, "test_consumer_tag");
         $this->messageConverter->expects("convertFrom")->with($inMessage)->andReturn($converted);
-        $this->wrapper->onMessage($inMessage);
-    }
 
-    public function testOnMessageThenConsumerProcess()
-    {
-        $this->channel->allows("basic_consume");
-        $this->wrapper->registerConsumer($this->consumer);
+        $expectedExchange = BasicExchange::withIn($converted);
+        $this->consumer->expects("process")->with(Matchers::equalTo($expectedExchange));
 
-        $inMessage = new AMQPMessage("test");
-        $converted = BasicMessage::newInstance()->setHeader(AMH::CONSUMER_TAG, $this->consumer->getOptions()->getTag());
-        $this->messageConverter->allows("convertFrom")->andReturn($converted);
-        $this->consumer->expects("process")->with(Matchers::equalTo(BasicExchange::withIn($converted)));
+        $this->processConfirmStrategy->expects("confirm")->with(
+            $this->wrapper,
+            $converted,
+            Matchers::equalTo($expectedExchange)
+        );
+
         $this->wrapper->onMessage($inMessage);
     }
 
@@ -172,19 +173,27 @@ class AmqpChannelWrapperTest extends TestCase
 
     public function testAck()
     {
+        $message = BasicMessage::newInstance()->setHeader(AMH::DELIVERY_TAG, "1");
         $this->channel->expects("basic_ack")->with("1", false);
-        $this->wrapper->ack("1", false);
+        $this->wrapper->ack($message);
     }
 
-    public function testNack()
+    public function testRejectWhenNotRequeue()
     {
-        $this->channel->expects("basic_nack")->with("1", false, true);
-        $this->wrapper->nack("1", false, true);
+        $message = BasicMessage::newInstance()->setHeader(AMH::DELIVERY_TAG, "1");
+        $this->channel->expects("basic_reject")->with("1", false);
+        $this->wrapper->reject($message, false);
     }
 
-    public function testReject()
+    public function testRejectWhenRequeue()
     {
+        $message = BasicMessage::newInstance()->setHeader(AMH::DELIVERY_TAG, "1");
         $this->channel->expects("basic_reject")->with("1", true);
-        $this->wrapper->reject("1", true);
+        $this->wrapper->reject($message, true);
+    }
+
+    private function createConsumer(AmqpConsumerOptions $options): AmqpConsumer
+    {
+        return Mockery::mock(AmqpConsumer::class, ["getOptions" => $options]);
     }
 }
