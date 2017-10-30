@@ -4,7 +4,6 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Wire\AMQPTable;
-use SAREhub\Client\Processor\Processor;
 
 class AmqpConsumerOptions implements \JsonSerializable
 {
@@ -33,16 +32,6 @@ class AmqpConsumerOptions implements \JsonSerializable
      */
     private $exclusive = false;
 
-    /**
-     * @var Processor
-     */
-    private $processor;
-
-    /**
-     * @var AmqpMessageProcessConfirmStrategy
-     */
-    private $processConfirmStrategy;
-
     public static function newInstance(): AmqpConsumerOptions
     {
         return new self();
@@ -66,28 +55,21 @@ class AmqpConsumerOptions implements \JsonSerializable
         return $this;
     }
 
-    public function setAckMode(bool $ack): AmqpConsumerOptions
+    public function setAckMode(): AmqpConsumerOptions
     {
-        $this->ackMode = $ack;
+        $this->autoAck = false;
+        return $this;
+    }
+
+    public function setAutoAckMode(): AmqpConsumerOptions
+    {
+        $this->autoAck = true;
         return $this;
     }
 
     public function setExclusive(bool $exclusive): AmqpConsumerOptions
     {
         $this->exclusive = $exclusive;
-        return $this;
-    }
-
-
-    public function setProcessor(Processor $processor): AmqpConsumerOptions
-    {
-        $this->processor = $processor;
-        return $this;
-    }
-
-    public function setProcessConfirmStrategy(AmqpMessageProcessConfirmStrategy $strategy): AmqpConsumerOptions
-    {
-        $this->processConfirmStrategy = $strategy;
         return $this;
     }
 
@@ -106,9 +88,14 @@ class AmqpConsumerOptions implements \JsonSerializable
         return $this->priority;
     }
 
-    public function isAutoAck(): bool
+    public function isAutoAckMode(): bool
     {
         return $this->autoAck;
+    }
+
+    public function isAckMode(): bool
+    {
+        return !$this->autoAck;
     }
 
     public function isExclusive(): bool
@@ -125,25 +112,14 @@ class AmqpConsumerOptions implements \JsonSerializable
         return new AMQPTable($args);
     }
 
-    public function getProcessor(): Processor
-    {
-        return $this->processor;
-    }
-
-    public function getProcessConfirmStrategy(): AmqpMessageProcessConfirmStrategy
-    {
-        return $this->processConfirmStrategy;
-    }
-
     public function jsonSerialize()
     {
         return [
             "queueName" => $this->getQueueName(),
             "tag" => $this->getTag(),
             "priority" => $this->getPriority(),
-            "isAutoAck" => $this->isAutoAck(),
-            "isExclusive" => $this->isExclusive(),
-            "processor" => $this->getProcessor()
+            "isAutoAck" => $this->isAutoAckMode(),
+            "isExclusive" => $this->isExclusive()
         ];
     }
 }
