@@ -34,27 +34,15 @@ class Router implements Processor, LoggerAwareInterface
         $this->logger = new NullLogger();
     }
 
-    /**
-     * @return Router
-     */
-    public static function newInstance()
+    public static function newInstance(): Router
     {
         return new self();
-    }
-
-    /**
-     * @param callable $f
-     * @return $this
-     */
-    public function withRoutingFunction(callable $f)
-    {
-        $this->routingFunction = $f;
-        return $this;
     }
 
     public function process(Exchange $exchange)
     {
         $routingKey = $this->getRoutingKeyForExchange($exchange);
+
         if ($route = $this->getRoute($routingKey)) {
             $this->getLogger()->debug('exchange has route', [
                 'routingKey' => $routingKey,
@@ -70,49 +58,29 @@ class Router implements Processor, LoggerAwareInterface
         }
     }
 
-    /**
-     * @param Exchange $exchange
-     * @return string
-     */
-    public function getRoutingKeyForExchange(Exchange $exchange)
+    public function getRoutingKeyForExchange(Exchange $exchange): string
     {
         $routingFunction = $this->routingFunction;
         return $routingFunction($exchange);
     }
 
-    /**
-     * @param string $routingKey
-     * @param Processor $route
-     * @return $this
-     */
-    public function addRoute($routingKey, Processor $route)
+    public function addRoute($routingKey, Processor $route): Router
     {
         $this->routes[$routingKey] = $route;
         return $this;
     }
 
-    /**
-     * @param string $routingKey
-     */
     public function removeRoute($routingKey)
     {
         unset($this->routes[$routingKey]);
     }
 
-    /**
-     * @param string $routingKey
-     * @return null|Processor
-     */
-    public function getRoute($routingKey)
+    public function getRoute($routingKey): ?Processor
     {
         return $this->hasRoute($routingKey) ? $this->routes[$routingKey] : null;
     }
 
-    /**
-     * @param string $routingKey
-     * @return bool
-     */
-    public function hasRoute($routingKey)
+    public function hasRoute($routingKey): bool
     {
         return isset($this->routes[$routingKey]);
     }
@@ -120,27 +88,20 @@ class Router implements Processor, LoggerAwareInterface
     /**
      * @return Processor[]
      */
-    public function getRoutes()
+    public function getRoutes(): array
     {
         return $this->routes;
     }
 
-    /**
-     * @return callable
-     */
-    public function getRoutingFunction()
+    public function getRoutingFunction(): callable
     {
         return $this->routingFunction;
     }
 
-    public function __toString()
+    public function setRoutingFunction(callable $f): Router
     {
-        $routes = [];
-        foreach ($this->getRoutes() as $key => $route) {
-            $routes[] = $key . ' => ' . $route;
-        }
-
-        return 'Router[ {' . implode('}, {', $routes) . '}]';
+        $this->routingFunction = $f;
+        return $this;
     }
 
     public function getLogger()
@@ -151,5 +112,15 @@ class Router implements Processor, LoggerAwareInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function __toString()
+    {
+        $routes = [];
+        foreach ($this->getRoutes() as $key => $route) {
+            $routes[] = $key . ' => ' . $route;
+        }
+
+        return 'Router[ {' . implode('}, {', $routes) . '}]';
     }
 }
