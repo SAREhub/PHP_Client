@@ -29,14 +29,15 @@ class Router implements Processor, LoggerAwareInterface
      */
     private $logger;
 
-    public function __construct()
+    public function __construct(callable $routingFunction)
     {
+        $this->routingFunction = $routingFunction;
         $this->logger = new NullLogger();
     }
 
-    public static function newInstance(): Router
+    public static function newWithRoutingFunction(callable $routingFunction): Router
     {
-        return new self();
+        return new self($routingFunction);
     }
 
     public function process(Exchange $exchange)
@@ -96,12 +97,6 @@ class Router implements Processor, LoggerAwareInterface
     public function getRoutingFunction(): callable
     {
         return $this->routingFunction;
-    }
-
-    public function setRoutingFunction(callable $f): Router
-    {
-        $this->routingFunction = $f;
-        return $this;
     }
 
     public function getLogger()
