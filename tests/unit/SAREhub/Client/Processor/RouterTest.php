@@ -29,7 +29,7 @@ class RouterTest extends TestCase
     public function setUp()
     {
         $this->routingFunctionMock = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
-        $this->router = Router::newWithRoutingFunction($this->routingFunctionMock);
+        $this->router = Router::withRoutingFunction($this->routingFunctionMock);
         $this->routeMock = $this->createMock(Processor::class);
     }
 

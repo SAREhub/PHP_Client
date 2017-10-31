@@ -35,7 +35,7 @@ class Router implements Processor, LoggerAwareInterface
         $this->logger = new NullLogger();
     }
 
-    public static function newWithRoutingFunction(callable $routingFunction): Router
+    public static function withRoutingFunction(callable $routingFunction): Router
     {
         return new self($routingFunction);
     }
