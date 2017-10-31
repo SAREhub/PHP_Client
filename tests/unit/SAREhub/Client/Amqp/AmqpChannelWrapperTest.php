@@ -59,6 +59,8 @@ class AmqpChannelWrapperTest extends TestCase
             ->setQueueName("test_queue")
             ->setTag("test_consumer_tag")
             ->setExclusive(true));
+
+        //$this->channel->allows(["basic_consume" => $this->consumer->getOptions()->getTag()]);
     }
 
     public function testSetChannelPrefetchCount()
@@ -86,10 +88,11 @@ class AmqpChannelWrapperTest extends TestCase
             false,
             $opts->isAutoAckMode(),
             $opts->isExclusive(),
+            false,
             [$this->wrapper, "onMessage"],
             null,
             Matchers::equalTo($opts->getConsumeArguments())
-        );
+        )->andReturn($opts->getTag());
 
         $this->wrapper->registerConsumer($this->consumer);
         $this->assertSame($this->consumer, $this->wrapper->getConsumer($opts->getTag()));
@@ -97,10 +100,10 @@ class AmqpChannelWrapperTest extends TestCase
 
     public function testUnregisterConsumerThenChannelBasicCancel()
     {
-        $this->channel->allows("basic_consume");
+        $opts = $this->consumer->getOptions();
+        $this->channel->allows(["basic_consume" => $opts->getTag()]);
         $this->wrapper->registerConsumer($this->consumer);
 
-        $opts = $this->consumer->getOptions();
         $this->channel->expects("basic_cancel")->with($opts->getTag(), false, true);
         $this->wrapper->unregisterConsumer($this->consumer->getOptions()->getTag());
 
@@ -136,7 +139,7 @@ class AmqpChannelWrapperTest extends TestCase
 
     public function testOnMessage()
     {
-        $this->channel->allows("basic_consume");
+        $this->channel->allows(["basic_consume" => $this->consumer->getOptions()->getTag()]);
         $this->wrapper->registerConsumer($this->consumer);
 
         $inMessage = new AMQPMessage();

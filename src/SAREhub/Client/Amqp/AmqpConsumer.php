@@ -7,7 +7,6 @@ use SAREhub\Client\Processor\Processor;
 
 class AmqpConsumer implements Processor
 {
-
     /**
      * @var AmqpConsumerOptions
      */
@@ -31,7 +30,7 @@ class AmqpConsumer implements Processor
 
     public function getOptions(): AmqpConsumerOptions
     {
-        return clone $this->options;
+        return $this->options;
     }
 
     public function getProcessor(): Processor

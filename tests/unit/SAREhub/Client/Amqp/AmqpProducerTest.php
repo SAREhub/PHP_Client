@@ -14,7 +14,7 @@ class AmqpProducerTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var Mock
+     * @var Mock | AmqpChannelWrapper
      */
     private $channel;
 

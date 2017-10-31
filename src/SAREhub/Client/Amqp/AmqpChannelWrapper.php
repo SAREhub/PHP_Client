@@ -11,7 +11,7 @@ use SAREhub\Commons\Service\ServiceSupport;
 
 class AmqpChannelWrapper extends ServiceSupport
 {
-    const DEFAULT_WAIT_TIMEOUT = 2;
+    const DEFAULT_WAIT_TIMEOUT = 1;
 
     /**
      * @var AMQPChannel
@@ -48,30 +48,22 @@ class AmqpChannelWrapper extends ServiceSupport
     public function registerConsumer(AmqpConsumer $consumer)
     {
         $opts = $consumer->getOptions();
-        $this->consumers[$opts->getTag()] = $consumer;
-
-        $this->getWrappedChannel()->basic_consume(
+        $this->getLogger()->debug("registering consumer", ["options" => $opts]);
+        $tag = $this->getWrappedChannel()->basic_consume(
             $opts->getQueueName(),
             $opts->getTag(),
             false,
             $opts->isAutoAckMode(),
             $opts->isExclusive(),
+            false,
             [$this, "onMessage"],
             null,
             $opts->getConsumeArguments()
         );
-    }
+        $opts->setTag($tag);
 
-    public function onMessage(AMQPMessage $in)
-    {
-        $inConverted = $this->getMessageConverter()->convertFrom($in);
-        $this->getLogger()->debug('got message', ['message' => $inConverted]);
-
-        $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
-        $exchange = BasicExchange::withIn($inConverted);
-        $consumer = $this->getConsumer($consumerTag);
-        $consumer->process($exchange);
-        $this->processConfirmStrategy->confirm($this, $inConverted, $exchange);
+        $this->getLogger()->debug("consumer tag: $tag", ["options" => $opts]);
+        $this->consumers[$tag] = $consumer;
     }
 
     public function unregisterConsumer(string $consumerTag)
@@ -79,6 +71,18 @@ class AmqpChannelWrapper extends ServiceSupport
         $consumer = $this->getConsumer($consumerTag);
         $this->getWrappedChannel()->basic_cancel($consumer->getOptions()->getTag(), false, true);
         unset($this->consumers[$consumerTag]);
+    }
+
+    public function onMessage(AMQPMessage $in)
+    {
+        $inConverted = $this->getMessageConverter()->convertFrom($in);
+        $this->getLogger()->debug('onMessage', ['message' => $inConverted]);
+
+        $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
+        $exchange = BasicExchange::withIn($inConverted);
+        $consumer = $this->getConsumer($consumerTag);
+        $consumer->process($exchange);
+        $this->getProcessConfirmStrategy()->confirm($this, $inConverted, $exchange);
     }
 
     protected function doTick()
@@ -106,7 +110,7 @@ class AmqpChannelWrapper extends ServiceSupport
 
     public function publish(Message $message)
     {
-        $this->getLogger()->debug("publish message", ["message" => $message]);
+        $this->getLogger()->debug("publish", ["message" => $message]);
 
         $converted = $this->messageConverter->convertTo($message);
         $exchange = $message->getHeader(AmqpMessageHeaders::EXCHANGE);
