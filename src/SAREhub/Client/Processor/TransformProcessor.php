@@ -19,19 +19,20 @@ class TransformProcessor implements Processor, IdAware
         $this->transformer = $transformer;
     }
 
-    /**
-     * @param callable $transformer
-     * @return TransformProcessor
-     */
-    public static function transform(callable $transformer)
+
+    public static function transform(callable $transformer): TransformProcessor
     {
         return new self($transformer);
     }
 
     public function process(Exchange $exchange)
     {
-        $c = $this->transformer;
-        $c($exchange);
+        ($this->transformer)($exchange);
+    }
+
+    public function getTransformer(): callable
+    {
+        return $this->transformer;
     }
 
     public function getId()
@@ -39,10 +40,6 @@ class TransformProcessor implements Processor, IdAware
         return $this->id;
     }
 
-    /**
-     * @param String $id
-     * @return $this
-     */
     public function setId($id)
     {
         $this->id = $id;
