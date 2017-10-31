@@ -9,11 +9,8 @@ RUN apk add --no-cache curl openssl python \
 
 COPY openssl.cnf /home/testca
 COPY prepare_server.sh /home/
-COPY local_admin.sh /usr/bin/
+COPY rabbitmq.config /etc/rabbitmq/rabbitmq.config
 
 RUN mkdir -p /home/server \
 	&& chmod +x /home/prepare_server.sh \
-	&& curl https://raw.githubusercontent.com/rabbitmq/rabbitmq-management/rabbitmq_v3_6_12/bin/rabbitmqadmin -o /usr/bin/rabbitmqadmin \
-    && chmod +x /usr/bin/rabbitmqadmin \
-    && chmod +x /usr/bin/local_admin.sh \
     && /bin/sh /home/prepare_server.sh
