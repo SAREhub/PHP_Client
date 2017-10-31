@@ -27,5 +27,10 @@
     "psr-4": {
       "SAREhub\\": "src/SAREhub"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SAREhub\\": "tests/SAREhub"
+    }
   }
 }
