@@ -27,20 +27,20 @@ class BasicAmqpProcessConfirmStrategy implements AmqpProcessConfirmStrategy, Log
         $this->logger = new NullLogger();
     }
 
-    public function confirm(AmqpChannelWrapper $channel, Message $orginalIn, Exchange $exchange)
+    public function confirm(AmqpChannelWrapper $channel, Message $originalIn, Exchange $exchange)
     {
-        $consumer = $channel->getConsumer($orginalIn->getHeader(AMH::CONSUMER_TAG));
+        $consumer = $channel->getConsumer($originalIn->getHeader(AMH::CONSUMER_TAG));
         if ($consumer->getOptions()->isAutoAckMode()) {
             return;
         }
 
-        $context = ["orginalIn" => $orginalIn, "exchange" => $exchange];
+        $context = ["orginalIn" => $originalIn, "exchange" => $exchange];
         if ($exchange->isFailed()) {
             $this->logger->debug('processed message failed', $context);
-            $channel->reject($orginalIn, $this->isRequeueOnReject());
+            $channel->reject($originalIn, $this->isRequeueOnReject());
         } else {
             $this->logger->debug('processed message success', $context);
-            $channel->ack($orginalIn);
+            $channel->ack($originalIn);
         }
     }
 
