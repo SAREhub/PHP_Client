@@ -42,7 +42,7 @@ class Processors
         return new UnmarshalProcessor($format);
     }
 
-    public static function filter(): SimpleFilterProcessor
+    public static function filter(callable $predicate): SimpleFilterProcessor
     {
         return new SimpleFilterProcessor($predicate);
     }

@@ -21,15 +21,26 @@ class ProcessorsTest extends TestCase
 
     public function testTransform()
     {
-        $transformer = function (Exchange $exchange) {
-        };
+        $transformer = $this->createCallable();
         $this->assertSame($transformer, Processors::transform($transformer)->getTransformer());
     }
 
     public function testRouter()
     {
-        $routingFunction = function (Exchange $exchange) { };
+        $routingFunction = $this->createCallable();
         $this->assertSame($routingFunction, Processors::router($routingFunction)->getRoutingFunction());
+    }
+
+    public function testFilter()
+    {
+        $predicate = $this->createCallable();
+        $this->assertSame($predicate, Processors::filter($predicate)->getPredicate());
+    }
+
+    private function createCallable(): callable
+    {
+        return function (Exchange $exchange) {
+        };
     }
 
 }
