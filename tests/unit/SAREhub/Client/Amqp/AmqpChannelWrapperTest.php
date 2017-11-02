@@ -59,8 +59,6 @@ class AmqpChannelWrapperTest extends TestCase
             ->setQueueName("test_queue")
             ->setTag("test_consumer_tag")
             ->setExclusive(true));
-
-        //$this->channel->allows(["basic_consume" => $this->consumer->getOptions()->getTag()]);
     }
 
     public function testSetChannelPrefetchCount()
