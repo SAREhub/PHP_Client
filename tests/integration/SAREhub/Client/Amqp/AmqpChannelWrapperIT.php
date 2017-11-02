@@ -28,10 +28,7 @@ class AmqpChannelWrapperIT extends TestCase
     {
         $publishedMessage = BasicMessage::newInstance()
             ->setBody("test_" . mt_rand(1, 100000))
-            ->setHeaders([
-                AMH::EXCHANGE => "",
-                AMH::ROUTING_KEY => $this->queueName
-            ]);
+            ->setHeader(AMH::ROUTING_KEY, $this->queueName);
 
         $this->channel->publish($publishedMessage);
 
