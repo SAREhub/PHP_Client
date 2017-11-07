@@ -5,9 +5,13 @@ namespace SAREhub\Client\Amqp;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
+use SAREhub\Client\Message\BasicExchange;
+use SAREhub\Client\Message\Message;
+use SAREhub\Commons\Service\ServiceSupport;
 
-class AmqpChannelWrapper
+class AmqpChannelWrapper extends ServiceSupport
 {
+    const DEFAULT_WAIT_TIMEOUT = 1;
 
     /**
      * @var AMQPChannel
@@ -15,95 +19,166 @@ class AmqpChannelWrapper
     private $channel;
 
     /**
-     * @var int
+     * @var AmqpMessageConverter
      */
-    private $waitTimeout = 3;
+    private $messageConverter;
 
     /**
-     * @var AmqpConsumer
+     * @var AmqpProcessConfirmStrategy
      */
-    private $consumer;
+    private $processConfirmStrategy;
+
+    /**
+     * @var int
+     */
+    private $waitTimeout = self::DEFAULT_WAIT_TIMEOUT;
+
+    /**
+     * @var AmqpConsumer[]
+     */
+    private $consumers = [];
 
     public function __construct(AMQPChannel $channel)
     {
         $this->channel = $channel;
+        $this->messageConverter = new AmqpMessageConverter();
+        $this->processConfirmStrategy = new BasicAmqpProcessConfirmStrategy();
     }
 
     public function registerConsumer(AmqpConsumer $consumer)
     {
-        $this->consumer = $consumer;
-        $this->channel->basic_qos(0, $this->consumer->getPrefetchCount(), false);
-        $this->getChannel()->basic_consume(
-            $consumer->getQueueName(),
-            $consumer->getConsumerTag(),
+        $opts = $consumer->getOptions();
+        $this->getLogger()->debug("registering consumer", ["options" => $opts]);
+        $tag = $this->getWrappedChannel()->basic_consume(
+            $opts->getQueueName(),
+            $opts->getTag(),
             false,
+            $opts->isAutoAckMode(),
+            $opts->isExclusive(),
             false,
-            false,
-            false,
-            [$consumer, 'consume']);
+            [$this, "onMessage"],
+            null,
+            $opts->getConsumeArguments()
+        );
+        $opts->setTag($tag);
+
+        $this->getLogger()->debug("consumer tag: $tag", ["options" => $opts]);
+        $this->consumers[$tag] = $consumer;
     }
 
-    public function cancelConsume()
+    public function unregisterConsumer(string $consumerTag)
     {
-        $this->channel->basic_cancel($this->consumer->getConsumerTag(), false, true);
-        $this->consumer = null;
+        $consumer = $this->getConsumer($consumerTag);
+        $this->getWrappedChannel()->basic_cancel($consumer->getOptions()->getTag(), false, true);
+        unset($this->consumers[$consumerTag]);
     }
 
-    public function wait()
+    public function onMessage(AMQPMessage $in)
+    {
+        $inConverted = $this->getMessageConverter()->convertFrom($in);
+        $this->getLogger()->debug('onMessage', ['message' => $inConverted]);
+
+        $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
+        $exchange = BasicExchange::withIn($inConverted);
+        $consumer = $this->getConsumer($consumerTag);
+        $consumer->process($exchange);
+        $this->getProcessConfirmStrategy()->confirm($this, $inConverted, $exchange);
+    }
+
+    protected function doTick()
     {
         try {
-            if ($this->hasConsumer()) {
-                $this->getChannel()->wait(null, true, $this->getWaitTimeout());
-            }
+            $this->getWrappedChannel()->wait(null, true, $this->getWaitTimeout());
         } catch (AMQPTimeoutException $e) {
-            sleep(1);
+            $this->getLogger()->debug("channel wait timeout: " . $e->getMessage(), ["exception" => $e]);
         }
     }
 
-    public function ack($deliveryTag)
+    public function ack(Message $message)
     {
-        $this->getChannel()->basic_ack($deliveryTag, false);
+        $this->getLogger()->debug("ack", ["message" => $message]);
+        $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
+        $this->getWrappedChannel()->basic_ack($deliveryTag, false);
     }
 
-    public function nack($deliveryTag)
+    public function reject(Message $message, bool $requeue = true)
     {
-        $this->getChannel()->basic_nack($deliveryTag, false, true);
+        $this->getLogger()->debug("reject", ["message" => $message, "requeue" => $requeue]);
+        $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
+        $this->getWrappedChannel()->basic_reject($deliveryTag, $requeue);
     }
 
-    public function publish(AMQPMessage $message, $exchange, $routingKey)
+    public function publish(Message $message)
     {
-        $this->getChannel()->basic_publish($message, $exchange, $routingKey);
+        $this->getLogger()->debug("publish", ["message" => $message]);
+
+        $converted = $this->messageConverter->convertTo($message);
+        $exchange = $message->getHeader(AmqpMessageHeaders::EXCHANGE);
+        $routingKey = $message->getHeader(AmqpMessageHeaders::ROUTING_KEY);
+        $this->getWrappedChannel()->basic_publish($converted, $exchange, $routingKey);
     }
 
-    /**
-     * @return AMQPChannel
-     */
-    public function getChannel()
+    public function setChannelPrefetchCount(int $count, int $size = 0)
     {
-        return $this->channel;
+        $this->getWrappedChannel()->basic_qos($size, $count, true);
     }
 
-    /**
-     * @return int
-     */
-    public function getWaitTimeout()
+    public function setPrefetchCountPerConsumer(int $count, int $size = 0)
+    {
+        $this->getWrappedChannel()->basic_qos($size, $count, false);
+    }
+
+    public function getWaitTimeout(): int
     {
         return $this->waitTimeout;
     }
 
-    /**
-     * @return AmqpConsumer
-     */
-    public function getConsumer()
+    public function setWaitTimeout(int $timeout)
     {
-        return $this->consumer;
+        $this->waitTimeout = $timeout;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasConsumer()
+    public function getConsumer(string $consumerTag): AmqpConsumer
     {
-        return $this->consumer !== null;
+        if ($this->hasConsumer($consumerTag)) {
+            return $this->consumers[$consumerTag];
+        }
+
+        throw new \InvalidArgumentException(sprintf("consumer with tag: '%s' is not registered", $consumerTag));
+    }
+
+    public function hasConsumer(string $consumerTag)
+    {
+        return isset($this->consumers[$consumerTag]);
+    }
+
+    public function getConsumers(): array
+    {
+        return $this->consumers;
+    }
+
+    public function getWrappedChannel(): AMQPChannel
+    {
+        return $this->channel;
+    }
+
+    public function getMessageConverter(): AmqpMessageConverter
+    {
+        return $this->messageConverter;
+    }
+
+    public function setMessageConverter(AmqpMessageConverter $messageConverter)
+    {
+        $this->messageConverter = $messageConverter;
+    }
+
+    public function getProcessConfirmStrategy(): AmqpProcessConfirmStrategy
+    {
+        return $this->processConfirmStrategy;
+    }
+
+    public function setProcessConfirmStrategy(AmqpProcessConfirmStrategy $processConfirmStrategy)
+    {
+        $this->processConfirmStrategy = $processConfirmStrategy;
     }
 }

@@ -34,9 +34,7 @@ class SimpleFilterProcessorTest extends TestCase
         $this->exchange = BasicExchange::newInstance();
         $this->predicate = $this->createPartialMock(\stdClass::class, ['__invoke']);
         $this->onPassProcessor = $this->createMock(Processor::class);
-        $this->processor = SimpleFilterProcessor::newInstance()
-            ->withPredicate($this->predicate)
-            ->withOnPass($this->onPassProcessor);
+        $this->processor = SimpleFilterProcessor::newWithPredicate($this->predicate)->to($this->onPassProcessor);
     }
 
     public function testProcessThenPredicateCall()

@@ -9,7 +9,7 @@ class RouterTest extends TestCase
 {
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var callable | PHPUnit_Framework_MockObject_MockObject
      */
     private $routingFunctionMock;
 
@@ -21,7 +21,7 @@ class RouterTest extends TestCase
     private $routingKey = 'key';
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var Processor | PHPUnit_Framework_MockObject_MockObject
      */
     private $routeMock;
 
@@ -29,7 +29,7 @@ class RouterTest extends TestCase
     public function setUp()
     {
         $this->routingFunctionMock = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
-        $this->router = Router::newInstance()->withRoutingFunction($this->routingFunctionMock);
+        $this->router = Router::withRoutingFunction($this->routingFunctionMock);
         $this->routeMock = $this->createMock(Processor::class);
     }
 
@@ -48,30 +48,15 @@ class RouterTest extends TestCase
     public function testRemoveRouteThenHasRouteReturnFalse()
     {
         $this->router->addRoute($this->routingKey, $this->routeMock);
-        $route = $this->createMock(Processor::class);
-        $routingKey = 'key';
-        $this->router->addRoute($routingKey, $route);
-        $this->router->removeRoute($routingKey);
-        $this->assertFalse($this->router->hasRoute($routingKey));
-        $this->assertNull($this->router->getRoute($routingKey));
+        $this->router->removeRoute($this->routingKey);
+        $this->assertFalse($this->router->hasRoute($this->routingKey));
     }
 
     public function testRemoveRouteThenGetRouteReturnNull()
     {
         $this->router->addRoute($this->routingKey, $this->routeMock);
-        $route = $this->createMock(Processor::class);
-        $routingKey = 'key';
-        $this->router->addRoute($routingKey, $route);
-        $this->router->removeRoute($routingKey);
-        $this->assertNull($this->router->getRoute($routingKey));
-    }
-
-    public function testRemoveRouteWhenNotExists()
-    {
-        $this->router->addRoute($this->routingKey, $this->routeMock);
-        $routingKey = 'key';
-        $this->router->removeRoute($routingKey);
-        $this->assertFalse($this->router->hasRoute($routingKey));
+        $this->router->removeRoute($this->routingKey);
+        $this->assertNull($this->router->getRoute($this->routingKey));
     }
 
     public function testProcess()

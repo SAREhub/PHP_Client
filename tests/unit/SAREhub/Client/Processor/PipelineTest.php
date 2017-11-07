@@ -1,5 +1,7 @@
 <?php
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\BasicMessage;
@@ -29,6 +31,8 @@ class PipelineTestProcessorOutSetter implements Processor
 class PipelineTest extends TestCase
 {
 
+    use MockeryPHPUnitIntegration;
+
     /**
      * @var Pipeline
      */
@@ -44,14 +48,6 @@ class PipelineTest extends TestCase
         $processor = $this->createProcessor();
         $this->pipeline->add($processor);
         $this->assertEquals([$processor], $this->pipeline->getProcessors());
-    }
-
-    public function testNextAddThenProcessors()
-    {
-        $processor1 = $this->createProcessor();
-        $processor2 = $this->createProcessor();
-        $this->pipeline->add($processor1)->add($processor2);
-        $this->assertEquals([$processor1, $processor2], $this->pipeline->getProcessors());
     }
 
     public function testAddAll()
@@ -90,46 +86,70 @@ class PipelineTest extends TestCase
         $p1 = new PipelineTestProcessorOutSetter();
         $p2 = $this->createProcessor();
         $this->pipeline->add($p1)->add($p2);
-        $p2->expects($this->once())
-            ->method('process')
-            ->with($this->callback(function (Exchange $exchange) use ($p1) {
+        $p2->expects("process")->withArgs(function (Exchange $exchange) use ($p1) {
                 return $p1->out === $exchange->getIn();
-            }));
+        });
+
         $this->pipeline->process($this->createExchange());
     }
 
     public function testProcessWhenProcessorNotSetsOutThenNextLastIn()
     {
+        $p1 = $this->createProcessor();
+        $p1->shouldReceive("process");
         $p2 = $this->createProcessor();
-        $this->pipeline->add($this->createProcessor())->add($p2);
+
+        $this->pipeline->add($p1)->add($p2);
         $exchange = $this->createExchange();
         $orginalIn = $exchange->getIn();
 
-        $p2->expects($this->once())
-            ->method('process')
-            ->with($this->callback(function (Exchange $exchange) use ($orginalIn) {
+        $p2->expects("process")->withArgs(function (Exchange $exchange) use ($orginalIn) {
                 return $exchange->getIn() === $orginalIn;
-            }));
+        });
 
         $this->pipeline->process($exchange);
     }
 
     public function testProcessWhenLastProcessorNotSetsOutThenLastInIsOut()
     {
-        $exchange = $this->createExchange();
         $p1 = new PipelineTestProcessorOutSetter();
         $this->pipeline->add($p1);
-        $this->pipeline->add($this->createProcessor());
+
+        $p2 = $this->createProcessor();
+        $p2->shouldReceive("process");
+        $this->pipeline->add($p2);
+
+        $exchange = $this->createExchange();
         $this->pipeline->process($exchange);
         $this->assertSame($p1->out, $exchange->getOut());
     }
 
     public function testProcessWhenLastProcessorNotSetsOutAndInIsOrginalThenEmptyOut()
     {
+        $p1 = $this->createProcessor();
+        $p1->shouldReceive("process");
+
+        $this->pipeline->add($p1);
+
         $exchange = $this->createExchange();
-        $this->pipeline->add($this->createProcessor());
         $this->pipeline->process($exchange);
         $this->assertFalse($exchange->hasOut());
+    }
+
+    public function testProcessWhenExchangeIsFailedAfterProcessThenStopProcessing()
+    {
+        $exchange = $this->createExchange();
+        $p1 = $this->createProcessor();
+        $p1->expects("process")->andReturnUsing(function () use ($exchange) {
+            $exchange->setException(new Exception("test"));
+        });
+        $this->pipeline->add($p1);
+
+        $p2 = $this->createProcessor();
+        $p2->shouldNotReceive("process");
+        $this->pipeline->add($p2);
+
+        $this->pipeline->process($exchange);
     }
 
     public function testToString()
@@ -142,11 +162,11 @@ class PipelineTest extends TestCase
     }
 
     /**
-     * @return Processor|PHPUnit_Framework_MockObject_MockObject
+     * @return Processor | MockInterface
      */
     private function createProcessor()
     {
-        return $this->createMock(Processor::class);
+        return Mockery::mock(Processor::class);
     }
 
     private function createProcessorWithToString($return)

@@ -15,58 +15,40 @@ class SimpleFilterProcessor implements Processor
     /**
      * @var Processor
      */
-    private $onPass;
+    private $to;
 
-    /**
-     * @return SimpleFilterProcessor
-     */
-    public static function newInstance()
-    {
-        return new self();
-    }
-
-    /**
-     * @param callable $predicate
-     * @return $this
-     */
-    public function withPredicate(callable $predicate)
+    public function __construct(callable $predicate)
     {
         $this->predicate = $predicate;
-        return $this;
     }
 
-    /**
-     * @param Processor $onPass
-     * @return $this
-     */
-    public function withOnPass(Processor $onPass)
+    public static function newWithPredicate(callable $predicate)
     {
-        $this->onPass = $onPass;
+        return new self($predicate);
+    }
+
+    public function to(Processor $to): SimpleFilterProcessor
+    {
+        $this->to = $to;
         return $this;
     }
 
     public function process(Exchange $exchange)
     {
-        $p = $this->getPredicate();
-        if ($p($exchange)) {
-            $this->getOnPass()->process($exchange);
+        if (($this->predicate)($exchange)) {
+            $this->getTo()->process($exchange);
         }
     }
 
-    /**
-     * @return callable
-     */
-    public function getPredicate()
+    public function getPredicate(): callable
     {
         return $this->predicate;
     }
 
-    /**
-     * @return Processor
-     */
-    public function getOnPass()
+
+    public function getTo(): Processor
     {
-        return $this->onPass;
+        return $this->to;
     }
 
     public function __toString()

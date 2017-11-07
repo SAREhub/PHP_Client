@@ -10,12 +10,12 @@ class Pipeline implements Processor
     /**
      * @var Processor[]
      */
-    protected $processors = [];
+    private $processors = [];
 
     /**
      * @return Pipeline
      */
-    public static function start()
+    public static function newInstance()
     {
         return new self();
     }
@@ -34,6 +34,9 @@ class Pipeline implements Processor
             }
 
             $processor->process($currentExchange);
+            if ($exchange->isFailed()) {
+                break;
+            }
         }
 
         if (!$currentExchange->hasOut() && $currentExchange->getIn() !== $orginalMessage) {
@@ -53,21 +56,13 @@ class Pipeline implements Processor
         return $previousExchange;
     }
 
-    /**
-     * @param Processor $processor
-     * @return $this
-     */
-    public function add(Processor $processor)
+    public function add(Processor $processor): Pipeline
     {
         $this->processors[] = $processor;
         return $this;
     }
 
-    /**
-     * @param array $processors
-     * @return $this
-     */
-    public function addAll(array $processors)
+    public function addAll(array $processors): Pipeline
     {
         foreach ($processors as $processor) {
             $this->add($processor);
@@ -76,10 +71,7 @@ class Pipeline implements Processor
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function clear()
+    public function clear(): Pipeline
     {
         $this->processors = [];
         return $this;
@@ -88,7 +80,7 @@ class Pipeline implements Processor
     /**
      * @return Processor[]
      */
-    public function getProcessors()
+    public function getProcessors(): array
     {
         return $this->processors;
     }

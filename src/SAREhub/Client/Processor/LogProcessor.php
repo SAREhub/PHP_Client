@@ -33,11 +33,6 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         ]);
     }
 
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
     public function getId()
     {
         return $this->id;
@@ -53,22 +48,34 @@ class LogProcessor implements Processor, LoggerAwareInterface, IdAware
         return $this->logLevel;
     }
 
-    public function setLogLevel(string $logLevel)
+    public function setLogLevel(string $logLevel): LogProcessor
     {
         $this->isValidLogLevel($logLevel);
         $this->logLevel = $logLevel;
+        return $this;
     }
 
     private function isValidLogLevel(string $logLevel): void
     {
         $logLevelReflection = new \ReflectionClass(LogLevel::class);
-        if (!in_array(strtolower($logLevel), $logLevelReflection->getConstants()))
+        if (!in_array(strtolower($logLevel), $logLevelReflection->getConstants())) {
             throw new \InvalidArgumentException("invalid LogLevel: $logLevel");
+        }
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
     public function __toString()
     {
-        return 'LogProcessor[' . $this->getId() . ']';
+        return sprintf('LogProcessor[id=%s,loglevel=%s]', $this->getId(), $this->getLogLevel());
     }
 
 }

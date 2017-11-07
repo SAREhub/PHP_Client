@@ -3,36 +3,55 @@
 namespace SAREhub\Client\Amqp;
 
 
+use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use SAREhub\Commons\Misc\Parameters;
 
 class AmqpConnectionFactory
 {
-
-    private $parameters;
-
-    public function __construct(array $parameters)
+    public function create(AmqpConnectionOptions $options)
     {
-        $this->parameters = new Parameters($parameters);
+        return $options->isSslEnabled() ? $this->createWithSsl($options) : $this->createWithoutSsl($options);
     }
 
-    public function create()
+    private function createWithSsl(AmqpConnectionOptions $options): AbstractConnection
+    {
+        return new AMQPSSLConnection(
+            $options->getHost(),
+            $options->getPort(),
+            $options->getUser(),
+            $options->getPassword(),
+            $options->getVhost(),
+            [
+                "verify_peer" => $options->isSslVerifyPeer(),
+                "verify_peer_name" => $options->isSslVerifyPeerName()
+            ],
+            [
+                "connection_timeout" => $options->getConnectionTimeout(),
+                "read_write_timeout" => $options->getReadWriteTimeout(),
+                "keepalive" => false,
+                "heartbeat" => $options->getHeartbeat()
+            ]
+        );
+    }
+
+    private function createWithoutSsl(AmqpConnectionOptions $options): AbstractConnection
     {
         return new AMQPStreamConnection(
-            $this->parameters->getRequired('host'),
-            $this->parameters->getRequired('port'),
-            $this->parameters->getRequired('username'),
-            $this->parameters->getRequired('password'),
-            $this->parameters->getRequired('vhost'),
+            $options->getHost(),
+            $options->getPort(),
+            $options->getUser(),
+            $options->getPassword(),
+            $options->getVhost(),
             false,
             'AMQPLAIN',
             null,
             'en_US',
-            3.0,
-            ($this->parameters->get('heartbeat', 30) * 2) + 1,
+            $options->getConnectionTimeout(),
+            $options->getReadWriteTimeout(),
             null,
-            $this->parameters->get('keepalive', true),
-            $this->parameters->get('heartbeat', 30)
+            $options->isKeepalive(),
+            $options->getHeartbeat()
         );
     }
 }

@@ -4,56 +4,30 @@ namespace SAREhub\Client\Message;
 
 interface Exchange
 {
+    public function getIn(): ?Message;
 
-    /**
-     * @return Message
-     */
-    public function getIn();
-
-    /**
-     * @param Message $message
-     * @return $this
-     */
-    public function setIn(Message $message);
+    public function setIn(Message $message): Exchange;
 
     /**
      * Gets output message, when message isn't sets that call will discrete create it.
-     * @return Message
      */
-    public function getOut();
+    public function getOut(): Message;
 
-    /**
-     * @return bool
-     */
-    public function hasOut();
+    public function hasOut(): bool;
 
-    /**
-     * @param Message $message
-     * @return $this
-     */
-    public function setOut(Message $message);
+    public function setOut(Message $message): Exchange;
 
-    /**
-     * Clears output message
-     * @return Exchange
-     */
-    public function clearOut();
+    public function clearOut(): Exchange;
 
     /**
      * Return true If exchange has exception sets
      * @return bool
      */
-    public function isFailed();
+    public function isFailed(): bool;
 
-    /**
-     * @return \Exception
-     */
-    public function getException();
+    public function getException(): ?\Throwable;
 
-    /**
-     * @param \Exception $exception
-     */
-    public function setException(\Exception $exception);
+    public function setException(\Throwable $e): Exchange;
 
 
 }
