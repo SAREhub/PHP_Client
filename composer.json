@@ -1,7 +1,7 @@
 {
   "name": "sarehub/client",
-  "description": "This project contains SAREhub event bus client",
-  "license": "Apache License 2.0",
+  "description": "This project is framework with implementation of Enterprise Integration Patterns",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Andrzej Wasiak",
