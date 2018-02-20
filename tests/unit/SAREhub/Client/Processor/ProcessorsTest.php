@@ -25,6 +25,16 @@ class ProcessorsTest extends TestCase
         $this->assertSame($transformer, Processors::transform($transformer)->getTransformer());
     }
 
+    public function testPipeline()
+    {
+        $this->assertInstanceOf(Pipeline::class, Processors::pipeline());
+    }
+
+    public function testMulticast()
+    {
+        $this->assertInstanceOf(MulticastProcessor::class, Processors::multicast());
+    }
+
     public function testRouter()
     {
         $routingFunction = $this->createCallable();
