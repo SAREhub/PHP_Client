@@ -27,7 +27,7 @@ interface Exchange
 
     public function getException(): ?\Throwable;
 
-    public function setException(\Throwable $e): Exchange;
+    public function setException(?\Throwable $e): Exchange;
 
 
 }

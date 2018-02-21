@@ -88,7 +88,7 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $this->exception;
     }
 
-    public function setException(\Throwable $e): Exchange
+    public function setException(?\Throwable $e): Exchange
     {
         $this->exception = $e;
         return $this;

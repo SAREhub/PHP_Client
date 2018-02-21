@@ -27,6 +27,11 @@ class Processors
         return new Pipeline();
     }
 
+    public static function multicast(): MulticastProcessor
+    {
+        return new MulticastProcessor();
+    }
+
     public static function router(callable $routingFunction): Router
     {
         return Router::withRoutingFunction($routingFunction);
@@ -46,4 +51,6 @@ class Processors
     {
         return new SimpleFilterProcessor($predicate);
     }
+
+
 }
