@@ -3,8 +3,13 @@
 
 namespace SAREhub\Client\Processor;
 
+use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\Exchange;
 
+/**
+ * Implements the Multicast pattern to send a message exchange to a number of processors,
+ * each processor receiving a copy of the message exchange.
+ */
 class MulticastProcessor implements Processor
 {
     /**
@@ -15,8 +20,13 @@ class MulticastProcessor implements Processor
     public function process(Exchange $exchange)
     {
         foreach ($this->getProcessors() as $p) {
-            $p->process($exchange);
+            $p->process($this->copyExchange($exchange));
         }
+    }
+
+    public function copyExchange(Exchange $exchange): Exchange
+    {
+        return BasicExchange::withIn($exchange->getIn()->copy())->setException($exchange->getException());
     }
 
     public function add(Processor $processor)

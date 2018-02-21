@@ -5,6 +5,8 @@ namespace SAREhub\Client\Processor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Message\BasicExchange;
+use SAREhub\Client\Message\BasicMessage;
+use SAREhub\Client\Message\Exchange;
 
 class MulticastProcessorTest extends TestCase
 {
@@ -42,13 +44,44 @@ class MulticastProcessorTest extends TestCase
         $this->assertEquals([], $this->multicastProcessor->getProcessors());
     }
 
-    public function testProcess()
+    public function testProcessThenProcessingExchangeIsNotOrginal()
     {
         $processor = \Mockery::mock(Processor::class);
         $this->multicastProcessor->add($processor);
 
-        $exchange = new BasicExchange();
-        $processor->expects("process")->withArgs([$exchange]);
-        $this->multicastProcessor->process($exchange);
+        $orginalExchange = new BasicExchange();
+        $processor->expects("process")->withArgs(function (Exchange $exchange) use ($orginalExchange) {
+            return $exchange !== $orginalExchange;
+        });
+
+        $this->multicastProcessor->process($orginalExchange);
+    }
+
+    public function testProcessThenProcessingExchangeHasCopyOfInMessage()
+    {
+        $processor = \Mockery::mock(Processor::class);
+        $this->multicastProcessor->add($processor);
+
+        $orginalIn = BasicMessage::newInstance();
+        $orginalExchange = BasicExchange::newInstance()->setIn($orginalIn);
+        $processor->expects("process")->withArgs(function (Exchange $exchange) use ($orginalIn) {
+            return $exchange->getIn() !== $orginalIn;
+        });
+
+        $this->multicastProcessor->process($orginalExchange);
+    }
+
+    public function testProcessThenProcessingExchangeHasSameOrginalExchangeException()
+    {
+        $processor = \Mockery::mock(Processor::class);
+        $this->multicastProcessor->add($processor);
+
+        $orginalException = new \Exception();
+        $orginalExchange = BasicExchange::newInstance()->setException($orginalException);
+        $processor->expects("process")->withArgs(function (Exchange $exchange) use ($orginalException) {
+            return $exchange->getException() === $orginalException;
+        });
+
+        $this->multicastProcessor->process($orginalExchange);
     }
 }
