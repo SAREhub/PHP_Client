@@ -36,7 +36,7 @@ class AmqpQueueSchema
     /**
      * @var bool
      */
-    private $excelusive;
+    private $exclusive;
 
     /**
      * @var bool
@@ -46,7 +46,7 @@ class AmqpQueueSchema
     /**
      * @var bool
      */
-    private $nowait;
+    private $nowait = false;
 
     /**
      * @var AMQPTable
@@ -133,18 +133,18 @@ class AmqpQueueSchema
         return $this;
     }
 
-    public function isExcelusive(): bool
+    public function isExclusive(): bool
     {
-        return $this->excelusive;
+        return $this->exclusive;
     }
 
     /**
      * @param bool $excelusive
      * @return AmqpQueueSchema
      */
-    public function withExcelusive(bool $excelusive): AmqpQueueSchema
+    public function withExclusive(bool $excelusive): AmqpQueueSchema
     {
-        $this->excelusive = $excelusive;
+        $this->exclusive = $excelusive;
         return $this;
     }
 

@@ -95,7 +95,7 @@ class AmqpQueueManagerIT extends TestCase
             ->withQueueName("AmqpQueueManagerIT")
             ->withPassive(false)
             ->withDurable(true)
-            ->withExcelusive(false)
+            ->withExclusive(false)
             ->withAutoDelete(false)
             ->withNowait(false)
             ->withArguments(new AMQPTable([]));

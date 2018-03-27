@@ -21,7 +21,7 @@ class AmqpQueueManager
             $amqpQueueInfo->getQueueName(),
             $amqpQueueInfo->isPassive(),
             $amqpQueueInfo->isDurable(),
-            $amqpQueueInfo->isExcelusive(),
+            $amqpQueueInfo->isExclusive(),
             $amqpQueueInfo->isAutoDelete(),
             $amqpQueueInfo->isNowait(),
             $amqpQueueInfo->getArguments()
