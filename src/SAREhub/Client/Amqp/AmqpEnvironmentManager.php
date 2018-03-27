@@ -18,7 +18,7 @@ class AmqpEnvironmentManager
 
     public function create(AmqpEnvironmentSchema $environmentSchema)
     {
-        foreach ($environmentSchema->getQueueSchemasCollection() as $queueSchema) {
+        foreach ($environmentSchema->getQueueSchemaCollection() as $queueSchema) {
             $this->amqpQueueManager->create($queueSchema);
         }
     }
