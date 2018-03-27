@@ -4,9 +4,7 @@
 namespace SAREhub\Client\Amqp;
 
 
-use DI\Annotation\Inject;
 use PhpAmqpLib\Connection\AbstractConnection;
-use SAREhub\Commons\Logger\LoggerFactory;
 use SAREhub\Commons\Misc\EnvironmentHelper;
 
 class AmqpChannelProvider
@@ -25,33 +23,11 @@ class AmqpChannelProvider
     private $connection;
 
     /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
-
-    /**
-     * @var int
-     */
-    private $hubId;
-
-    /**
-     * @var AmqpConsumer
-     */
-    private $consumer;
-
-    /**
-     * @Inject({"hubId" = "hubId"})
      * @param AbstractConnection $connection
-     * @param LoggerFactory $loggerFactory
-     * @param int $hubId
-     * @param AmqpConsumer $consumer
      */
-    public function __construct(AbstractConnection $connection, LoggerFactory $loggerFactory, int $hubId, AmqpConsumer $consumer)
+    public function __construct(AbstractConnection $connection)
     {
         $this->connection = $connection;
-        $this->loggerFactory = $loggerFactory;
-        $this->hubId = $hubId;
-        $this->consumer = $consumer;
     }
 
     public function get()
@@ -59,12 +35,6 @@ class AmqpChannelProvider
         $channel = new AmqpChannelWrapper($this->connection->channel());
         $channel->setPrefetchCountPerConsumer($this->getPrefetchCountFromEnv());
 
-        $processConfirmStrategy = new BasicAmqpProcessConfirmStrategy();
-        $processConfirmStrategy->setLogger($this->loggerFactory->create(self::ENTRY . ".processConfirmStrategy"));
-        $processConfirmStrategy->setRejectRequeue(false);
-        $channel->setProcessConfirmStrategy($processConfirmStrategy);
-
-        $channel->registerConsumer($this->consumer);
         return $channel;
     }
 
