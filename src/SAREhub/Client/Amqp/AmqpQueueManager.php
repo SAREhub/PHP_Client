@@ -27,11 +27,6 @@ class AmqpQueueManager
             $amqpQueueInfo->getArguments()
         );
 
-        if (!empty($amqpQueueInfo->getExchange()) && !empty($amqpQueueInfo->getRoutingKey())) {
-            $this->channel->exchange_declare($amqpQueueInfo->getExchange(), 'topic');
-            $this->channel->queue_bind($amqpQueueInfo->getQueueName(), $amqpQueueInfo->getExchange(), $amqpQueueInfo->getRoutingKey());
-        }
-
         return $queueData;
     }
 }

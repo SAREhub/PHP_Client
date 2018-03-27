@@ -51,42 +51,6 @@ class AmqpQueueManagerIT extends TestCase
     }
 
     /**
-     * @depends testCreateWhenExist
-     */
-    public function testCreateWhenExchangeAndRoutingKeyAreSetThenCreateBinding()
-    {
-        $queueInfo = $this->createTestQueueInfo();
-
-        $this->channel->exchange_declare('test', 'topic');
-
-        $queueData = $this->queueManager->create($queueInfo
-            ->withExchange('test')
-            ->withRoutingKey('test')
-        );
-
-        $this->assertEquals($this->queueName, $queueData[0]);
-
-        $this->channel->exchange_delete('test');
-    }
-
-    /**
-     * @depends testCreateWhenExchangeAndRoutingKeyAreSetThenCreateBinding
-     */
-    public function testCreateWhenExchangeAndRoutingKeyAreSetAndExchangeNotExistThenCreateExchange()
-    {
-        $queueInfo = $this->createTestQueueInfo();
-
-        $queueData = $this->queueManager->create($queueInfo
-            ->withExchange('test')
-            ->withRoutingKey('test')
-        );
-
-        $this->assertEquals($this->queueName, $queueData[0]);
-
-        $this->channel->exchange_delete('test');
-    }
-
-    /**
      * @return AmqpQueueSchema
      */
     private function createTestQueueInfo(): AmqpQueueSchema
