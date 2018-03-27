@@ -34,14 +34,4 @@ class AmqpQueueManager
 
         return $queueData;
     }
-
-    public function getChannel(): AMQPChannel
-    {
-        return $this->channel;
-    }
-
-    public function setChannel(AMQPChannel $channel): void
-    {
-        $this->channel = $channel;
-    }
 }
