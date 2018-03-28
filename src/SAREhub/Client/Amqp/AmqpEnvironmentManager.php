@@ -38,12 +38,12 @@ class AmqpEnvironmentManager
             $this->amqpQueueManager->create($queueSchema);
         }
 
-        foreach ($environmentSchema->getQueueBindingSchemas() as $queueBindingSchema) {
-            $this->amqpQueueBindingManager->create($queueBindingSchema);
-        }
-
         foreach ($environmentSchema->getExchangeSchemas() as $exchangeSchema) {
             $this->amqpExchangeManager->create($exchangeSchema);
+        }
+
+        foreach ($environmentSchema->getQueueBindingSchemas() as $queueBindingSchema) {
+            $this->amqpQueueBindingManager->create($queueBindingSchema);
         }
     }
 }
