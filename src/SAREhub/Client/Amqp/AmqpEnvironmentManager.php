@@ -32,6 +32,10 @@ class AmqpEnvironmentManager
         $this->amqpExchangeManager = $exchangeManager;
     }
 
+    /**
+     * @param AmqpEnvironmentSchema $environmentSchema
+     * @throws AmqpSchemaException
+     */
     public function create(AmqpEnvironmentSchema $environmentSchema)
     {
         foreach ($environmentSchema->getQueueSchemas() as $queueSchema) {
