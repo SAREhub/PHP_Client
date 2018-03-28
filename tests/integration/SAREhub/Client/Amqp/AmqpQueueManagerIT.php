@@ -25,7 +25,7 @@ class AmqpQueueManagerIT extends TestCase
     protected function setUp()
     {
         $connection = AmqpTestHelper::createConnection();
-        $this->channel = (new AmqpChannelWrapper($connection->channel()))->getWrappedChannel();
+        $this->channel = $connection->channel();
 
         $this->queueManager = new AmqpQueueManager($this->channel);
         $this->channel->queue_delete($this->queueName);
@@ -61,7 +61,6 @@ class AmqpQueueManagerIT extends TestCase
             ->withDurable(true)
             ->withExclusive(false)
             ->withAutoDelete(false)
-            ->withNowait(false)
             ->withArguments(new AMQPTable([]));
 
         return $queueInfo;

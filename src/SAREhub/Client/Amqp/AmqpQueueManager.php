@@ -15,16 +15,16 @@ class AmqpQueueManager
         $this->channel = $channel;
     }
 
-    public function create(AmqpQueueSchema $amqpQueueInfo)
+    public function create(AmqpQueueSchema $schema)
     {
         $queueData = $this->channel->queue_declare(
-            $amqpQueueInfo->getQueueName(),
-            $amqpQueueInfo->isPassive(),
-            $amqpQueueInfo->isDurable(),
-            $amqpQueueInfo->isExclusive(),
-            $amqpQueueInfo->isAutoDelete(),
+            $schema->getQueueName(),
+            $schema->isPassive(),
+            $schema->isDurable(),
+            $schema->isExclusive(),
+            $schema->isAutoDelete(),
             false,
-            $amqpQueueInfo->getArguments()
+            $schema->getArguments()
         );
 
         return $queueData;
