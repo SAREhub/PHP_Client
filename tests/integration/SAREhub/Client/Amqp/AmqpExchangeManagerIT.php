@@ -41,7 +41,7 @@ class AmqpExchangeManagerIT extends TestCase
      * @depends testCreateWhenNotExistsThenCreateExchange
      * @throws AmqpSchemaException
      */
-    public function testCreateWhenExistsThenThrowException()
+    public function testCreateWhenExistsAndPassiveIsSetToFalseThenThrowException()
     {
         $this->exchangeManager->create($this->createTestExchangeSchema());
 

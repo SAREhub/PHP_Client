@@ -42,7 +42,7 @@ class AmqpQueueManagerIT extends TestCase
      * @depends testCreate
      * @throws AmqpSchemaException
      */
-    public function testCreateWhenExist()
+    public function testCreateWhenExistAndPassiveIsSetToFalse()
     {
         $queueInfo = $this->createTestQueueSchema();
 
