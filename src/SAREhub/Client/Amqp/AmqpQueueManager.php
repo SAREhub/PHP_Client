@@ -26,7 +26,7 @@ class AmqpQueueManager
     {
         try {
             $this->channel->queue_declare(
-                $schema->getQueueName(),
+                $schema->getName(),
                 $schema->isPassive(),
                 $schema->isDurable(),
                 $schema->isExclusive(),
@@ -37,7 +37,7 @@ class AmqpQueueManager
 
             return true;
         } catch (\Exception $e) {
-            throw new AmqpSchemaException($this->getExceptionMessage($schema->getQueueName()), $e);
+            throw new AmqpSchemaException($this->getExceptionMessage($schema->getName()), $e);
         }
     }
 

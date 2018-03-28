@@ -58,7 +58,7 @@ class AmqpQueueManagerIT extends TestCase
     private function createTestQueueSchema(): AmqpQueueSchema
     {
         return AmqpQueueSchema::newInstance()
-            ->withQueueName("AmqpQueueManagerIT")
+            ->withName("AmqpQueueManagerIT")
             ->withPassive(false)
             ->withDurable(true)
             ->withExclusive(false)

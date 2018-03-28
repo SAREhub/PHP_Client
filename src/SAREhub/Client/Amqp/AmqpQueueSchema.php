@@ -11,7 +11,7 @@ class AmqpQueueSchema
     /**
      * @var string
      */
-    private $queueName = "";
+    private $name = "";
 
     /**
      * @var bool
@@ -48,18 +48,18 @@ class AmqpQueueSchema
         $this->arguments = new AMQPTable();
     }
 
-    public function getQueueName(): string
+    public function getName(): string
     {
-        return $this->queueName;
+        return $this->name;
     }
 
     /**
-     * @param string $queueName
+     * @param string $name
      * @return AmqpQueueSchema
      */
-    public function withQueueName(string $queueName): AmqpQueueSchema
+    public function withName(string $name): AmqpQueueSchema
     {
-        $this->queueName = $queueName;
+        $this->name = $name;
         return $this;
     }
 
