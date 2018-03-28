@@ -13,7 +13,7 @@
          syntaxCheck="true"
 >
     <php>
-        <env name="AMQP_HOST" value="192.168.99.100"/>
+        <env name="AMQP_HOST" value="localhost"/>
         <env name="AMQP_PORT" value="30000"/>
         <env name="AMQP_SSL_PORT" value="30001"/>
     </php>
