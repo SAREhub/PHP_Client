@@ -9,27 +9,27 @@ class AmqpEnvironmentSchema
     /**
      * @var AmqpQueueSchema[]
      */
-    private $queueSchema = [];
+    private $queueSchemas = [];
 
     public static function newInstance(): self
     {
         return new self();
     }
 
-    public function getQueueSchema(): array
+    public function getQueueSchemas(): array
     {
-        return $this->queueSchema;
+        return $this->queueSchemas;
     }
 
     public function withQueueSchemaCollection(array $queueSchemas): AmqpEnvironmentSchema
     {
-        $this->queueSchema = $queueSchemas;
+        $this->queueSchemas = $queueSchemas;
         return $this;
     }
 
     public function addQueueSchema(AmqpQueueSchema $queueSchema): AmqpEnvironmentSchema
     {
-        $this->queueSchema[] = $queueSchema;
+        $this->queueSchemas[] = $queueSchema;
         return $this;
     }
 
