@@ -11,37 +11,27 @@ class AmqpQueueSchema
     /**
      * @var string
      */
-    private $queueName;
-
-    /**
-     * @var string
-     */
-    private $exchange = '';
-
-    /**
-     * @var string
-     */
-    private $routingKey = '';
+    private $queueName = "";
 
     /**
      * @var bool
      */
-    private $passive;
+    private $passive = false;
 
     /**
      * @var bool
      */
-    private $durable;
+    private $durable = false;
 
     /**
      * @var bool
      */
-    private $exclusive;
+    private $exclusive = false;
 
     /**
      * @var bool
      */
-    private $autoDelete;
+    private $autoDelete = true;
 
     /**
      * @var AMQPTable
@@ -73,39 +63,9 @@ class AmqpQueueSchema
         return $this;
     }
 
-    public function getExchange(): string
-    {
-        return $this->exchange;
-    }
-
-    /**
-     * @param string $exchange
-     * @return AmqpQueueSchema
-     */
-    public function withExchange(string $exchange): AmqpQueueSchema
-    {
-        $this->exchange = $exchange;
-        return $this;
-    }
-
     public function isPassive(): bool
     {
         return $this->passive;
-    }
-
-    public function getRoutingKey(): string
-    {
-        return $this->routingKey;
-    }
-
-    /**
-     * @param string $routingKey
-     * @return AmqpQueueSchema
-     */
-    public function withRoutingKey(string $routingKey): AmqpQueueSchema
-    {
-        $this->routingKey = $routingKey;
-        return $this;
     }
 
     /**
