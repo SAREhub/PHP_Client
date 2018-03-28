@@ -8,6 +8,8 @@ use PhpAmqpLib\Channel\AMQPChannel;
 
 class AmqpQueueManager
 {
+    const EXCEPTION_MESSAGE_FORMAT = "AmqpQueueManager occurred error when creating queue (name: %s).";
+
     private $channel;
 
     public function __construct(AMQPChannel $channel)
@@ -15,18 +17,32 @@ class AmqpQueueManager
         $this->channel = $channel;
     }
 
+    /**
+     * @param AmqpQueueSchema $schema
+     * @return bool
+     * @throws AmqpSchemaException
+     */
     public function create(AmqpQueueSchema $schema)
     {
-        $queueData = $this->channel->queue_declare(
-            $schema->getQueueName(),
-            $schema->isPassive(),
-            $schema->isDurable(),
-            $schema->isExclusive(),
-            $schema->isAutoDelete(),
-            false,
-            $schema->getArguments()
-        );
+        try {
+            $this->channel->queue_declare(
+                $schema->getQueueName(),
+                $schema->isPassive(),
+                $schema->isDurable(),
+                $schema->isExclusive(),
+                $schema->isAutoDelete(),
+                false,
+                $schema->getArguments()
+            );
 
-        return $queueData;
+            return true;
+        } catch (\Exception $e) {
+            throw new AmqpSchemaException($this->getExceptionMessage($schema->getQueueName()), $e);
+        }
+    }
+
+    private function getExceptionMessage(string $queueName): string
+    {
+        return sprintf(self::EXCEPTION_MESSAGE_FORMAT, $queueName);
     }
 }

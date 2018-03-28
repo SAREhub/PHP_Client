@@ -4,7 +4,6 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Exception\AMQPExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
 class AmqpExchangeManagerIT extends TestCase
@@ -30,19 +29,24 @@ class AmqpExchangeManagerIT extends TestCase
         $this->channel->exchange_delete($this->exchangeName);
     }
 
+    /**
+     * @throws AmqpSchemaException
+     */
     public function testCreateWhenNotExistsThenCreateExchange()
     {
-        $this->assertNull($this->exchangeManager->create($this->createTestExchangeSchema()));
+        $this->assertTrue($this->exchangeManager->create($this->createTestExchangeSchema()));
     }
 
     /**
      * @depends testCreateWhenNotExistsThenCreateExchange
+     * @throws AmqpSchemaException
      */
     public function testCreateWhenExistsThenThrowException()
     {
         $this->exchangeManager->create($this->createTestExchangeSchema());
 
-        $this->expectException(AMQPExceptionInterface::class);
+        $this->expectException(AmqpSchemaException::class);
+
         $this->exchangeManager->create($this->createTestExchangeSchema()->withDurable(false));
     }
 

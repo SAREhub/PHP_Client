@@ -4,7 +4,6 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Exception\AMQPExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
 class AmqpQueueBindingManagerIT extends TestCase
@@ -40,17 +39,21 @@ class AmqpQueueBindingManagerIT extends TestCase
         $this->channel->exchange_declare($this->exchangeName, 'topic');
     }
 
+    /**
+     * @throws AmqpSchemaException
+     */
     public function testCreateWhenGivenGoodDataThenCreateBinding()
     {
-        $this->assertNull($this->queueBindingManager->create($this->createTestQueueBindingSchema()->withExchangeName($this->exchangeName)));
+        $this->assertTrue($this->queueBindingManager->create($this->createTestQueueBindingSchema()->withExchangeName($this->exchangeName)));
     }
 
     /**
      * @depends testCreateWhenGivenGoodDataThenCreateBinding
+     * @throws AmqpSchemaException
      */
     public function testCreateWhenGivenCorruptedDataThenThrowException()
     {
-        $this->expectException(AMQPExceptionInterface::class);
+        $this->expectException(AmqpSchemaException::class);
         $this->queueBindingManager->create($this->createTestQueueBindingSchema()->withExchangeName("notExistingExchange"));
     }
 

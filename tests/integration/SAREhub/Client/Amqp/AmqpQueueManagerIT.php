@@ -4,7 +4,6 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 use PhpAmqpLib\Wire\AMQPTable;
 use PHPUnit\Framework\TestCase;
 
@@ -31,19 +30,23 @@ class AmqpQueueManagerIT extends TestCase
         $this->channel->queue_delete($this->queueName);
     }
 
+    /**
+     * @throws AmqpSchemaException
+     */
     public function testCreate()
     {
-        $this->assertEquals($this->queueName, $this->queueManager->create($this->createTestQueueSchema())[0]);
+        $this->assertTrue($this->queueManager->create($this->createTestQueueSchema()));
     }
 
     /**
      * @depends testCreate
+     * @throws AmqpSchemaException
      */
     public function testCreateWhenExist()
     {
         $queueInfo = $this->createTestQueueSchema();
 
-        $this->expectException(AMQPProtocolChannelException::class);
+        $this->expectException(AmqpSchemaException::class);
 
         $this->queueManager->create($queueInfo);
         $this->queueManager->create($queueInfo->withAutoDelete(true));
