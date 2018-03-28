@@ -142,9 +142,9 @@ class AmqpQueueSchema
      * @param bool $excelusive
      * @return AmqpQueueSchema
      */
-    public function withExclusive(bool $excelusive): AmqpQueueSchema
+    public function withExclusive(bool $exclusive): AmqpQueueSchema
     {
-        $this->exclusive = $excelusive;
+        $this->exclusive = $exclusive;
         return $this;
     }
 
