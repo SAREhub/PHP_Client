@@ -54,14 +54,12 @@ class AmqpQueueManagerIT extends TestCase
      */
     private function createTestQueueSchema(): AmqpQueueSchema
     {
-        $queueInfo = AmqpQueueSchema::newInstance()
+        return AmqpQueueSchema::newInstance()
             ->withQueueName("AmqpQueueManagerIT")
             ->withPassive(false)
             ->withDurable(true)
             ->withExclusive(false)
             ->withAutoDelete(false)
             ->withArguments(new AMQPTable([]));
-
-        return $queueInfo;
     }
 }
