@@ -33,8 +33,7 @@ class AmqpQueueManagerIT extends TestCase
 
     public function testCreate()
     {
-        $queueInfo = $this->createTestQueueInfo();
-        $this->assertEquals($this->queueName, $this->queueManager->create($queueInfo)[0]);
+        $this->assertEquals($this->queueName, $this->queueManager->create($this->createTestQueueSchema())[0]);
     }
 
     /**
@@ -42,7 +41,7 @@ class AmqpQueueManagerIT extends TestCase
      */
     public function testCreateWhenExist()
     {
-        $queueInfo = $this->createTestQueueInfo();
+        $queueInfo = $this->createTestQueueSchema();
 
         $this->expectException(AMQPProtocolChannelException::class);
 
@@ -53,7 +52,7 @@ class AmqpQueueManagerIT extends TestCase
     /**
      * @return AmqpQueueSchema
      */
-    private function createTestQueueInfo(): AmqpQueueSchema
+    private function createTestQueueSchema(): AmqpQueueSchema
     {
         $queueInfo = AmqpQueueSchema::newInstance()
             ->withQueueName("AmqpQueueManagerIT")
