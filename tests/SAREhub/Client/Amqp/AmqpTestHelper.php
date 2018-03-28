@@ -11,6 +11,8 @@ class AmqpTestHelper
     const ENV_PORT = "AMQP_PORT";
     const ENV_SSL_PORT = "AMQP_SSL_PORT";
 
+    const CONNECTION_TIMEOUT = 20;
+
     public static function createConnection(bool $secure = true)
     {
         $connectionFactory = new AmqpConnectionFactory();
@@ -23,7 +25,7 @@ class AmqpTestHelper
             ->withUser("test")
             ->withPassword("test")
             ->withSsl($secure)
-            ->withConnectionTimeout(20)
+            ->withConnectionTimeout(self::CONNECTION_TIMEOUT)
         );
     }
 }

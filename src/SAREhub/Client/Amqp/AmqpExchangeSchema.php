@@ -11,7 +11,7 @@ class AmqpExchangeSchema
     /**
      * @var string 
      */
-    private $exchangeName = "";
+    private $name = "";
 
     /**
      * @var string 
@@ -53,14 +53,14 @@ class AmqpExchangeSchema
         return new self();
     }
 
-    public function getExchangeName(): string
+    public function getName(): string
     {
-        return $this->exchangeName;
+        return $this->name;
     }
 
-    public function withExchangeName(string $exchangeName): AmqpExchangeSchema
+    public function withName(string $exchangeName): AmqpExchangeSchema
     {
-        $this->exchangeName = $exchangeName;
+        $this->name = $exchangeName;
         return $this;
     }
 
@@ -97,7 +97,7 @@ class AmqpExchangeSchema
         return $this;
     }
 
-    public function isAutoDelete(): bool
+    public function isAutoDeletable(): bool
     {
         return $this->autoDelete;
     }

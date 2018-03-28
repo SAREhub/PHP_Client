@@ -18,11 +18,11 @@ class AmqpExchangeManager
     public function create(AmqpExchangeSchema $schema)
     {
         return $this->channel->exchange_declare(
-            $schema->getExchangeName(),
+            $schema->getName(),
             $schema->getType(),
             $schema->isPassive(),
             $schema->isDurable(),
-            $schema->isAutoDelete(),
+            $schema->isAutoDeletable(),
             $schema->isInternal(),
             false,
             $schema->getArguments()

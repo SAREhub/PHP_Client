@@ -49,7 +49,7 @@ class AmqpExchangeManagerIT extends TestCase
     private function createTestExchangeSchema()
     {
         return AmqpExchangeSchema::newInstance()
-            ->withExchangeName($this->exchangeName)
+            ->withName($this->exchangeName)
             ->withType("topic");
     }
 }
