@@ -44,11 +44,6 @@ class AmqpQueueSchema
     private $autoDelete;
 
     /**
-     * @var bool
-     */
-    private $nowait = false;
-
-    /**
      * @var AMQPTable
      */
     private $arguments;
@@ -56,6 +51,11 @@ class AmqpQueueSchema
     public static function newInstance(): self
     {
         return new self();
+    }
+
+    public function __construct()
+    {
+        $this->arguments = new AMQPTable();
     }
 
     public function getQueueName(): string
@@ -160,21 +160,6 @@ class AmqpQueueSchema
     public function withAutoDelete(bool $autoDelete): AmqpQueueSchema
     {
         $this->autoDelete = $autoDelete;
-        return $this;
-    }
-
-    public function isNowait(): bool
-    {
-        return $this->nowait;
-    }
-
-    /**
-     * @param bool $nowait
-     * @return AmqpQueueSchema
-     */
-    public function withNowait(bool $nowait): AmqpQueueSchema
-    {
-        $this->nowait = $nowait;
         return $this;
     }
 

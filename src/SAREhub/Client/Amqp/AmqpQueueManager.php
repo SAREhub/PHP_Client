@@ -23,7 +23,7 @@ class AmqpQueueManager
             $amqpQueueInfo->isDurable(),
             $amqpQueueInfo->isExclusive(),
             $amqpQueueInfo->isAutoDelete(),
-            $amqpQueueInfo->isNowait(),
+            false,
             $amqpQueueInfo->getArguments()
         );
 
