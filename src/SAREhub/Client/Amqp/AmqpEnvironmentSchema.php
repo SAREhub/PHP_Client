@@ -21,12 +21,6 @@ class AmqpEnvironmentSchema
         return $this->queueSchemas;
     }
 
-    public function withQueueSchemaCollection(array $queueSchemas): AmqpEnvironmentSchema
-    {
-        $this->queueSchemas = $queueSchemas;
-        return $this;
-    }
-
     public function addQueueSchema(AmqpQueueSchema $queueSchema): AmqpEnvironmentSchema
     {
         $this->queueSchemas[] = $queueSchema;
