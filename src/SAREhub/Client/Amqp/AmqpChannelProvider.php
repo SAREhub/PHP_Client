@@ -9,13 +9,8 @@ use SAREhub\Commons\Misc\EnvironmentHelper;
 
 class AmqpChannelProvider
 {
-    const ENTRY = "amqp.channel";
-
     const ENV_PREFETCH_COUNT = "AMQP_PREFETCH_COUNT";
     const DEFAULT_PREFETCH_COUNT = 3;
-
-    const ENV_QUEUE_ARGUMENTS_EXPIRES = "AMQP_QUEUE_ARGUMENTS_EXPIRES";
-    const DEFAULT_QUEUE_ARGUMENTS_EXPIRES = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
 
     /**
      * @var AbstractConnection
