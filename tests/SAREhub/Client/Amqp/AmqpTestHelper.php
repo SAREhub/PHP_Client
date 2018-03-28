@@ -23,6 +23,7 @@ class AmqpTestHelper
             ->withUser("test")
             ->withPassword("test")
             ->withSsl($secure)
+            ->withConnectionTimeout(20)
         );
     }
 }

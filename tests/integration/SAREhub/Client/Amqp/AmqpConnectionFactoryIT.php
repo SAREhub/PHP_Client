@@ -26,6 +26,7 @@ class AmqpConnectionFactoryIT extends TestCase
             ->withVhost("test")
             ->withUser("test")
             ->withPassword("test")
+            ->withConnectionTimeout(10)
         );
 
         $this->assertTrue($connection->isConnected());
@@ -41,6 +42,7 @@ class AmqpConnectionFactoryIT extends TestCase
             ->withUser("test")
             ->withPassword("test")
             ->withSsl()
+            ->withConnectionTimeout(10)
         );
         $this->assertTrue($connection->isConnected());
         $connection->close();
