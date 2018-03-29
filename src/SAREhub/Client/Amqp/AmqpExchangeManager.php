@@ -6,9 +6,9 @@ namespace SAREhub\Client\Amqp;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 
-class AmqpQueueManager
+class AmqpExchangeManager
 {
-    const EXCEPTION_MESSAGE_FORMAT = "AmqpQueueManager occurred error when creating queue (name: %s).";
+    const EXCEPTION_MESSAGE_FORMAT = "AmqpExchangeManager occurred error when creating exchange (name: %s).";
 
     private $channel;
 
@@ -18,31 +18,31 @@ class AmqpQueueManager
     }
 
     /**
-     * @param AmqpQueueSchema $schema
+     * @param AmqpExchangeSchema $schema
      * @return bool
      * @throws AmqpSchemaException
      */
-    public function create(AmqpQueueSchema $schema)
+    public function create(AmqpExchangeSchema $schema)
     {
         try {
-            $this->channel->queue_declare(
+            $this->channel->exchange_declare(
                 $schema->getName(),
+                $schema->getType(),
                 $schema->isPassive(),
                 $schema->isDurable(),
-                $schema->isExclusive(),
-                $schema->isAutoDelete(),
+                $schema->isAutoDeletable(),
+                $schema->isInternal(),
                 false,
                 $schema->getArguments()
             );
-
             return true;
         } catch (\Exception $e) {
             throw new AmqpSchemaException($this->getExceptionMessage($schema->getName()), $e);
         }
     }
 
-    private function getExceptionMessage(string $queueName): string
+    private function getExceptionMessage(string $exchangeName): string
     {
-        return sprintf(self::EXCEPTION_MESSAGE_FORMAT, $queueName);
+        return sprintf(self::EXCEPTION_MESSAGE_FORMAT, $exchangeName);
     }
 }

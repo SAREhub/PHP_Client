@@ -11,7 +11,7 @@ class AmqpQueueSchema
     /**
      * @var string
      */
-    private $queueName = "";
+    private $name = "";
 
     /**
      * @var bool
@@ -48,18 +48,14 @@ class AmqpQueueSchema
         $this->arguments = new AMQPTable();
     }
 
-    public function getQueueName(): string
+    public function getName(): string
     {
-        return $this->queueName;
+        return $this->name;
     }
 
-    /**
-     * @param string $queueName
-     * @return AmqpQueueSchema
-     */
-    public function withQueueName(string $queueName): AmqpQueueSchema
+    public function withName(string $name): AmqpQueueSchema
     {
-        $this->queueName = $queueName;
+        $this->name = $name;
         return $this;
     }
 
@@ -68,10 +64,6 @@ class AmqpQueueSchema
         return $this->passive;
     }
 
-    /**
-     * @param bool $passive
-     * @return AmqpQueueSchema
-     */
     public function withPassive(bool $passive): AmqpQueueSchema
     {
         $this->passive = $passive;
@@ -83,10 +75,6 @@ class AmqpQueueSchema
         return $this->durable;
     }
 
-    /**
-     * @param bool $durable
-     * @return AmqpQueueSchema
-     */
     public function withDurable(bool $durable): AmqpQueueSchema
     {
         $this->durable = $durable;
@@ -98,10 +86,6 @@ class AmqpQueueSchema
         return $this->exclusive;
     }
 
-    /**
-     * @param bool $excelusive
-     * @return AmqpQueueSchema
-     */
     public function withExclusive(bool $exclusive): AmqpQueueSchema
     {
         $this->exclusive = $exclusive;
@@ -113,10 +97,6 @@ class AmqpQueueSchema
         return $this->autoDelete;
     }
 
-    /**
-     * @param bool $autoDelete
-     * @return AmqpQueueSchema
-     */
     public function withAutoDelete(bool $autoDelete): AmqpQueueSchema
     {
         $this->autoDelete = $autoDelete;
@@ -128,10 +108,6 @@ class AmqpQueueSchema
         return $this->arguments;
     }
 
-    /**
-     * @param AMQPTable $arguments
-     * @return AmqpQueueSchema
-     */
     public function withArguments(AMQPTable $arguments): AmqpQueueSchema
     {
         $this->arguments = $arguments;
