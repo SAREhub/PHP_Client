@@ -51,24 +51,33 @@ class EnvAmqpConnectionOptionsProvider implements AmqpConnectionOptionsProvider
     private $envVarPrefix;
 
     /**
+     * @var array
+     */
+    private $envSchema;
+
+    /**
      * @var SecretValueProvider
      */
     private $secretValueProvider;
 
-    /**
-     *
-     * @param string $envVarPrefix
-     * @param SecretValueProvider $secretValueProvider
-     */
-    public function __construct($envVarPrefix = self::DEFAULT_ENV_VAR_PREFIX, SecretValueProvider $secretValueProvider)
+    public function __construct(
+        SecretValueProvider $secretValueProvider,
+        $envVarPrefix = self::DEFAULT_ENV_VAR_PREFIX,
+        array $envSchema
+    )
     {
         $this->envVarPrefix = $envVarPrefix;
+        $this->envSchema = array_merge(self::ENV_SCHEMA, $envSchema);
         $this->secretValueProvider = $secretValueProvider;
     }
 
+    /**
+     * @return AmqpConnectionOptions
+     * @throws \SAREhub\Commons\Secret\SecretValueNotFoundException
+     */
     public function get(): AmqpConnectionOptions
     {
-        $env = EnvironmentHelper::getVars(self::ENV_SCHEMA, $this->envVarPrefix);
+        $env = EnvironmentHelper::getVars($this->envSchema, $this->envVarPrefix);
 
         return AmqpConnectionOptions::newInstance()
             ->withHost($env[self::ENV_HOST])
