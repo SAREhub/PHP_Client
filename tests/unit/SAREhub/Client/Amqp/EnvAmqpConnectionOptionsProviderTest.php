@@ -93,5 +93,6 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
     {
         $name = $this->envVarPrefix . $name;
         putenv("$name=$value");
+
     }
 }
