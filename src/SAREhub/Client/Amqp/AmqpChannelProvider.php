@@ -5,13 +5,10 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Connection\AbstractConnection;
-use SAREhub\Commons\Misc\EnvironmentHelper;
+use SAREhub\Commons\Misc\InvokableProvider;
 
-class AmqpChannelProvider
+class AmqpChannelProvider extends InvokableProvider
 {
-    const ENV_PREFETCH_COUNT = "AMQP_PREFETCH_COUNT";
-    const DEFAULT_PREFETCH_COUNT = 3;
-
     /**
      * @var AbstractConnection
      */
@@ -27,14 +24,6 @@ class AmqpChannelProvider
 
     public function get()
     {
-        $channel = new AmqpChannelWrapper($this->connection->channel());
-        $channel->setPrefetchCountPerConsumer($this->getPrefetchCountFromEnv());
-
-        return $channel;
-    }
-
-    private function getPrefetchCountFromEnv(): int
-    {
-        return EnvironmentHelper::getVar(self::ENV_PREFETCH_COUNT, self::DEFAULT_PREFETCH_COUNT);
+        return $this->connection->channel();
     }
 }
