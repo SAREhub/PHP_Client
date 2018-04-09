@@ -30,7 +30,6 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
     {
         $this->envVarPrefix = $this->getName();
         $this->secretValueProvider = \Mockery::mock(SecretValueProvider::class);
-        $this->secretValueProvider->shouldIgnoreMissing("");
         $this->provider = new EnvAmqpConnectionOptionsProvider($this->secretValueProvider, $this->envVarPrefix, []);
     }
 
@@ -42,8 +41,11 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
      */
     public function testGet($expectedOptionValue, string $envVar, string $optionName)
     {
+        $this->secretValueProvider->allows("get")->andReturn("");
         $this->putEnvVar($envVar, $expectedOptionValue);
+
         $options = $this->provider->get();
+
         $this->assertEquals($expectedOptionValue, $options->{$optionName}());
     }
 
@@ -53,8 +55,7 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
         $this->putEnvVar(EnvAmqpConnectionOptionsProvider::ENV_PASSWORD_SECRET, $passwordSecret);
         $this->secretValueProvider->expects("get")->withArgs([$passwordSecret])->andReturn("test_password");
 
-        $options = $this->provider->get();
-        $this->assertEquals("test_password", $options->getPassword());
+        $this->assertEquals("test_password", $this->provider->get()->getPassword());
     }
 
     public function setsOptionProvider()
@@ -72,6 +73,20 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
             "Keepalive" => [true, EnvAmqpConnectionOptionsProvider::ENV_KEEPALIVE, "isKeepalive"],
             "Heartbeat" => [100, EnvAmqpConnectionOptionsProvider::ENV_HEARTBEAT, "getHeartbeat"]
         ];
+    }
+
+    public function testGetWhenCustomSchemaDefaultValues()
+    {
+        $this->secretValueProvider->allows("get")->andReturn("");
+
+        $customSchema = [EnvAmqpConnectionOptionsProvider::ENV_HOST => "custom_default_host"];
+        $this->provider = new EnvAmqpConnectionOptionsProvider(
+            $this->secretValueProvider,
+            $this->envVarPrefix,
+            $customSchema
+        );
+
+        $this->assertEquals("custom_default_host", $this->provider->get()->getHost());
     }
 
     private function putEnvVar(string $name, $value)
