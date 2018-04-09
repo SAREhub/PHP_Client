@@ -5,9 +5,10 @@ namespace SAREhub\Client\Amqp;
 
 
 use SAREhub\Commons\Misc\EnvironmentHelper;
+use SAREhub\Commons\Misc\InvokableProvider;
 use SAREhub\Commons\Secret\SecretValueProvider;
 
-class EnvAmqpConnectionOptionsProvider implements AmqpConnectionOptionsProvider
+class EnvAmqpConnectionOptionsProvider extends InvokableProvider
 {
     const ENV_HOST = "HOST";
     const ENV_PORT = "PORT";
