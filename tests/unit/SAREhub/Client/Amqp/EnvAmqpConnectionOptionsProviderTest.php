@@ -31,7 +31,7 @@ class EnvAmqpConnectionOptionsProviderTest extends TestCase
         $this->envVarPrefix = $this->getName();
         $this->secretValueProvider = \Mockery::mock(SecretValueProvider::class);
         $this->secretValueProvider->shouldIgnoreMissing("");
-        $this->provider = new EnvAmqpConnectionOptionsProvider($this->envVarPrefix, $this->secretValueProvider);
+        $this->provider = new EnvAmqpConnectionOptionsProvider($this->secretValueProvider, $this->envVarPrefix, []);
     }
 
     /**

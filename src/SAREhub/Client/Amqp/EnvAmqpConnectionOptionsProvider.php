@@ -63,7 +63,7 @@ class EnvAmqpConnectionOptionsProvider implements AmqpConnectionOptionsProvider
     public function __construct(
         SecretValueProvider $secretValueProvider,
         $envVarPrefix = self::DEFAULT_ENV_VAR_PREFIX,
-        array $envSchema
+        array $envSchema = []
     )
     {
         $this->envVarPrefix = $envVarPrefix;
