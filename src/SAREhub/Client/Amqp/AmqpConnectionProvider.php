@@ -21,6 +21,7 @@ class AmqpConnectionProvider extends InvokableProvider
     public function __construct(AmqpConnectionFactory $factory, AmqpConnectionOptions $options)
     {
         $this->connectionFactory = $factory;
+        $this->options = $options;
     }
 
     public function get()
