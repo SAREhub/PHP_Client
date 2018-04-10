@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        <link rel="stylesheet" href="resources/bootstrap.min.css">
+        <link rel="stylesheet" href="resources/style.css">
+
+        <title>
+            Class Pimple\Container | SAREhub PHP Client
+        </title>
+    </head>
+
+    <body>
+<div id="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="index.html">
+                                SAREhub PHP Client
+                            </a>
+                        </li>
+
+                            <li>
+                                <a href="classes.html">Classes</a>
+                            </li>
+
+                            <li>
+                                <a href="interfaces.html">Interfaces</a>
+                            </li>
+
+
+
+                            <li>
+                                <a href="exceptions.html">Exceptions</a>
+                            </li>
+
+                    </ul>
+
+                    <form id="search" class="pull-right">
+                        <input type="text" name="q" class="form-control text" placeholder="Search class, function or namespace" autofocus>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="breadcrumbs">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+
+
+<div class="pull-left type">
+    <span class="label label-success">Class</span>
+</div>
+
+<ol class="breadcrumb pull-left">
+        <li>
+            <a href="namespace-Pimple.html">Pimple</a>
+        </li>
+
+        <li class="backslash">\</li>
+        <li class="active">Container</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+    <h1>Container</h1>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                Container main class.
+            </div>
+        </div>
+
+        <dl class="tree">
+            <dd>
+
+                    implements
+                        <a href="interface-ArrayAccess.html">
+                            ArrayAccess
+                        </a>
+
+            </dd>
+        </dl>
+
+
+        <div>
+            <h2>Known subclasses</h2>
+            <a href="class-SAREhub.Client.BasicClientContext.html">SAREhub\Client\BasicClientContext</a>
+        </div>
+
+    <div class="info">
+        
+
+            <br>
+            <a href="source-class-Pimple.Container.html" class="open-source-code">Open source code</a>
+        <br>
+    </div>
+
+        <table class="summary table table-bordered table-responsive table-striped" id="methods">
+            <tr><th colspan="3">Methods Summary</th></tr>
+
+
+
+<tr id="___construct">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#___construct">#</a>
+            <code><a href="source-class-Pimple.Container.html#55-63">__construct</a>( <span> array <span class="property-name">$values</span> = <span class="php-keyword1">array</span> ( )</span> )</code>
+
+            <div class="description">
+                Instantiates the container.
+
+Objects and parameters can be passed as argument to the constructor.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_offsetSet">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_offsetSet">#</a>
+            <code><a href="source-class-Pimple.Container.html#79-87">offsetSet</a>( <span> string <span class="property-name">$id</span> </span>, <span> mixed <span class="property-name">$value</span> </span> )</code>
+
+            <div class="description">
+                Sets a parameter or an object.
+
+Objects must be defined as Closures.
+
+Allowing any PHP callable leads to difficult to debug problems
+as function names (strings) are callable (creating a function with
+the same name as an existing parameter would break your container).
+
+
+
+
+
+
+
+
+                        <h2>Implementation of</h2>
+                        <div>
+                            <code>
+                                <a href="interface-ArrayAccess.html#_offsetSet">
+                                    ArrayAccess::offsetSet()
+                                </a>
+                            </code>
+                        </div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_offsetGet">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_offsetGet">#</a>
+            <code><a href="source-class-Pimple.Container.html#98-124">offsetGet</a>( <span> string <span class="property-name">$id</span> </span> )</code>
+
+            <div class="description">
+                Gets a parameter or an object.
+
+
+
+
+
+
+
+
+                        <h2>Implementation of</h2>
+                        <div>
+                            <code>
+                                <a href="interface-ArrayAccess.html#_offsetGet">
+                                    ArrayAccess::offsetGet()
+                                </a>
+                            </code>
+                        </div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_offsetExists">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_offsetExists">#</a>
+            <code><a href="source-class-Pimple.Container.html#133-136">offsetExists</a>( <span> string <span class="property-name">$id</span> </span> )</code>
+
+            <div class="description">
+                Checks if a parameter or an object is set.
+
+
+
+
+
+
+
+
+                        <h2>Implementation of</h2>
+                        <div>
+                            <code>
+                                <a href="interface-ArrayAccess.html#_offsetExists">
+                                    ArrayAccess::offsetExists()
+                                </a>
+                            </code>
+                        </div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_offsetUnset">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_offsetUnset">#</a>
+            <code><a href="source-class-Pimple.Container.html#143-152">offsetUnset</a>( <span> string <span class="property-name">$id</span> </span> )</code>
+
+            <div class="description">
+                Unsets a parameter or an object.
+
+
+
+
+
+
+
+
+                        <h2>Implementation of</h2>
+                        <div>
+                            <code>
+                                <a href="interface-ArrayAccess.html#_offsetUnset">
+                                    ArrayAccess::offsetUnset()
+                                </a>
+                            </code>
+                        </div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_factory">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_factory">#</a>
+            <code><a href="source-class-Pimple.Container.html#163-172">factory</a>( <span> callable <span class="property-name">$callable</span> </span> )</code>
+
+            <div class="description">
+                Marks a callable as being a factory service.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_protect">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_protect">#</a>
+            <code><a href="source-class-Pimple.Container.html#185-194">protect</a>( <span> callable <span class="property-name">$callable</span> </span> )</code>
+
+            <div class="description">
+                Protects a callable from being interpreted as a service.
+
+This is useful when you want to store a callable as a parameter.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_raw">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_raw">#</a>
+            <code><a href="source-class-Pimple.Container.html#205-216">raw</a>( <span> string <span class="property-name">$id</span> </span> )</code>
+
+            <div class="description">
+                Gets a parameter or the closure defining an object.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_extend">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_extend">#</a>
+            <code><a href="source-class-Pimple.Container.html#234-268">extend</a>( <span> string <span class="property-name">$id</span> </span>, <span> callable <span class="property-name">$callable</span> </span> )</code>
+
+            <div class="description">
+                Extends an object definition.
+
+Useful when you want to extend an existing object definition,
+without necessarily loading that object.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_keys">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_keys">#</a>
+            <code><a href="source-class-Pimple.Container.html#275-278">keys</a>( )</code>
+
+            <div class="description">
+                Returns all defined value names.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_register">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_register">#</a>
+            <code><a href="source-class-Pimple.Container.html#288-297">register</a>( <span> Pimple\ServiceProviderInterface <span class="property-name">$provider</span> </span>, <span> array <span class="property-name">$values</span> = <span class="php-keyword1">array</span> ( )</span> )</code>
+
+            <div class="description">
+                Registers a service provider.
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+        </table>
+
+
+
+
+
+
+
+    <div id="footer">
+        Generated by <a href="https://github.com/apigen/apigen">ApiGen</a>
+    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="resources/jquery-3.2.1.min.js"></script>
+        <script src="resources/jquery-ui-1.12.1.min.js"></script>
+
+        <script src="elementlist.js"></script>
+        <script src="resources/main.js"></script>
+    </body>
+</html>
+
+

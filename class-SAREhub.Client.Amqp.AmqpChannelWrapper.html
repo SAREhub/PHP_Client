@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        <link rel="stylesheet" href="resources/bootstrap.min.css">
+        <link rel="stylesheet" href="resources/style.css">
+
+        <title>
+            Class SAREhub\Client\Amqp\AmqpChannelWrapper | SAREhub PHP Client
+        </title>
+    </head>
+
+    <body>
+<div id="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="index.html">
+                                SAREhub PHP Client
+                            </a>
+                        </li>
+
+                            <li>
+                                <a href="classes.html">Classes</a>
+                            </li>
+
+                            <li>
+                                <a href="interfaces.html">Interfaces</a>
+                            </li>
+
+
+
+                            <li>
+                                <a href="exceptions.html">Exceptions</a>
+                            </li>
+
+                    </ul>
+
+                    <form id="search" class="pull-right">
+                        <input type="text" name="q" class="form-control text" placeholder="Search class, function or namespace" autofocus>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="breadcrumbs">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+
+
+<div class="pull-left type">
+    <span class="label label-success">Class</span>
+</div>
+
+<ol class="breadcrumb pull-left">
+        <li>
+            <a href="namespace-SAREhub.html">SAREhub</a>
+        </li>
+            <li class="backslash">\</li>
+        <li>
+            <a href="namespace-SAREhub.Client.html">Client</a>
+        </li>
+            <li class="backslash">\</li>
+        <li>
+            <a href="namespace-SAREhub.Client.Amqp.html">Amqp</a>
+        </li>
+
+        <li class="backslash">\</li>
+        <li class="active">AmqpChannelWrapper</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+    <h1>AmqpChannelWrapper</h1>
+
+
+        <dl class="tree">
+            <dd>
+                    extends
+                    <a href="class-SAREhub.Commons.Service.ServiceSupport.html">
+                        SAREhub\Commons\Service\ServiceSupport
+                    </a>
+
+
+            </dd>
+        </dl>
+
+
+
+    <div class="info">
+        
+
+            <a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html" class="open-source-code">Open source code</a>
+        <br>
+    </div>
+
+        <table class="summary table table-bordered table-responsive table-striped" id="methods">
+            <tr><th colspan="3">Methods Summary</th></tr>
+
+
+
+<tr id="___construct">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#___construct">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#41-46">__construct</a>( <span> PhpAmqpLib\Channel\AMQPChannel <span class="property-name">$channel</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_registerConsumer">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_registerConsumer">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#48-67">registerConsumer</a>( <span> <a href="class-SAREhub.Client.Amqp.AmqpConsumer.html">SAREhub\Client\Amqp\AmqpConsumer</a> <span class="property-name">$consumer</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_unregisterConsumer">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_unregisterConsumer">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#69-74">unregisterConsumer</a>( <span> string <span class="property-name">$consumerTag</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_onMessage">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_onMessage">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#76-86">onMessage</a>( <span> PhpAmqpLib\Message\AMQPMessage <span class="property-name">$in</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_doTick">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 protected 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_doTick">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#88-95">doTick</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+                        <h2>Overrides</h2>
+                        <div>
+                            <code>
+                                <a href="class-SAREhub.Commons.Service.ServiceSupport.html#_doTick">
+                                    SAREhub\Commons\Service\ServiceSupport::doTick()
+                                </a>
+                            </code>
+                        </div>
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_ack">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_ack">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#97-102">ack</a>( <span> <a href="interface-SAREhub.Client.Message.Message.html">SAREhub\Client\Message\Message</a> <span class="property-name">$message</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_reject">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_reject">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#104-109">reject</a>( <span> <a href="interface-SAREhub.Client.Message.Message.html">SAREhub\Client\Message\Message</a> <span class="property-name">$message</span> </span>, <span> bool <span class="property-name">$requeue</span> = <span class="php-keyword1">true</span></span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_publish">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_publish">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#111-119">publish</a>( <span> <a href="interface-SAREhub.Client.Message.Message.html">SAREhub\Client\Message\Message</a> <span class="property-name">$message</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setChannelPrefetchCount">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setChannelPrefetchCount">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#121-124">setChannelPrefetchCount</a>( <span> int <span class="property-name">$count</span> </span>, <span> int <span class="property-name">$size</span> = <span class="php-num">0</span></span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setPrefetchCountPerConsumer">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setPrefetchCountPerConsumer">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#126-129">setPrefetchCountPerConsumer</a>( <span> int <span class="property-name">$count</span> </span>, <span> int <span class="property-name">$size</span> = <span class="php-num">0</span></span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getWaitTimeout">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getWaitTimeout">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#131-134">getWaitTimeout</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setWaitTimeout">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setWaitTimeout">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#136-139">setWaitTimeout</a>( <span> int <span class="property-name">$timeout</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getConsumer">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getConsumer">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#141-148">getConsumer</a>( <span> string <span class="property-name">$consumerTag</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_hasConsumer">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_hasConsumer">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#150-153">hasConsumer</a>( <span> string <span class="property-name">$consumerTag</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getConsumers">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getConsumers">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#155-158">getConsumers</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getWrappedChannel">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getWrappedChannel">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#160-163">getWrappedChannel</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getMessageConverter">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getMessageConverter">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#165-168">getMessageConverter</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setMessageConverter">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setMessageConverter">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#170-173">setMessageConverter</a>( <span> <a href="class-SAREhub.Client.Amqp.AmqpMessageConverter.html">SAREhub\Client\Amqp\AmqpMessageConverter</a> <span class="property-name">$messageConverter</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getProcessConfirmStrategy">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getProcessConfirmStrategy">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#175-178">getProcessConfirmStrategy</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setProcessConfirmStrategy">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                 public 
+                
+                
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setProcessConfirmStrategy">#</a>
+            <code><a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#180-183">setProcessConfirmStrategy</a>( <span> <a href="interface-SAREhub.Client.Amqp.AmqpProcessConfirmStrategy.html">SAREhub\Client\Amqp\AmqpProcessConfirmStrategy</a> <span class="property-name">$processConfirmStrategy</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+        </table>
+
+        <table class="summary table table-bordered table-responsive table-striped">
+            <tr>
+                <th>
+                    Methods inherited from <a href="class-SAREhub.Commons.Service.ServiceSupport.html#methods">SAREhub\Commons\Service\ServiceSupport</a>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_start">start()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_tick">tick()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_stop">stop()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_isStarted">isStarted()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_isStopped">isStopped()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_isRunning">isRunning()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_getLogger">getLogger()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_setLogger">setLogger()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_doStart">doStart()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_doTick">doTick()</a></code>, 
+                        <code><a href="class-SAREhub.Commons.Service.ServiceSupport.html#_doStop">doStop()</a></code>
+                </td>
+            </tr>
+        </table>
+
+
+        <table class="summary table table-bordered table-responsive table-striped" id="constants">
+            <tr><th colspan="3">Constants Summary</th></tr>
+<tr id="DEFAULT_WAIT_TIMEOUT">
+    <td class="attributes">
+        <code class="keyword">
+        public
+        
+        
+        int
+        </code>
+    </td>
+    <td class="name">
+        <code>
+            <a href="source-class-SAREhub.Client.Amqp.AmqpChannelWrapper.html#14" class="constant-name">DEFAULT_WAIT_TIMEOUT</a>
+        </code>
+
+        <div class="description">
+            
+
+        </div>
+    </td>
+    <td class="value">
+        <div>
+            <a href="#DEFAULT_WAIT_TIMEOUT" class="anchor pull-right">#</a>
+            <code><span class="php-num">1</span></code>
+        </div>
+    </td>
+</tr>
+        </table>
+
+
+
+
+    <div id="footer">
+        Generated by <a href="https://github.com/apigen/apigen">ApiGen</a>
+    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="resources/jquery-3.2.1.min.js"></script>
+        <script src="resources/jquery-ui-1.12.1.min.js"></script>
+
+        <script src="elementlist.js"></script>
+        <script src="resources/main.js"></script>
+    </body>
+</html>
+
+

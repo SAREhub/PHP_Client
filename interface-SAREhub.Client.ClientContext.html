@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        <link rel="stylesheet" href="resources/bootstrap.min.css">
+        <link rel="stylesheet" href="resources/style.css">
+
+        <title>
+            Interface SAREhub\Client\ClientContext | SAREhub PHP Client
+        </title>
+    </head>
+
+    <body>
+<div id="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="index.html">
+                                SAREhub PHP Client
+                            </a>
+                        </li>
+
+                            <li>
+                                <a href="classes.html">Classes</a>
+                            </li>
+
+                            <li>
+                                <a href="interfaces.html">Interfaces</a>
+                            </li>
+
+
+
+                            <li>
+                                <a href="exceptions.html">Exceptions</a>
+                            </li>
+
+                    </ul>
+
+                    <form id="search" class="pull-right">
+                        <input type="text" name="q" class="form-control text" placeholder="Search class, function or namespace" autofocus>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="breadcrumbs">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+
+
+<div class="pull-left type">
+    <span class="label label-info">Interface</span>
+</div>
+
+<ol class="breadcrumb pull-left">
+        <li>
+            <a href="namespace-SAREhub.html">SAREhub</a>
+        </li>
+            <li class="backslash">\</li>
+        <li>
+            <a href="namespace-SAREhub.Client.html">Client</a>
+        </li>
+
+        <li class="backslash">\</li>
+        <li class="active">ClientContext</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+    <h1>ClientContext</h1>
+
+
+        <dl class="tree">
+            <dd>
+                implements
+                    <a href="interface-Psr.Log.LoggerAwareInterface.html">Psr\Log\LoggerAwareInterface</a>, 
+                    <a href="interface-SAREhub.Commons.Service.Service.html">SAREhub\Commons\Service\Service</a>
+            </dd>
+        </dl>
+
+        <div>
+            <h2>Known implementers</h2>
+            <p>
+                    <a href="class-SAREhub.Client.BasicClientContext.html">
+                        SAREhub\Client\BasicClientContext
+                    </a>
+            </p>
+        </div>
+
+    <div class="info">
+            <a href="source-interface-SAREhub.Client.ClientContext.html" class="open-source-code">Open source code</a>
+        <br>
+    </div>
+
+        <table class="summary table table-responsive table-bordered table-striped" id="methods">
+            <tr><th colspan="3">Methods Summary</th></tr>
+
+
+
+<tr id="_getProperty">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getProperty">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#18">getProperty</a>( <span> string <span class="property-name">$name</span> </span> )</code>
+
+            <div class="description">
+                Sets property in context
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_hasProperty">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_hasProperty">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#25">hasProperty</a>( <span> string <span class="property-name">$name</span> </span> )</code>
+
+            <div class="description">
+                Checks context has property
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setProperty">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setProperty">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#35">setProperty</a>( <span> string <span class="property-name">$name</span> </span>, <span> mixed <span class="property-name">$value</span> </span> )</code>
+
+            <div class="description">
+                Sets propertty yin context
+Value can be callable(first argument will be $this context),
+it will be lazy evaluate in first use.
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_addFactory">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_addFactory">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#43">addFactory</a>( <span> string <span class="property-name">$name</span> </span>, <span> callable <span class="property-name">$factory</span> </span> )</code>
+
+            <div class="description">
+                Adds factory to context as property any call to that
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_addService">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_addService">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#54">addService</a>( <span> string <span class="property-name">$name</span> </span>, <span> <a href="interface-SAREhub.Commons.Service.Service.html">SAREhub\Commons\Service\Service</a> <span class="property-name">$service</span> </span> )</code>
+
+            <div class="description">
+                Adds service to context for lifecycle manage(service will be started if not started yet).
+
+Sets service as context property.
+Sets context(when implements ClientContextAware) and logger(creates based on name) of service.
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_registerContextProvider">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_registerContextProvider">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#60">registerContextProvider</a>( <span> <a href="interface-SAREhub.Client.ContextProvider.html">SAREhub\Client\ContextProvider</a> <span class="property-name">$provider</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_now">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_now">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#66">now</a>( )</code>
+
+            <div class="description">
+                Returns current timestamp
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getTimeProvider">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getTimeProvider">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#71">getTimeProvider</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setTimeProvider">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setTimeProvider">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#77">setTimeProvider</a>( <span> SAREhub\Commons\Misc\TimeProvider <span class="property-name">$provider</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_injectLogger">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_injectLogger">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#83">injectLogger</a>( <span> string <span class="property-name">$name</span> </span>, <span> <a href="interface-Psr.Log.LoggerAwareInterface.html">Psr\Log\LoggerAwareInterface</a> <span class="property-name">$aware</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_getLoggerFactory">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_getLoggerFactory">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#88">getLoggerFactory</a>( )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+
+<tr id="_setLoggerFactory">
+
+    <td class="attributes col-md-1">
+        <code class="keyword">
+                
+                public
+        </code>
+    </td>
+
+    <td class="name">
+        <div>
+            <a class="anchor pull-right" href="#_setLoggerFactory">#</a>
+            <code><a href="source-interface-SAREhub.Client.ClientContext.html#94">setLoggerFactory</a>( <span> SAREhub\Commons\Logger\LoggerFactory <span class="property-name">$factory</span> </span> )</code>
+
+            <div class="description">
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </td>
+</tr>
+        </table>
+
+
+    <div id="footer">
+        Generated by <a href="https://github.com/apigen/apigen">ApiGen</a>
+    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="resources/jquery-3.2.1.min.js"></script>
+        <script src="resources/jquery-ui-1.12.1.min.js"></script>
+
+        <script src="elementlist.js"></script>
+        <script src="resources/main.js"></script>
+    </body>
+</html>
+
+
