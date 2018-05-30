@@ -19,7 +19,7 @@ class Splitter implements Processor
     private $splittingStrategy;
 
     /**
-     * @var PartProcessor;
+     * @var Processor;
      */
     private $partProcessor;
 
