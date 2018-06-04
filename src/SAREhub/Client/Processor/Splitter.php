@@ -23,9 +23,17 @@ class Splitter implements Processor
      */
     private $partProcessor;
 
+    public function __construct(SplittingStrategy $splittingStrategy, Processor $partProcessor)
+    {
+        $this->splittingStrategy = $splittingStrategy;
+        $this->partProcessor = $partProcessor;
+    }
 
     public function process(Exchange $exchange)
     {
-
+        $partList = $this->splittingStrategy->split($exchange->getIn());
+        foreach ($partList as $part) {
+            $this->partProcessor->process($part);
+        }
     }
 }
