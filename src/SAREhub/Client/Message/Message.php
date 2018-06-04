@@ -4,68 +4,76 @@ namespace SAREhub\Client\Message;
 
 interface Message
 {
-
     /**
+     * Returns copy of message
      * @return Message
      */
-    public function copy();
+    public function copy(): Message;
 
     /**
-     * @param $name
+     * @param string $name
      * @param mixed $defaultValue
      * @return mixed
      */
-    public function getHeader($name, $defaultValue = null);
+    public function getHeader(string $name, $defaultValue = null);
 
     /**
+     * Returns all message headers
      * @return array
      */
-    public function getHeaders();
+    public function getHeaders(): array;
 
     /**
-     * @param $name
+     * Returns true if header is sets
+     * @param string $name
      * @return bool
      */
-    public function hasHeader($name);
+    public function hasHeader(string $name): bool;
 
     /**
+     * Returns true if any header was sets on message
      * @return bool
      */
-    public function hasAnyHeader();
+    public function hasAnyHeader(): bool;
 
     /**
-     * Sets all headers to new.
+     * Sets all headers to new
      * @param array $headers
      * @return $this
      */
-    public function setHeaders(array $headers);
+    public function setHeaders(array $headers): Message;
 
     /**
+     * Sets selected header on given value
      * @param string $name
      * @param mixed $value
      * @return $this
      */
-    public function setHeader($name, $value);
+    public function setHeader(string $name, $value): Message;
 
     /**
+     * Removes selected header from message
      * @param string $name
-     * @return $this
+     * @return Message
      */
-    public function removeHeader($name);
+    public function removeHeader(string $name): Message;
 
     /**
+     * Returns body of message
      * @return mixed
      */
     public function getBody();
 
     /**
+     * Returns true is message has body
      * @return bool
      */
-    public function hasBody();
+    public function hasBody(): bool;
 
     /**
+     * Sets new body on message
      * @param mixed $body
      * @return $this
      */
-    public function setBody($body);
+    public function setBody($body): Message;
 }
