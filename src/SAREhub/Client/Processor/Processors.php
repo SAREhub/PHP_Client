@@ -52,5 +52,9 @@ class Processors
         return new SimpleFilterProcessor($predicate);
     }
 
+    public static function split(SplittingStrategy $splittingStrategy, Processor $partProcessor): Splitter
+    {
+        return new Splitter($splittingStrategy, $partProcessor);
+    }
 
 }
