@@ -9,17 +9,17 @@ class AmqpEnvironmentManager
     /**
      * @var AmqpQueueManager
      */
-    private $amqpQueueManager;
+    private $queueManager;
 
     /**
      * @var AmqpQueueBindingManager
      */
-    private $amqpQueueBindingManager;
+    private $queueBindingManager;
 
     /**
      * @var AmqpExchangeManager
      */
-    private $amqpExchangeManager;
+    private $exchangeManager;
 
     public function __construct(
         AmqpQueueManager $queueManager,
@@ -27,9 +27,9 @@ class AmqpEnvironmentManager
         AmqpExchangeManager $exchangeManager
     )
     {
-        $this->amqpQueueManager = $queueManager;
-        $this->amqpQueueBindingManager = $queueBindingManager;
-        $this->amqpExchangeManager = $exchangeManager;
+        $this->queueManager = $queueManager;
+        $this->queueBindingManager = $queueBindingManager;
+        $this->exchangeManager = $exchangeManager;
     }
 
     /**
@@ -38,16 +38,46 @@ class AmqpEnvironmentManager
      */
     public function create(AmqpEnvironmentSchema $environmentSchema)
     {
-        foreach ($environmentSchema->getQueueSchemas() as $queueSchema) {
-            $this->amqpQueueManager->create($queueSchema);
-        }
+        $this->createQueues($environmentSchema);
+        $this->createExchanges($environmentSchema);
+        $this->createBindings($environmentSchema);
+    }
 
-        foreach ($environmentSchema->getExchangeSchemas() as $exchangeSchema) {
-            $this->amqpExchangeManager->create($exchangeSchema);
-        }
-
-        foreach ($environmentSchema->getQueueBindingSchemas() as $queueBindingSchema) {
-            $this->amqpQueueBindingManager->create($queueBindingSchema);
+    /**
+     * @param AmqpEnvironmentSchema $environmentSchema
+     * @throws AmqpSchemaException
+     */
+    private function createQueues(AmqpEnvironmentSchema $environmentSchema)
+    {
+        foreach ($environmentSchema->getQueueSchemas() as $schema) {
+            $this->queueManager->create($schema);
         }
     }
+
+    /**
+     * @param AmqpEnvironmentSchema $environmentSchema
+     * @throws AmqpSchemaException
+     */
+    private function createExchanges(AmqpEnvironmentSchema $environmentSchema)
+    {
+        foreach ($environmentSchema->getExchangeSchemas() as $schema) {
+            $this->exchangeManager->create($schema);
+        }
+    }
+
+    /**
+     * @param AmqpEnvironmentSchema $environmentSchema
+     * @throws AmqpSchemaException
+     */
+    private function createBindings(AmqpEnvironmentSchema $environmentSchema)
+    {
+        foreach ($environmentSchema->getQueueBindingSchemas() as $schema) {
+            $this->queueBindingManager->create($schema);
+        }
+
+        foreach ($environmentSchema->getExchangeBindingSchemas() as $schema) {
+            $this->exchangeManager->bindToExchange($schema);
+        }
+    }
+
 }

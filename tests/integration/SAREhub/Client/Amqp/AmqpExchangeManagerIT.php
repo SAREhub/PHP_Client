@@ -3,18 +3,10 @@
 namespace SAREhub\Client\Amqp;
 
 
-use PhpAmqpLib\Channel\AMQPChannel;
-use PHPUnit\Framework\TestCase;
+use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
 
-class AmqpExchangeManagerIT extends TestCase
+class AmqpExchangeManagerIT extends AmqpTestCase
 {
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
-
-    private $exchangeName = "AmqpExchangeManagerIT";
-
     /**
      * @var AmqpExchangeManager
      */
@@ -22,38 +14,48 @@ class AmqpExchangeManagerIT extends TestCase
 
     protected function setUp()
     {
-        $connection = AmqpTestHelper::createConnection();
-        $this->channel = $connection->channel();
-
+        parent::setUp();
         $this->exchangeManager = new AmqpExchangeManager($this->channel);
-        $this->channel->exchange_delete($this->exchangeName);
     }
 
     /**
      * @throws AmqpSchemaException
      */
-    public function testCreateWhenNotExistsThenCreateExchange()
+    public function testCreate()
     {
-        $this->assertTrue($this->exchangeManager->create($this->createTestExchangeSchema()));
-    }
-
-    /**
-     * @depends testCreateWhenNotExistsThenCreateExchange
-     * @throws AmqpSchemaException
-     */
-    public function testCreateWhenExistsAndPassiveIsSetToFalseThenThrowException()
-    {
-        $this->exchangeManager->create($this->createTestExchangeSchema());
-
-        $this->expectException(AmqpSchemaException::class);
-
-        $this->exchangeManager->create($this->createTestExchangeSchema()->withDurable(false));
-    }
-
-    private function createTestExchangeSchema()
-    {
-        return AmqpExchangeSchema::newInstance()
-            ->withName($this->exchangeName)
+        $schema = AmqpExchangeSchema::newInstance()
+            ->withName("test_exchange")
+            ->withAutoDelete(true)
+            ->withDurable(false)
             ->withType("topic");
+        $this->assertTrue($this->exchangeManager->create($schema));
+    }
+
+    /**
+     * @throws AmqpSchemaException
+     */
+    public function testBindToExchange()
+    {
+        $this->createExchange("exchange_1");
+        $this->createExchange("exchange_2");
+
+        $bindingSchema = AmqpExchangeBindingSchema::newInstance()
+            ->withDestination("exchange_2")
+            ->withSource("exchange_1")
+            ->withRoutingKey("a.b");
+
+        $this->assertTrue($this->exchangeManager->bindToExchange($bindingSchema));
+    }
+
+    /**
+     * @param string $name
+     * @throws AmqpSchemaException
+     */
+    private function createExchange(string $name)
+    {
+        $schema = AmqpExchangeSchema::newInstance()
+            ->withName($name)
+            ->withAutoDelete(true);
+        $this->exchangeManager->create($schema);
     }
 }
