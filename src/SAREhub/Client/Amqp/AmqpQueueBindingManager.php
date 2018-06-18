@@ -8,10 +8,11 @@ use PhpAmqpLib\Channel\AMQPChannel;
 
 class AmqpQueueBindingManager
 {
+    const ERROR_MESSAGE = "Creating queue binding error(queue: %s; exchange: %s; routing_key: %s)";
 
-    const EXCEPTION_MESSAGE_FORMAT = "AmqpQueueBindingManager occurred error when creating binding (from: %s; to: %s; routing key: %s).";
-
-
+    /**
+     * @var AMQPChannel
+     */
     private $channel;
 
     public function __construct(AMQPChannel $channel)
@@ -34,14 +35,14 @@ class AmqpQueueBindingManager
             );
             return true;
         } catch (\Exception $e) {
-            throw new AmqpSchemaException($this->getExceptionMessage($schema), $e);
+            throw new AmqpSchemaException($this->formatExceptionMessage($schema), $e);
         }
     }
 
-    private function getExceptionMessage(AmqpQueueBindingSchema $schema): string
+    private function formatExceptionMessage(AmqpQueueBindingSchema $schema): string
     {
         return sprintf(
-            self::EXCEPTION_MESSAGE_FORMAT,
+            self::ERROR_MESSAGE,
             $schema->getQueueName(),
             $schema->getExchangeName(),
             $schema->getRoutingKey()
