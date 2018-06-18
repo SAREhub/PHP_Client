@@ -4,6 +4,8 @@
 namespace SAREhub\Client\Amqp;
 
 
+use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
+
 class AmqpEnvironmentSchema
 {
     /**
@@ -21,9 +23,38 @@ class AmqpEnvironmentSchema
      */
     private $exchangeSchemas = [];
 
+    /**
+     * @var AmqpExchangeBindingSchema[]
+     */
+    private $exchangeBindingSchemas = [];
+
     public static function newInstance(): self
     {
         return new self();
+    }
+
+    public function addQueueSchema(AmqpQueueSchema $schema): self
+    {
+        $this->queueSchemas[] = $schema;
+        return $this;
+    }
+
+    public function addExchangeSchema(AmqpExchangeSchema $schema): self
+    {
+        $this->exchangeSchemas[] = $schema;
+        return $this;
+    }
+
+    public function addQueueBindingSchema(AmqpQueueBindingSchema $schema): self
+    {
+        $this->queueBindingSchemas[] = $schema;
+        return $this;
+    }
+
+    public function addExchangeBindingSchema(AmqpExchangeBindingSchema $schema): self
+    {
+        $this->exchangeBindingSchemas[] = $schema;
+        return $this;
     }
 
     public function getQueueSchemas(): array
@@ -31,10 +62,9 @@ class AmqpEnvironmentSchema
         return $this->queueSchemas;
     }
 
-    public function addQueueSchema(AmqpQueueSchema $queueSchema): AmqpEnvironmentSchema
+    public function getExchangeSchemas(): array
     {
-        $this->queueSchemas[] = $queueSchema;
-        return $this;
+        return $this->exchangeSchemas;
     }
 
     public function getQueueBindingSchemas(): array
@@ -42,20 +72,8 @@ class AmqpEnvironmentSchema
         return $this->queueBindingSchemas;
     }
 
-    public function addQueueBindingSchema(AmqpQueueBindingSchema $queueBindingSchema): self
+    public function getExchangeBindingSchemas(): array
     {
-        $this->queueBindingSchemas[] = $queueBindingSchema;
-        return $this;
-    }
-
-    public function getExchangeSchemas(): array
-    {
-        return $this->exchangeSchemas;
-    }
-
-    public function addExchangeSchema(AmqpExchangeSchema $exchangeSchema): AmqpEnvironmentSchema
-    {
-        $this->exchangeSchemas[] = $exchangeSchema;
-        return $this;
+        return $this->exchangeBindingSchemas;
     }
 }

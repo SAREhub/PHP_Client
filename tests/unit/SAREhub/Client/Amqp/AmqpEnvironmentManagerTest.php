@@ -6,6 +6,7 @@ namespace SAREhub\Client\Amqp;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\Mock;
 use PHPUnit\Framework\TestCase;
+use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
 
 class AmqpEnvironmentManagerTest extends TestCase
 {
@@ -44,7 +45,7 @@ class AmqpEnvironmentManagerTest extends TestCase
         );
     }
 
-    public function testCreateWhenQueueSchemaAddedThenCreateIt()
+    public function testCreateWhenQueueSchemaAdded()
     {
         $environmentSchema = new AmqpEnvironmentSchema();
 
@@ -60,7 +61,7 @@ class AmqpEnvironmentManagerTest extends TestCase
         $this->environmentManager->create($environmentSchema);
     }
 
-    public function testCreateWhenQueueBindingSchemaAddedThenCreateIt()
+    public function testCreateWhenQueueBindingSchemaAdded()
     {
         $environmentSchema = new AmqpEnvironmentSchema();
 
@@ -76,7 +77,7 @@ class AmqpEnvironmentManagerTest extends TestCase
         $this->environmentManager->create($environmentSchema);
     }
 
-    public function testCreateWhenExchangeSchemaAddedThenCreateIt()
+    public function testCreateWhenExchangeSchemaAdded()
     {
         $environmentSchema = new AmqpEnvironmentSchema();
 
@@ -88,6 +89,22 @@ class AmqpEnvironmentManagerTest extends TestCase
 
         $this->exchangeManager->expects('create')->withArgs([$exchangeSchema1]);
         $this->exchangeManager->expects('create')->withArgs([$exchangeSchema2]);
+
+        $this->environmentManager->create($environmentSchema);
+    }
+
+    public function testCreateWhenExchangeBindingSchemaAdded()
+    {
+        $environmentSchema = new AmqpEnvironmentSchema();
+
+        $schema1 = AmqpExchangeBindingSchema::newInstance();
+        $schema2 = AmqpExchangeBindingSchema::newInstance();
+
+        $environmentSchema->addExchangeBindingSchema($schema1);
+        $environmentSchema->addExchangeBindingSchema($schema2);
+
+        $this->exchangeManager->expects('bindToExchange')->withArgs([$schema1]);
+        $this->exchangeManager->expects('bindToExchange')->withArgs([$schema2]);
 
         $this->environmentManager->create($environmentSchema);
     }
