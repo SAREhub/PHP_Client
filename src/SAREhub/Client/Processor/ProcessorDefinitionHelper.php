@@ -1,5 +1,4 @@
 <?php
-
 namespace SAREhub\Client\Processor;
 
 use DI\Definition\Helper\CreateDefinitionHelper;
