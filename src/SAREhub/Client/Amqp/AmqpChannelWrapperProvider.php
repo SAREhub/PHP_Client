@@ -1,11 +1,10 @@
 <?php
 
 
-namespace SAREhub\Service\Throttler\Amqp;
+namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use SAREhub\Client\Amqp\AmqpChannelWrapper;
 use SAREhub\Commons\Misc\EnvironmentHelper;
 use SAREhub\Commons\Misc\InvokableProvider;
 
