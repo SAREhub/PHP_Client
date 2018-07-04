@@ -24,26 +24,25 @@ class BasicExchange implements Exchange, \JsonSerializable
     private $exception = null;
 
     /**
-     * @return BasicExchange
+     * @param null|Message $in
      */
-    public static function newInstance()
+    public function __construct(?Message $in = null)
+    {
+        $this->in = $in ?? BasicMessage::newInstance();
+    }
+
+    public static function newInstance(): Exchange
     {
         return new self();
     }
 
-    public static function withIn(Message $message)
+    public static function withIn(Message $message): Exchange
     {
-        $exchange = new self();
-        $exchange->setIn($message);
-        return $exchange;
+        return new self($message);
     }
 
     public function getIn(): Message
     {
-        if ($this->in === null) {
-            $this->in = BasicMessage::newInstance();
-        }
-
         return $this->in;
     }
 
@@ -53,10 +52,15 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $this;
     }
 
+    public function getInBody()
+    {
+        $this->getIn()->getBody();
+    }
+
     public function getOut(): Message
     {
         if (!$this->hasOut()) {
-            $this->setOut(new BasicMessage());
+            $this->setOut(BasicMessage::newInstance());
         }
         return $this->out;
     }
@@ -94,6 +98,16 @@ class BasicExchange implements Exchange, \JsonSerializable
         return $this;
     }
 
+    public function copy(): Exchange
+    {
+        $copy = self::withIn($this->getIn()->copy());
+        if ($this->hasOut()) {
+            $copy->setOut($this->getOut()->copy());
+        }
+        $copy->setException($this->exception);
+        return $copy;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -103,4 +117,3 @@ class BasicExchange implements Exchange, \JsonSerializable
         ];
     }
 }
-
