@@ -47,4 +47,36 @@ class BasicExchangeTest extends TestCase
         $this->assertNull($data["out"]);
         $this->assertNull($data["exception"]);
     }
+
+
+    public function testCopyThenIsNotSameInstance()
+    {
+        $original = BasicExchange::withIn(BasicMessage::withBody("test"));
+        $copy = $original->copy();
+        $this->assertNotSame($original, $copy);
+    }
+
+    public function testCopyThenInCopied()
+    {
+        $original = BasicExchange::withIn(BasicMessage::withBody("test"));
+        $copy = $original->copy();
+        $this->assertNotSame($original->getIn(), $copy->getIn());
+        $this->assertEquals($original->getIn(), $copy->getIn());
+    }
+
+    public function testCopyWhenHasOutThenOutCopied()
+    {
+        $original = BasicExchange::withIn(BasicMessage::withBody("in_body"));
+        $original->getOut()->setBody("out_body");
+        $copy = $original->copy();
+        $this->assertNotSame($original->getOut(), $copy->getOut());
+        $this->assertEquals($original->getOut(), $copy->getOut());
+    }
+
+    public function testCopyWhenHasNotOutThenCopiedIsWithoutOut()
+    {
+        $original = BasicExchange::withIn(BasicMessage::withBody("in_body"));
+        $copy = $original->copy();
+        $this->assertFalse($copy->hasOut());
+    }
 }
