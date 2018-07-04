@@ -104,6 +104,7 @@ class BasicExchange implements Exchange, \JsonSerializable
         if ($this->hasOut()) {
             $copy->setOut($this->getOut()->copy());
         }
+        $copy->setException($this->exception);
         return $copy;
     }
 

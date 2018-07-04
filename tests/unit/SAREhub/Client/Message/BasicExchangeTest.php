@@ -79,4 +79,13 @@ class BasicExchangeTest extends TestCase
         $copy = $original->copy();
         $this->assertFalse($copy->hasOut());
     }
+
+    public function testCopyWhenHasException()
+    {
+        $original = BasicExchange::withIn(BasicMessage::withBody("in_body"));
+        $exception = new \Exception("test");
+        $original->setException($exception);
+        $copy = $original->copy();
+        $this->assertSame($exception, $copy->getException());
+    }
 }
