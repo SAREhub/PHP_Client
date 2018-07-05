@@ -4,6 +4,10 @@ namespace SAREhub\Client\Processor;
 use DI\Definition\Helper\CreateDefinitionHelper;
 use function DI\create;
 
+/**
+ * Class ProcessorDefinitionHelper is a helper for PHP-DI definitions.
+ * @deprecated Use php-di bridge for php client. This file will be removed in future versions.
+ */
 class ProcessorDefinitionHelper
 {
     public static function filter(callable $predicate, $to)
