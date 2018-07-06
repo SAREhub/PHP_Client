@@ -54,7 +54,7 @@ class BasicExchange implements Exchange, \JsonSerializable
 
     public function getInBody()
     {
-        $this->getIn()->getBody();
+        return $this->getIn()->getBody();
     }
 
     public function getOut(): Message
