@@ -91,6 +91,10 @@ class AmqpChannelWrapper extends ServiceSupport
             $this->getWrappedChannel()->wait(null, true, $this->getWaitTimeout());
         } catch (AMQPTimeoutException $e) {
             $this->getLogger()->debug("channel wait timeout: " . $e->getMessage(), ["exception" => $e]);
+        } catch (\ErrorException $e) {
+            if (strpos($e->getMessage(), "Interrupted system call") === false) { // silent for signal process
+                throw $e;
+            }
         }
     }
 
