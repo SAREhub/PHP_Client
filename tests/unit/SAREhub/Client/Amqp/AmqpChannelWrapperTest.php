@@ -135,6 +135,28 @@ class AmqpChannelWrapperTest extends TestCase
         $this->wrapper->tick();
     }
 
+    public function testTickWhenInterruptedSystemCallThenSilent()
+    {
+        $this->wrapper->start();
+
+        $e =  new \ErrorException("stream_select ... Interrupted system call");
+        $this->channel->expects("wait")->andThrow($e);
+
+        $this->wrapper->tick();
+    }
+
+    public function testTickWhenOtherExceptionThenThrow()
+    {
+        $this->wrapper->start();
+
+        $e =  new \Exception("other");
+        $this->channel->expects("wait")->andThrow($e);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("other");
+
+        $this->wrapper->tick();
+    }
+
     public function testOnMessage()
     {
         $this->channel->allows(["basic_consume" => $this->consumer->getOptions()->getTag()]);
