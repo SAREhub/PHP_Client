@@ -48,7 +48,7 @@ class AmqpChannelWrapper extends ServiceSupport
     public function registerConsumer(AmqpConsumer $consumer)
     {
         $opts = $consumer->getOptions();
-        $this->getLogger()->debug("registering consumer", ["options" => $opts]);
+        $this->getLogger()->info("registerConsumer", ["options" => $opts]);
         $tag = $this->getWrappedChannel()->basic_consume(
             $opts->getQueueName(),
             $opts->getTag(),
@@ -61,14 +61,14 @@ class AmqpChannelWrapper extends ServiceSupport
             $opts->getConsumeArguments()
         );
         $opts->setTag($tag);
-
-        $this->getLogger()->debug("consumer tag: $tag", ["options" => $opts]);
         $this->consumers[$tag] = $consumer;
+        $this->getLogger()->info("registerConsumer tag: $tag", ["options" => $opts]);
     }
 
     public function unregisterConsumer(string $consumerTag)
     {
         $consumer = $this->getConsumer($consumerTag);
+        $this->getLogger()->info("unregisterConsumer", ["options" => $consumer->getOptions()]);
         $this->getWrappedChannel()->basic_cancel($consumer->getOptions()->getTag(), false, true);
         unset($this->consumers[$consumerTag]);
     }
@@ -76,8 +76,7 @@ class AmqpChannelWrapper extends ServiceSupport
     public function onMessage(AMQPMessage $in)
     {
         $inConverted = $this->getMessageConverter()->convertFrom($in);
-        $this->getLogger()->debug('onMessage', ['message' => $inConverted]);
-
+        $this->getLogger()->info("onMessage", ["message" => $inConverted]);
         $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
         $exchange = BasicExchange::withIn($inConverted);
         $consumer = $this->getConsumer($consumerTag);
@@ -100,21 +99,21 @@ class AmqpChannelWrapper extends ServiceSupport
 
     public function ack(Message $message)
     {
-        $this->getLogger()->debug("ack", ["message" => $message]);
+        $this->getLogger()->info("ack", ["message" => $message]);
         $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
         $this->getWrappedChannel()->basic_ack($deliveryTag, false);
     }
 
     public function reject(Message $message, bool $requeue = true)
     {
-        $this->getLogger()->debug("reject", ["message" => $message, "requeue" => $requeue]);
+        $this->getLogger()->info("reject", ["message" => $message, "requeue" => $requeue]);
         $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
         $this->getWrappedChannel()->basic_reject($deliveryTag, $requeue);
     }
 
     public function publish(Message $message)
     {
-        $this->getLogger()->debug("publish", ["message" => $message]);
+        $this->getLogger()->info("publish", ["message" => $message]);
 
         $converted = $this->messageConverter->convertTo($message);
         $exchange = $message->getHeader(AmqpMessageHeaders::EXCHANGE);
