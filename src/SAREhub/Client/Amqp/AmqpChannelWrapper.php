@@ -48,7 +48,7 @@ class AmqpChannelWrapper extends ServiceSupport
     public function registerConsumer(AmqpConsumer $consumer)
     {
         $opts = $consumer->getOptions();
-        $this->getLogger()->info("registering consumer", ["options" => $opts]);
+        $this->getLogger()->info("registerConsumer", ["options" => $opts]);
         $tag = $this->getWrappedChannel()->basic_consume(
             $opts->getQueueName(),
             $opts->getTag(),
@@ -61,14 +61,14 @@ class AmqpChannelWrapper extends ServiceSupport
             $opts->getConsumeArguments()
         );
         $opts->setTag($tag);
-
-        $this->getLogger()->info("consumer tag: $tag", ["options" => $opts]);
         $this->consumers[$tag] = $consumer;
+        $this->getLogger()->info("registerConsumer tag: $tag", ["options" => $opts]);
     }
 
     public function unregisterConsumer(string $consumerTag)
     {
         $consumer = $this->getConsumer($consumerTag);
+        $this->getLogger()->info("unregisterConsumer", ["options" => $consumer->getOptions()]);
         $this->getWrappedChannel()->basic_cancel($consumer->getOptions()->getTag(), false, true);
         unset($this->consumers[$consumerTag]);
     }
@@ -76,8 +76,7 @@ class AmqpChannelWrapper extends ServiceSupport
     public function onMessage(AMQPMessage $in)
     {
         $inConverted = $this->getMessageConverter()->convertFrom($in);
-        $this->getLogger()->info('onMessage', ['message' => $inConverted]);
-
+        $this->getLogger()->info("onMessage", ["message" => $inConverted]);
         $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
         $exchange = BasicExchange::withIn($inConverted);
         $consumer = $this->getConsumer($consumerTag);
