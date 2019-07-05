@@ -5,6 +5,8 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Exception\AMQPProtocolConnectionException;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use SAREhub\Client\Amqp\Schema\AmqpEnvironmentSchemaCreator;
 use SAREhub\Commons\Service\ServiceSupport;
 
@@ -56,8 +58,15 @@ class AmqpConnectionService extends ServiceSupport
 
     protected function doTick()
     {
-        foreach ($this->channels as $channel) {
-            $channel->tick();
+        try {
+            foreach ($this->channels as $channel) {
+                $channel->tick();
+            }
+        } catch (AMQPProtocolConnectionException $e) {
+            $this->reconnect();
+            $this->getLogger()->warning("reconnected", [
+                "reason" => $e
+            ]);
         }
     }
 
