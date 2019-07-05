@@ -1,11 +1,10 @@
 <?php
 
-namespace SAREhub\Client\Amqp\Task;
+namespace SAREhub\Client\Amqp\Schema;
 
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PHPUnit\Framework\TestCase;
-use SAREhub\Client\Amqp\AmqpEnvironmentManager;
-use SAREhub\Client\Amqp\AmqpEnvironmentSchema;
 
 class CreateAmqpSchemaTaskTest extends TestCase
 {
@@ -15,9 +14,11 @@ class CreateAmqpSchemaTaskTest extends TestCase
     {
         $schemaManager = \Mockery::mock(AmqpEnvironmentManager::class);
         $schema = new AmqpEnvironmentSchema();
-        $task = new CreateAmqpSchemaTask($schemaManager, $schema);
+        $channel = \Mockery::mock(AMQPChannel::class);
+        $task = new AmqpEnvironmentSchemaCreator($schemaManager, $schema);
 
-        $schemaManager->expects("create")->with($schema);
-        $task->run();
+        $schemaManager->expects("create")->with($schema, $channel);
+
+        $task->create($channel);
     }
 }

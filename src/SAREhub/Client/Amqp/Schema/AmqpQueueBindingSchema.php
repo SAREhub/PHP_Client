@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
 class AmqpQueueBindingSchema

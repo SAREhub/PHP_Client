@@ -4,29 +4,47 @@
 namespace SAREhub\Client\Amqp;
 
 
-use PhpAmqpLib\Channel\AMQPChannel;
+use SAREhub\Client\Amqp\Schema\AmqpEnvironmentSchemaCreator;
 use SAREhub\Commons\Misc\EnvironmentHelper;
 use SAREhub\Commons\Misc\InvokableProvider;
 
 class AmqpChannelWrapperProvider extends InvokableProvider
 {
     const ENV_PREFETCH_COUNT = "AMQP_PREFETCH_COUNT";
-    const DEFAULT_PREFETCH_COUNT = 5;
+    const DEFAULT_PREFETCH_COUNT = 20;
+
+    const DEFAULT_CHANNEL_ID = "MAIN";
 
     /**
-     * @var AMQPChannel
+     * @var AmqpConnectionService
      */
-    private $channel;
+    private $connectionService;
 
-    public function __construct(AMQPChannel $channel)
+    /**
+     * @var string
+     */
+    private $channelId;
+
+    /**
+     * @var AmqpEnvironmentSchemaCreator
+     */
+    private $schemaCreator;
+
+    public function __construct(
+        AmqpConnectionService $connectionService,
+        AmqpEnvironmentSchemaCreator $schemaCreator,
+        string $channelId = self::DEFAULT_CHANNEL_ID
+    )
     {
-        $this->channel = $channel;
+        $this->connectionService = $connectionService;
+        $this->schemaCreator = $schemaCreator;
+        $this->channelId = $channelId;
     }
 
     public function get()
     {
-        $wrapper = new AmqpChannelWrapper($this->channel);
-        $wrapper->setPrefetchCountPerConsumer($this->getPrefetchCountFromEnv());
+        $wrapper = $this->connectionService->createChannel($this->channelId, $this->schemaCreator);
+        $wrapper->setConsumerPrefetch($this->getPrefetchCountFromEnv());
         return $wrapper;
     }
 

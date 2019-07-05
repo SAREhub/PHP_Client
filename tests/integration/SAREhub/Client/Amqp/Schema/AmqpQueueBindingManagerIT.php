@@ -1,22 +1,14 @@
 <?php
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
-use PhpAmqpLib\Channel\AMQPChannel;
-use PHPUnit\Framework\TestCase;
+use SAREhub\Client\Amqp\AmqpTestCase;
 
-class AmqpQueueBindingManagerIT extends TestCase
+class AmqpQueueBindingManagerIT extends AmqpTestCase
 {
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
-
     private $queueName = "AmqpQueueBindingManagerIT";
-
     private $exchangeName = "test_exchange";
-
     private $routingKey = "test";
 
     /**
@@ -24,17 +16,13 @@ class AmqpQueueBindingManagerIT extends TestCase
      */
     private $queueBindingManager;
 
-
     protected function setUp()
     {
-        $connection = AmqpTestHelper::createConnection();
-        $this->channel = $connection->channel();
+        parent::setUp();
+        $this->queueBindingManager = new AmqpQueueBindingManager();
 
         $this->channel->queue_delete($this->queueName);
         $this->channel->exchange_delete($this->exchangeName);
-
-        $this->queueBindingManager = new AmqpQueueBindingManager($this->channel);
-
         $this->channel->queue_declare($this->queueName);
         $this->channel->exchange_declare($this->exchangeName, 'topic');
     }
@@ -44,7 +32,8 @@ class AmqpQueueBindingManagerIT extends TestCase
      */
     public function testCreateWhenGivenGoodDataThenCreateBinding()
     {
-        $this->assertTrue($this->queueBindingManager->create($this->createTestQueueBindingSchema()->withExchangeName($this->exchangeName)));
+        $schema = $this->createTestQueueBindingSchema()->withExchangeName($this->exchangeName);
+        $this->assertTrue($this->queueBindingManager->create($schema, $this->channel));
     }
 
     /**
@@ -54,11 +43,14 @@ class AmqpQueueBindingManagerIT extends TestCase
     public function testCreateWhenGivenCorruptedDataThenThrowException()
     {
         $this->expectException(AmqpSchemaException::class);
-        $this->queueBindingManager->create($this->createTestQueueBindingSchema()->withExchangeName("notExistingExchange"));
+        $schema = $this->createTestQueueBindingSchema()->withExchangeName("notExistingExchange");
+        $this->queueBindingManager->create($schema, $this->channel);
     }
 
     public function createTestQueueBindingSchema(): AmqpQueueBindingSchema
     {
-        return AmqpQueueBindingSchema::newInstance()->withQueueName($this->queueName)->withRoutingKey($this->routingKey);
+        return AmqpQueueBindingSchema::newInstance()
+            ->withQueueName($this->queueName)
+            ->withRoutingKey($this->routingKey);
     }
 }

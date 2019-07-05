@@ -1,12 +1,13 @@
 <?php
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\Mock;
+use Mockery\MockInterface;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PHPUnit\Framework\TestCase;
-use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
 
 class AmqpEnvironmentManagerTest extends TestCase
 {
@@ -32,6 +33,11 @@ class AmqpEnvironmentManagerTest extends TestCase
      */
     private $environmentManager;
 
+    /**
+     * @var AMQPChannel | MockInterface
+     */
+    private $channel;
+
     public function setUp()
     {
         $this->queueManager = \Mockery::mock(AmqpQueueManager::class);
@@ -43,6 +49,8 @@ class AmqpEnvironmentManagerTest extends TestCase
             $this->queueBindingManager,
             $this->exchangeManager
         );
+
+        $this->channel = \Mockery::mock(AMQPChannel::class);
     }
 
     public function testCreateWhenQueueSchemaAdded()
@@ -55,10 +63,10 @@ class AmqpEnvironmentManagerTest extends TestCase
         $environmentSchema->addQueueSchema($queueSchema1);
         $environmentSchema->addQueueSchema($queueSchema2);
 
-        $this->queueManager->expects('create')->withArgs([$queueSchema1]);
-        $this->queueManager->expects('create')->withArgs([$queueSchema2]);
+        $this->queueManager->expects("create")->with($queueSchema1, $this->channel);
+        $this->queueManager->expects("create")->with($queueSchema2, $this->channel);
 
-        $this->environmentManager->create($environmentSchema);
+        $this->environmentManager->create($environmentSchema, $this->channel);
     }
 
     public function testCreateWhenQueueBindingSchemaAdded()
@@ -71,10 +79,10 @@ class AmqpEnvironmentManagerTest extends TestCase
         $environmentSchema->addQueueBindingSchema($queueBindingSchema1);
         $environmentSchema->addQueueBindingSchema($queueBindingSchema2);
 
-        $this->queueBindingManager->expects('create')->withArgs([$queueBindingSchema1]);
-        $this->queueBindingManager->expects('create')->withArgs([$queueBindingSchema2]);
+        $this->queueBindingManager->expects("create")->with($queueBindingSchema1, $this->channel);
+        $this->queueBindingManager->expects("create")->with($queueBindingSchema2, $this->channel);
 
-        $this->environmentManager->create($environmentSchema);
+        $this->environmentManager->create($environmentSchema, $this->channel);
     }
 
     public function testCreateWhenExchangeSchemaAdded()
@@ -87,10 +95,10 @@ class AmqpEnvironmentManagerTest extends TestCase
         $environmentSchema->addExchangeSchema($exchangeSchema1);
         $environmentSchema->addExchangeSchema($exchangeSchema2);
 
-        $this->exchangeManager->expects('create')->withArgs([$exchangeSchema1]);
-        $this->exchangeManager->expects('create')->withArgs([$exchangeSchema2]);
+        $this->exchangeManager->expects("create")->with($exchangeSchema1, $this->channel);
+        $this->exchangeManager->expects("create")->with($exchangeSchema2, $this->channel);
 
-        $this->environmentManager->create($environmentSchema);
+        $this->environmentManager->create($environmentSchema, $this->channel);
     }
 
     public function testCreateWhenExchangeBindingSchemaAdded()
@@ -103,9 +111,9 @@ class AmqpEnvironmentManagerTest extends TestCase
         $environmentSchema->addExchangeBindingSchema($schema1);
         $environmentSchema->addExchangeBindingSchema($schema2);
 
-        $this->exchangeManager->expects('bindToExchange')->withArgs([$schema1]);
-        $this->exchangeManager->expects('bindToExchange')->withArgs([$schema2]);
+        $this->exchangeManager->expects("bindToExchange")->with($schema1, $this->channel);
+        $this->exchangeManager->expects("bindToExchange")->with($schema2, $this->channel);
 
-        $this->environmentManager->create($environmentSchema);
+        $this->environmentManager->create($environmentSchema, $this->channel);
     }
 }
