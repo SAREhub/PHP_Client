@@ -20,8 +20,8 @@ class AmqpTestHelper
 
     public static function createConnection(bool $secure = true)
     {
-        $connectionFactory = new AmqpConnectionFactory();
-        return $connectionFactory->create(self::getConnectionOptions($secure));
+        $provider = new AmqpConnectionProvider(new AmqpConnectionFactory(), self::getConnectionOptions($secure));
+        return $provider->get();
     }
 
     private static function getConnectionOptions(bool $secure = true): AmqpConnectionOptions
