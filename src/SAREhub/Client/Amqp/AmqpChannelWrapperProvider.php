@@ -13,39 +13,28 @@ class AmqpChannelWrapperProvider extends InvokableProvider
     const ENV_PREFETCH_COUNT = "AMQP_PREFETCH_COUNT";
     const DEFAULT_PREFETCH_COUNT = 20;
 
-    const DEFAULT_CHANNEL_ID = "MAIN";
-
     /**
      * @var AmqpConnectionService
      */
     private $connectionService;
 
     /**
-     * @var string
-     */
-    private $channelId;
-
-    /**
      * @var AmqpEnvironmentSchemaCreator
      */
     private $schemaCreator;
 
-    public function __construct(
-        AmqpConnectionService $connectionService,
-        AmqpEnvironmentSchemaCreator $schemaCreator,
-        string $channelId = self::DEFAULT_CHANNEL_ID
-    )
+    public function __construct(AmqpConnectionService $connectionService, AmqpEnvironmentSchemaCreator $schemaCreator)
     {
         $this->connectionService = $connectionService;
         $this->schemaCreator = $schemaCreator;
-        $this->channelId = $channelId;
     }
 
     public function get()
     {
-        $wrapper = $this->connectionService->createChannel($this->channelId, $this->schemaCreator);
-        $wrapper->setConsumerPrefetch($this->getPrefetchCountFromEnv());
-        return $wrapper;
+        $channel = new AmqpChannelWrapper($this->schemaCreator);
+        $channel->setConsumerPrefetch($this->getPrefetchCountFromEnv());
+        $this->connectionService->addChannel($channel);
+        return $channel;
     }
 
     private function getPrefetchCountFromEnv(): int

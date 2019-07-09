@@ -5,13 +5,17 @@ namespace SAREhub\Client\Amqp;
 
 
 use PhpAmqpLib\Connection\AbstractConnection;
-use PhpAmqpLib\Exception\AMQPProtocolConnectionException;
+use PhpAmqpLib\Exception\AMQPIOException;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
-use SAREhub\Client\Amqp\Schema\AmqpEnvironmentSchemaCreator;
 use SAREhub\Commons\Service\ServiceSupport;
 
 class AmqpConnectionService extends ServiceSupport
 {
+    /**
+     * @var AmqpConnectionProvider
+     */
+    private $connectionProvider;
+
     /**
      * @var AbstractConnection
      */
@@ -22,37 +26,22 @@ class AmqpConnectionService extends ServiceSupport
      */
     private $channels = [];
 
-    public function __construct(AbstractConnection $connection)
+    public function __construct(AmqpConnectionProvider $connectionProvider)
     {
-        $this->connection = $connection;
+        $this->connectionProvider = $connectionProvider;
     }
 
-    public function createChannel(string $id, AmqpEnvironmentSchemaCreator $schemaCreator): AmqpChannelWrapper
+    public function addChannel(AmqpChannelWrapper $channel): void
     {
-        $channel = new AmqpChannelWrapper($schemaCreator);
-        $this->channels[$id] = $channel;
-        return $channel;
+        $this->channels[] = $channel;
     }
 
     protected function doStart()
     {
-        if (!$this->connection->isConnected()) {
-            $this->reconnect();
-            return;
-        }
-
+        $this->connection = $this->connectionProvider->get();
         foreach ($this->channels as $channel) {
             $channel->setWrappedChannel($this->connection->channel());
             $channel->start();
-        }
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection->reconnect();
-        foreach ($this->channels as $channel) {
-            $channel->setWrappedChannel($this->connection->channel());
-            $channel->updateState();
         }
     }
 
@@ -62,24 +51,26 @@ class AmqpConnectionService extends ServiceSupport
             foreach ($this->channels as $channel) {
                 $channel->tick();
             }
-        } catch (AMQPProtocolConnectionException $e) {
+        } catch (AMQPRuntimeException | AMQPIOException $e) {
             $this->reconnect();
-            $this->getLogger()->warning("reconnected", [
-                "reason" => $e
-            ]);
+            $this->getLogger()->warning("Reconnected", ["reason" => $e->getMessage()]);
+        }
+    }
+
+    private function reconnect(): void
+    {
+        $this->connection = $this->connectionProvider->get();
+        foreach ($this->channels as $channel) {
+            $channel->setWrappedChannel($this->connection->channel());
+            $channel->updateState();
         }
     }
 
     protected function doStop()
     {
-        $this->close();
         foreach ($this->channels as $channel) {
             $channel->stop();
         }
-    }
-
-    public function close(): void
-    {
         $this->connection->close();
     }
 }

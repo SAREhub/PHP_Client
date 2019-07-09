@@ -4,6 +4,8 @@
 namespace SAREhub\Client\Amqp;
 
 
+use PhpAmqpLib\Exception\AMQPIOException;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use SAREhub\Commons\Misc\EnvironmentHelper;
 use SAREhub\Commons\Misc\InvokableProvider;
 use SAREhub\Commons\Misc\RetryFunctionWrapper;
@@ -43,7 +45,7 @@ class AmqpConnectionProvider extends InvokableProvider
         $exponent = (int)EnvironmentHelper::getVar(self::ENV_EXPONENT, self::DEFAULT_EXPONENT);
         $retryWrapper = new RetryFunctionWrapper(
             $createCallback,
-            [],//[\Exception::class],
+            [AMQPRuntimeException::class, AMQPIOException::class],
             $maxRetries,
             $initialWait,
             $exponent

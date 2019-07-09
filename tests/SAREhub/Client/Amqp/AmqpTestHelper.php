@@ -3,6 +3,7 @@
 namespace SAREhub\Client\Amqp;
 
 
+use PhpAmqpLib\Connection\AbstractConnection;
 use SAREhub\Commons\Misc\EnvironmentHelper;
 
 class AmqpTestHelper
@@ -18,10 +19,14 @@ class AmqpTestHelper
 
     const CONNECTION_TIMEOUT = 20;
 
-    public static function createConnection(bool $secure = true)
+    public static function createConnection(bool $secure = true): AbstractConnection
     {
-        $provider = new AmqpConnectionProvider(new AmqpConnectionFactory(), self::getConnectionOptions($secure));
-        return $provider->get();
+        return self::createConnectionProvider($secure)->get();
+    }
+
+    public static function createConnectionProvider(bool $secure = true): AmqpConnectionProvider
+    {
+        return new AmqpConnectionProvider(new AmqpConnectionFactory(), self::getConnectionOptions($secure));
     }
 
     private static function getConnectionOptions(bool $secure = true): AmqpConnectionOptions

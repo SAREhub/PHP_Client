@@ -2,6 +2,7 @@
 
 namespace SAREhub\Client\Amqp;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use SAREhub\Client\Amqp\AmqpMessageHeaders as AMH;
 use SAREhub\Client\Amqp\Schema\AmqpEnvironmentManager;
@@ -15,6 +16,8 @@ use SAREhub\Client\Processor\ExchangeCatcherProcessor;
 
 class AmqpChannelWrapperIT extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     /**
      * @var AmqpChannelWrapper
      */
@@ -39,17 +42,23 @@ class AmqpChannelWrapperIT extends TestCase
 
     protected function setUp()
     {
-        $connection = AmqpTestHelper::createConnection();
-        $schema = AmqpEnvironmentSchema::newInstance()
-            ->addQueueSchema(AmqpQueueSchema::newInstance()->withName($this->queueName)->withAutoDelete(true));
-        $this->connectionService = new AmqpConnectionService($connection);
-        $createSchemaTask = new AmqpEnvironmentSchemaCreator(new AmqpEnvironmentManager(), $schema);
-        $this->channel = $this->connectionService->createChannel("main", $createSchemaTask);
-        $this->consumerProcessor = new ExchangeCatcherProcessor();
-        $opts = AmqpConsumerOptions::newInstance()->setQueueName($this->queueName);
-        $this->channel->registerConsumer(new AmqpConsumer($opts, $this->consumerProcessor));
+        $this->channel = $this->createChannel();
+        $this->connectionService = new AmqpConnectionService(AmqpTestHelper::createConnectionProvider());
+        $this->connectionService->addChannel($this->channel);
         $this->producer = new AmqpProducer($this->channel);
         $this->connectionService->start();
+    }
+
+    private function createChannel(): AmqpChannelWrapper
+    {
+        $schema = AmqpEnvironmentSchema::newInstance()
+            ->addQueueSchema(AmqpQueueSchema::newInstance()->withName($this->queueName)->withAutoDelete(true));
+        $schemaCreator = new AmqpEnvironmentSchemaCreator(new AmqpEnvironmentManager(), $schema);
+        $channel = new AmqpChannelWrapper($schemaCreator);
+        $this->consumerProcessor = new ExchangeCatcherProcessor();
+        $opts = AmqpConsumerOptions::newInstance()->setQueueName($this->queueName);
+        $channel->registerConsumer(new AmqpConsumer($opts, $this->consumerProcessor));
+        return $channel;
     }
 
     protected function tearDown()
@@ -69,18 +78,6 @@ class AmqpChannelWrapperIT extends TestCase
         $message = $messages[0];
 
         $this->assertEquals($publishedMessage->getBody(), $message->getBody(), "message.body");
-    }
-
-    public function testReconnect()
-    {
-        $this->connectionService->close();
-        $this->connectionService->reconnect();
-        $this->connectionService->tick();
-        $publishedMessage = BasicMessage::newInstance()
-            ->setBody("test_" . mt_rand(1, 100000))
-            ->setHeader(AMH::ROUTING_KEY, $this->queueName);
-        $this->publishAndWaitForMessage($publishedMessage);
-        $this->assertCount(1, $this->consumerProcessor->getCaughtInMessages());
     }
 
     private function publishAndWaitForMessage(Message $message, int $timeout = 5)
