@@ -1,10 +1,8 @@
 <?php
 
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
-
-use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
 
 class AmqpEnvironmentSchema
 {

@@ -17,6 +17,11 @@ class AmqpConsumer implements Processor
      */
     private $processor;
 
+    /**
+     * @var string
+     */
+    private $tag;
+
     public function __construct(AmqpConsumerOptions $options, Processor $processor)
     {
         $this->options = $options;
@@ -36,5 +41,15 @@ class AmqpConsumer implements Processor
     public function getProcessor(): Processor
     {
         return $this->processor;
+    }
+
+    public function getTag(): string
+    {
+        return empty($this->getOptions()->getTag()) ? $this->tag : $this->getOptions()->getTag();
+    }
+
+    public function setTag(string $tag): void
+    {
+        $this->tag = $tag;
     }
 }

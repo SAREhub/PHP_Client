@@ -1,18 +1,13 @@
 <?php
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Wire\AMQPTable;
-use PHPUnit\Framework\TestCase;
+use SAREhub\Client\Amqp\AmqpTestCase;
 
-class AmqpQueueManagerIT extends TestCase
+class AmqpQueueManagerIT extends AmqpTestCase
 {
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
 
     private $queueName = "AmqpQueueManagerIT";
 
@@ -23,10 +18,8 @@ class AmqpQueueManagerIT extends TestCase
 
     protected function setUp()
     {
-        $connection = AmqpTestHelper::createConnection();
-        $this->channel = $connection->channel();
-
-        $this->queueManager = new AmqpQueueManager($this->channel);
+        parent::setUp();
+        $this->queueManager = new AmqpQueueManager();
         $this->channel->queue_delete($this->queueName);
     }
 
@@ -35,7 +28,7 @@ class AmqpQueueManagerIT extends TestCase
      */
     public function testCreate()
     {
-        $this->assertTrue($this->queueManager->create($this->createTestQueueSchema()));
+        $this->assertTrue($this->queueManager->create($this->createTestQueueSchema(), $this->channel));
     }
 
     /**
@@ -44,12 +37,12 @@ class AmqpQueueManagerIT extends TestCase
      */
     public function testCreateWhenExistAndPassiveIsSetToFalse()
     {
-        $queueInfo = $this->createTestQueueSchema();
+        $schema = $this->createTestQueueSchema();
 
         $this->expectException(AmqpSchemaException::class);
 
-        $this->queueManager->create($queueInfo);
-        $this->queueManager->create($queueInfo->withAutoDelete(true));
+        $this->queueManager->create($schema, $this->channel);
+        $this->queueManager->create($schema->withAutoDelete(true), $this->channel);
     }
 
     /**

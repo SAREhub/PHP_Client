@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -12,22 +12,16 @@ class AmqpExchangeManager
     const CREATE_ERROR = "Creating exchange error: %s";
     const BINDING_ERROR = "Creating exchange to exchange binding error(destination: %s; source: %s; routing_key: %s)";
 
-    private $channel;
-
-    public function __construct(AMQPChannel $channel)
-    {
-        $this->channel = $channel;
-    }
-
     /**
      * @param AmqpExchangeSchema $schema
+     * @param AMQPChannel $channel
      * @return bool
      * @throws AmqpSchemaException
      */
-    public function create(AmqpExchangeSchema $schema)
+    public function create(AmqpExchangeSchema $schema, AMQPChannel $channel)
     {
         try {
-            $this->channel->exchange_declare(
+            $channel->exchange_declare(
                 $schema->getName(),
                 $schema->getType(),
                 $schema->isPassive(),
@@ -39,15 +33,20 @@ class AmqpExchangeManager
             );
             return true;
         } catch (\Exception $e) {
-            $message = sprintf(self::CREATE_ERROR, $schema->getName());
-            throw new AmqpSchemaException($message, $e);
+            throw new AmqpSchemaException(sprintf(self::CREATE_ERROR, $schema->getName()), $e);
         }
     }
 
-    public function bindToExchange(AmqpExchangeBindingSchema $schema)
+    /**
+     * @param AmqpExchangeBindingSchema $schema
+     * @param AMQPChannel $channel
+     * @return bool
+     * @throws AmqpSchemaException
+     */
+    public function bindToExchange(AmqpExchangeBindingSchema $schema, AMQPChannel $channel): bool
     {
         try {
-            $this->channel->exchange_bind(
+            $channel->exchange_bind(
                 $schema->getDestination(),
                 $schema->getSource(),
                 $schema->getRoutingKey(),
@@ -56,13 +55,12 @@ class AmqpExchangeManager
             );
             return true;
         } catch (\Exception $e) {
-            $message = sprintf(
+            throw new AmqpSchemaException(sprintf(
                 self::BINDING_ERROR,
                 $schema->getDestination(),
                 $schema->getSource(),
                 $schema->getRoutingKey()
-            );
-            throw new AmqpSchemaException($message, $e);
+            ), $e);
         }
     }
 }

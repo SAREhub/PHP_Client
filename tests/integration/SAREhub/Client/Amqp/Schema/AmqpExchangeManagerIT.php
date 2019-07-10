@@ -1,9 +1,9 @@
 <?php
 
-namespace SAREhub\Client\Amqp;
+namespace SAREhub\Client\Amqp\Schema;
 
 
-use SAREhub\Client\Amqp\Schema\AmqpExchangeBindingSchema;
+use SAREhub\Client\Amqp\AmqpTestCase;
 
 class AmqpExchangeManagerIT extends AmqpTestCase
 {
@@ -15,7 +15,7 @@ class AmqpExchangeManagerIT extends AmqpTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->exchangeManager = new AmqpExchangeManager($this->channel);
+        $this->exchangeManager = new AmqpExchangeManager();
     }
 
     /**
@@ -28,7 +28,7 @@ class AmqpExchangeManagerIT extends AmqpTestCase
             ->withAutoDelete(true)
             ->withDurable(false)
             ->withType("topic");
-        $this->assertTrue($this->exchangeManager->create($schema));
+        $this->assertTrue($this->exchangeManager->create($schema, $this->channel));
     }
 
     /**
@@ -44,7 +44,7 @@ class AmqpExchangeManagerIT extends AmqpTestCase
             ->withSource("exchange_1")
             ->withRoutingKey("a.b");
 
-        $this->assertTrue($this->exchangeManager->bindToExchange($bindingSchema));
+        $this->assertTrue($this->exchangeManager->bindToExchange($bindingSchema, $this->channel));
     }
 
     /**
@@ -56,6 +56,6 @@ class AmqpExchangeManagerIT extends AmqpTestCase
         $schema = AmqpExchangeSchema::newInstance()
             ->withName($name)
             ->withAutoDelete(true);
-        $this->exchangeManager->create($schema);
+        $this->exchangeManager->create($schema, $this->channel);
     }
 }

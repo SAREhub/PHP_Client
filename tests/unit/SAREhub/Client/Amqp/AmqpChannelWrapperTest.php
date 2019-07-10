@@ -5,12 +5,13 @@ namespace SAREhub\Client\Amqp;
 use Hamcrest\Matchers;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use SAREhub\Client\Amqp\AmqpMessageHeaders as AMH;
+use SAREhub\Client\Amqp\Schema\AmqpEnvironmentSchemaCreator;
 use SAREhub\Client\Message\BasicExchange;
 use SAREhub\Client\Message\BasicMessage;
 
@@ -20,17 +21,17 @@ class AmqpChannelWrapperTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var Mockery\Mock | AMQPChannel
+     * @var MockInterface | AMQPChannel
      */
     private $channel;
 
     /**
-     * @var Mockery\Mock | AmqpMessageConverter
+     * @var MockInterface | AmqpMessageConverter
      */
     private $messageConverter;
 
     /**
-     * @var Mockery\Mock | AmqpProcessConfirmStrategy
+     * @var MockInterface | AmqpProcessConfirmStrategy
      */
     private $processConfirmStrategy;
 
@@ -40,14 +41,21 @@ class AmqpChannelWrapperTest extends TestCase
     private $wrapper;
 
     /**
-     * @var Mockery\Mock | AmqpConsumer
+     * @var MockInterface | AmqpConsumer
      */
     private $consumer;
+
+    /**
+     * @var MockInterface | AmqpEnvironmentSchemaCreator
+     */
+    private $schemaCreator;
 
     protected function setUp()
     {
         $this->channel = Mockery::mock(AMQPChannel::class);
-        $this->wrapper = new AmqpChannelWrapper($this->channel);
+        $this->schemaCreator = Mockery::mock(AmqpEnvironmentSchemaCreator::class);
+        $this->wrapper = new AmqpChannelWrapper($this->schemaCreator);
+        $this->wrapper->setWrappedChannel($this->channel);
 
         $this->messageConverter = Mockery::mock(AmqpMessageConverter::class);
         $this->wrapper->setMessageConverter($this->messageConverter);
@@ -59,25 +67,42 @@ class AmqpChannelWrapperTest extends TestCase
             ->setQueueName("test_queue")
             ->setTag("test_consumer_tag")
             ->setExclusive(true));
+        $this->consumer->allows("getTag")->andReturn($this->consumer->getOptions()->getTag());
     }
 
-    public function testSetChannelPrefetchCount()
+    public function testSetChannelPrefetch()
     {
+        $this->schemaCreator->allows("create");
+
         $count = 1;
         $size = 2;
         $this->channel->expects("basic_qos")->with($size, $count, true);
-        $this->wrapper->setChannelPrefetchCount($count, $size);
+
+        $this->wrapper->setChannelPrefetch($count, $size);
+        $this->wrapper->updateState();
     }
 
-    public function testSetPrefetchCountPerConsumer()
+    public function testSetConsumerPrefetch()
     {
+        $this->schemaCreator->allows("create");
+
         $count = 1;
         $size = 2;
         $this->channel->expects("basic_qos")->with($size, $count, false);
-        $this->wrapper->setPrefetchCountPerConsumer($count, $size);
+
+        $this->wrapper->setConsumerPrefetch($count, $size);
+        $this->wrapper->updateState();
     }
 
-    public function testRegisterConsumerThenChannelBasicConsume()
+    public function testRegisterConsumerThenChannelBasicConsumeWhenLazy()
+    {
+        $this->channel->expects("basic_consume")->never();
+        $this->wrapper->registerConsumer($this->consumer, true);
+
+        $this->assertSame($this->consumer, $this->wrapper->getConsumer($this->consumer->getTag()));
+    }
+
+    public function testRegisterConsumerThenChannelBasicConsumeWhenNotLazy()
     {
         $opts = $this->consumer->getOptions();
         $this->channel->expects("basic_consume")->with(
@@ -91,21 +116,24 @@ class AmqpChannelWrapperTest extends TestCase
             null,
             Matchers::equalTo($opts->getConsumeArguments())
         )->andReturn($opts->getTag());
+        $this->consumer->expects("setTag")->with($opts->getTag());
 
-        $this->wrapper->registerConsumer($this->consumer);
+        $this->wrapper->registerConsumer($this->consumer, false);
+
         $this->assertSame($this->consumer, $this->wrapper->getConsumer($opts->getTag()));
     }
 
     public function testUnregisterConsumerThenChannelBasicCancel()
     {
-        $opts = $this->consumer->getOptions();
-        $this->channel->allows(["basic_consume" => $opts->getTag()]);
+        $consumerTag = $this->consumer->getOptions()->getTag();
+        $this->channel->allows(["basic_consume" => $consumerTag]);
         $this->wrapper->registerConsumer($this->consumer);
 
-        $this->channel->expects("basic_cancel")->with($opts->getTag(), false, true);
-        $this->wrapper->unregisterConsumer($this->consumer->getOptions()->getTag());
+        $this->channel->expects("basic_cancel")->with($consumerTag, false, true);
 
-        $this->assertFalse($this->wrapper->hasConsumer($this->consumer->getOptions()->getTag()));
+        $this->wrapper->unregisterConsumer($consumerTag);
+
+        $this->assertFalse($this->wrapper->hasConsumer($consumerTag));
     }
 
     public function testCancelConsumeWhenConsumerNotRegistered()
@@ -117,26 +145,26 @@ class AmqpChannelWrapperTest extends TestCase
 
     public function testTickThenChannelWait()
     {
+        $this->schemaCreator->expects("create")->with($this->channel);
         $this->wrapper->start();
         $this->channel->expects("wait")->with(null, true, $this->wrapper->getWaitTimeout());
         $this->wrapper->tick();
     }
 
-    public function testTickWhenTimeoutExceptionThenLog()
+    public function testTickWhenTimeoutExceptionThenSilent()
     {
+        $this->schemaCreator->expects("create")->with($this->channel);
         $this->wrapper->start();
         $e = new AMQPTimeoutException("exception message");
 
-        $logger = Mockery::mock(LoggerInterface::class);
-        $logger->expects("debug")->with("channel wait timeout: exception message", ["exception" => $e]);
-        $this->wrapper->setLogger($logger);
-
         $this->channel->expects("wait")->andThrow($e);
         $this->wrapper->tick();
+        $this->assertTrue(true); // silent
     }
 
     public function testTickWhenInterruptedSystemCallThenSilent()
     {
+        $this->schemaCreator->expects("create")->with($this->channel);
         $this->wrapper->start();
 
         $e =  new \ErrorException("stream_select ... Interrupted system call");
@@ -147,6 +175,7 @@ class AmqpChannelWrapperTest extends TestCase
 
     public function testTickWhenOtherExceptionThenThrow()
     {
+        $this->schemaCreator->expects("create")->with($this->channel);
         $this->wrapper->start();
 
         $e =  new \Exception("other");
