@@ -24,6 +24,11 @@ class BasicMessage implements Message, \JsonSerializable
         $this->body = $body;
     }
 
+    public static function create($body, array $headers = []): Message
+    {
+        return new self($headers, $body);
+    }
+
     /**
      * @param mixed $body
      * @return Message
