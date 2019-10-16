@@ -31,14 +31,19 @@ class BasicExchange implements Exchange, \JsonSerializable
         $this->in = $in ?? BasicMessage::newInstance();
     }
 
-    public static function newInstance(): Exchange
+    public static function create($body, array $headers = []): Exchange
     {
-        return new self();
+        return self::withIn(BasicMessage::create($body, $headers));
     }
 
     public static function withIn(Message $message): Exchange
     {
         return new self($message);
+    }
+
+    public static function newInstance(): Exchange
+    {
+        return new self();
     }
 
     public function getIn(): Message
