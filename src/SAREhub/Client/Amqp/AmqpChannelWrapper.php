@@ -43,6 +43,8 @@ class AmqpChannelWrapper extends ServiceSupport
 
     public function registerConsumer(AmqpConsumer $consumer, bool $lazy = true): void
     {
+        $this->getLogger()->info("Registering consumer", ["options" => $consumer->getOptions()]);
+
         $this->state->addConsumer($consumer);
         if ($lazy) {
             return;
@@ -61,13 +63,13 @@ class AmqpChannelWrapper extends ServiceSupport
             $opts->getConsumeArguments()
         );
         $consumer->setTag($tag);
-        $this->getLogger()->info("registered consumer with tag: $tag", ["options" => $opts]);
+        $this->getLogger()->notice("Registered consumer with tag: $tag", ["options" => $opts]);
     }
 
     public function onMessage(AMQPMessage $in): void
     {
         $inConverted = $this->getMessageConverter()->convertFrom($in);
-        $this->getLogger()->info("onMessage", ["message" => $inConverted]);
+        $this->getLogger()->info("Got message", ["message" => $inConverted]);
         $consumerTag = $inConverted->getHeader(AmqpMessageHeaders::CONSUMER_TAG);
         $exchange = BasicExchange::withIn($inConverted->copy());
         $this->getConsumer($consumerTag)->process($exchange);
@@ -79,7 +81,7 @@ class AmqpChannelWrapper extends ServiceSupport
         $consumer = $this->getConsumer($consumerTag);
         $this->getWrappedChannel()->basic_cancel($consumerTag, false, true);
         $this->state->removeConsumer($consumer);
-        $this->getLogger()->info("unregistered consumer with tag: $consumerTag", ["options" => $consumer->getOptions()]);
+        $this->getLogger()->notice("Unregistered consumer with tag: $consumerTag", ["options" => $consumer->getOptions()]);
     }
 
     protected function doStart()
@@ -104,14 +106,14 @@ class AmqpChannelWrapper extends ServiceSupport
     {
         $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
         $this->getWrappedChannel()->basic_ack($deliveryTag, false);
-        $this->getLogger()->info("ack message", ["message" => $message]);
+        $this->getLogger()->info("Ack message", ["message" => $message]);
     }
 
     public function reject(Message $message, bool $requeue = true)
     {
         $deliveryTag = $message->getHeader(AmqpMessageHeaders::DELIVERY_TAG);
         $this->getWrappedChannel()->basic_reject($deliveryTag, $requeue);
-        $this->getLogger()->info("rejected message", ["message" => $message, "requeue" => $requeue]);
+        $this->getLogger()->info("Rejected message", ["message" => $message, "requeue" => $requeue]);
     }
 
     public function publish(Message $message)
@@ -120,14 +122,16 @@ class AmqpChannelWrapper extends ServiceSupport
         $exchange = $message->getHeader(AmqpMessageHeaders::EXCHANGE);
         $routingKey = $message->getHeader(AmqpMessageHeaders::ROUTING_KEY);
         $this->getWrappedChannel()->basic_publish($converted, $exchange, $routingKey);
-        $this->getLogger()->info("published message", ["message" => $message]);
+        $this->getLogger()->info("Published message", ["message" => $message]);
     }
 
     public function updateState(): void
     {
+        $this->getLogger()->info("Updating state");
         $this->schemaCreator->create($this->getWrappedChannel());
         $this->updatePrefetchState();
         $this->updateConsumersState();
+        $this->getLogger()->notice("Updated state");
     }
 
     private function updatePrefetchState(): void
@@ -147,6 +151,7 @@ class AmqpChannelWrapper extends ServiceSupport
                 false
             );
         }
+        $this->getLogger()->notice("Updated prefetch state");
     }
 
     private function updateConsumersState(): void
@@ -156,6 +161,7 @@ class AmqpChannelWrapper extends ServiceSupport
         foreach ($consumers as $consumer) {
             $this->registerConsumer($consumer, false);
         }
+        $this->getLogger()->notice("Updated consumers state");
     }
 
     public function setChannelPrefetch(int $count, int $size = 0): void
