@@ -66,7 +66,7 @@ class AmqpConnectionServiceTest extends TestCase
         $this->service->start();
 
         $channelWrapper->expects("tick")->andThrow(new AMQPRuntimeException("some AMQP error"));
-        $connection = $this->connectionProviderExpectsGet();
+        $connection->expects("reconnect");
         $this->wrapperExpectsSetChannelFromConnection($channelWrapper, $connection);
         $channelWrapper->expects("updateState");
 

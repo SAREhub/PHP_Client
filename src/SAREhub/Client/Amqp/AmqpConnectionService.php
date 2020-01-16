@@ -34,6 +34,7 @@ class AmqpConnectionService extends ServiceSupport
     public function addChannel(AmqpChannelWrapper $channel): void
     {
         $this->channels[] = $channel;
+        $this->getLogger()->info("Added channel");
     }
 
     protected function doStart()
@@ -52,6 +53,7 @@ class AmqpConnectionService extends ServiceSupport
                 $channel->tick();
             }
         } catch (AMQPRuntimeException | AMQPIOException $e) {
+            $this->getLogger()->warning("Reconnecting...", ["reason" => $e->getMessage()]);
             $this->reconnect();
             $this->getLogger()->warning("Reconnected", ["reason" => $e->getMessage()]);
         }
@@ -59,7 +61,7 @@ class AmqpConnectionService extends ServiceSupport
 
     private function reconnect(): void
     {
-        $this->connection = $this->connectionProvider->get();
+        $this->connection->reconnect();
         foreach ($this->channels as $channel) {
             $channel->setWrappedChannel($this->connection->channel());
             $channel->updateState();
