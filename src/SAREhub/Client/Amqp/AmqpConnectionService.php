@@ -61,10 +61,15 @@ class AmqpConnectionService extends ServiceSupport
 
     private function reconnect(): void
     {
-        $this->connection->reconnect();
+        try {
+            $this->connection->close();
+        } catch (\Exception $e) {
+            $this->getLogger()->debug("Error when force close connection to reconnect: " . $e->getMessage());
+        }
+        $this->connection = $this->connectionProvider->get();
         foreach ($this->channels as $channel) {
             $channel->setWrappedChannel($this->connection->channel());
-            $channel->updateState();
+            $channel->start();
         }
     }
 
